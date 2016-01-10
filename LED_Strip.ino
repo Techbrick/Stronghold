@@ -58,6 +58,9 @@ void loop()
      case 7:
        greenScroll();
        break;
+     case 8:
+       random();
+       break;
   }
   
   FastLED.show();
@@ -67,7 +70,7 @@ void receiveEvent(int howMany)
 {
   while (Wire.available()) {
     int c = Wire.read();
-    if (c < NUM_DANCES) {
+    if (c <= NUM_DANCES) {
       if (c != dance) {
         dance = c;
         count = 0;
@@ -242,6 +245,7 @@ void scrollOut() {
   count = (count - 1 + space) % space;
   delay(80);
 }
+
 void halfScrollIn() {
   int space = 4;
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -263,3 +267,9 @@ void halfScrollIn() {
   delay(80);
 }
 
+void random() {
+	for (int i = 0; i < NUM_LEDS; i++) {
+		leds[i].setRGB((int)random(256), (int)random(256), (int)random(256));
+	}
+	delay(100);
+}
