@@ -21,7 +21,7 @@ void setup()
   //randomSeed(analogRead(A0));
   //dance = random(NUM_DANCES);
   
-  //This is the chipset in the AM-2640 LED strip using the default Data/CLK pins
+  //This is the chipset in the AM-2640 LED strip using the default Data/CLK pins 
    FastLED.addLeds<WS2801, RGB>(leds, NUM_LEDS);
    for (int i = 0; i < NUM_CHASE; i++)
    {
