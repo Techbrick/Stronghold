@@ -269,7 +269,7 @@ void halfScrollIn() {
 
 void random() {
 	for (int i = 0; i < NUM_LEDS; i++) {
-		leds[i].setRGB((int)random(256), (int)random(256), (int)random(256));
+		leds[i].setRGB((int)random(0, 256), (int)random(0, 256), (int)random(0, 256));
 	}
 	delay(100);
 }
