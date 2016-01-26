@@ -34,7 +34,7 @@ public:
 
 	Position(AnalogGyro gyroPtr, BuiltInAccelerometer accelPtr):
 	gyro(gyroPtr), //"cannot convert 'AnalogGyro' to 'AnalogGyro' in initialization
-	accel (accelPtr) //"cannot convert 'BuiltInAccelerometer' to 'BuiltInAccelerometer' in initialization
+	accel(accelPtr) //"cannot convert 'BuiltInAccelerometer' to 'BuiltInAccelerometer' in initialization
 	{}
 
 	void Setup() {
