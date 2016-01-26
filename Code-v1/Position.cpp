@@ -13,11 +13,10 @@
 #define PI 3.14159265
 
 class Position {
-	ADXL345_I2C accel;
+	Accelerometer accel;
 	Gyro gyro;
 	Timer xTimer;
 	Timer yTimer;
-	Timer zTimer;
 	float xAcceleration;
 	float yAcceleration;
 	float xDistance;
@@ -28,29 +27,31 @@ class Position {
 public:
 
 	//TODO: Add in absolute locations of obstacles so that the robot can move to them && add in vision capabilities
+	//TODO: Set in Robot.cpp to update every ms - Kyle
 
 	void Setup() {
 		xTimer.Start();
+		xTimer.Reset();
 		yTimer.Start();
-		zTimer.Start();
+		yTimer.Reset();
 		gyro(Constants::gyroPin);
-		accel(Constants::accelerometerPin);
+		accel = new BuiltInAccelerometer();
 		gyro.Reset();
 	}
 	float trackX() {
-		xTimer.Reset();
 		xAcceleration = accel.GetX() * cos((gyro.GetAngle() - 90) * PI / 180); //angle + 90? Will have to test
 		xDistance = .5 * xAcceleration * xTimer.Get() * xTimer.Get();
 		xPos = xPos + xDistance;
 		return xPos;
+		xTimer.Reset();
 	}
 
 	float trackY() {
-		yTimer.Reset();
 		yAcceleration = accel.GetY() * sin((gyro.GetAngle() - 90) * PI / 180); //again, we'll have to play with it
 		yDistance = .5 * yAcceleration * yTimer.Get() * yTimer.Get();
 		yPos = yPos + yDistance;
 		return yPos;
+		yTimer.Reset();
 	}
 
 };
