@@ -33,7 +33,6 @@ public:
 
 
 	//Position
-	static constexpr int accelerometerPin = 0;
 	static constexpr float accelerometerSensitivity = .018;
 	static constexpr float accelerometerZero = 2.5;
 	static constexpr float xStartPos = 0;
