@@ -1,6 +1,7 @@
 #include "WPILib.h"
 #include "Switch.h"
 #include "Constants.cpp"
+#include "Position.cpp"
 
 /**
  * This is a demo program showing the use of the RobotDrive class.
@@ -15,6 +16,7 @@
 class Robot: public SampleRobot
 {
 	RobotDrive myRobot; // robot drive system
+	SendableChooser *chooser;
 	Joystick leftStick; // left drive joystick
 	Joystick rightStick; //right drive joystick
 	Joystick operatorStick; //operator joystick
@@ -23,7 +25,8 @@ class Robot: public SampleRobot
 	Switch armBottom;
 	Switch armTop;
 	Talon armTalon;
-	SendableChooser *chooser;
+	AnalogGyro gyro;
+	BuiltInAccelerometer accel;
 	const std::string autoNameDefault = "Default";
 	const std::string autoNameCustom = "My Auto";
 
@@ -40,8 +43,8 @@ public:
 			shooterTop(Constants::shooterTopPin),
 			armBottom(Constants::armBottomPin),
 			armTop(Constants::armTopPin),
-			armTalon(Constants::armTalonPin)
-
+			armTalon(Constants::armTalonPin),
+			gyro(Constants::gyroPin)
 	{
 		//Note SmartDashboard is not initialized here, wait until RobotInit to make SmartDashboard calls
 		myRobot.SetExpiration(0.1);
@@ -96,7 +99,7 @@ public:
 		myRobot.SetSafetyEnabled(true);
 		while (IsOperatorControl() && IsEnabled())
 		{
-			myRobot.TankDrive(leftStick, rightStick, false); //drive
+			myRobot.TankDrive(leftStick, rightStick); //drive
 			Wait(0.005);				// wait for a motor update time
 		}
 	}
