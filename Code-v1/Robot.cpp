@@ -1,7 +1,7 @@
 #include "WPILib.h"
 #include "Switch.h"
 #include "Constants.cpp"
-#include "Position.cpp"
+#include "Position.h"
 
 /**
  * This is a demo program showing the use of the RobotDrive class.
@@ -27,6 +27,7 @@ class Robot: public SampleRobot
 	Talon armTalon;
 	AnalogGyro gyro;
 	BuiltInAccelerometer accel;
+	Position position;
 	const std::string autoNameDefault = "Default";
 	const std::string autoNameCustom = "My Auto";
 
@@ -44,7 +45,9 @@ public:
 			armBottom(Constants::armBottomPin),
 			armTop(Constants::armTopPin),
 			armTalon(Constants::armTalonPin),
-			gyro(Constants::gyroPin)
+			gyro(Constants::gyroPin),
+			accel(),
+			position(gyro, accel)
 	{
 		//Note SmartDashboard is not initialized here, wait until RobotInit to make SmartDashboard calls
 		myRobot.SetExpiration(0.1);
@@ -97,6 +100,7 @@ public:
 	void OperatorControl()
 	{
 		myRobot.SetSafetyEnabled(true);
+		position.Setup();
 		while (IsOperatorControl() && IsEnabled())
 		{
 			myRobot.TankDrive(leftStick, rightStick); //drive
