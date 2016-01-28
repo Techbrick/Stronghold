@@ -28,7 +28,7 @@ class Position {
 	float yPos = Constants::yStartPos;
 
 public :
-	Position(int gyroPin);
+	Position();
 	void Setup();
 	float trackX();
 	float trackY();
