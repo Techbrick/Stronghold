@@ -38,6 +38,8 @@ public:
 	static constexpr float xStartPos = 0;
 	static constexpr float yStartPos = 0;
 	static constexpr int gyroPin = 0;
+	static constexpr float towerX = 0;
+	static constexpr float towerY = 0;
 
 
 
