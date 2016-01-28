@@ -1,22 +1,23 @@
+
 /*
- * Position.cpp
+ * Position.h
  *
- *  Created on: Jan 25, 2016
- *      Author: Noah Zbozny
+ *  Created on: Jan 26, 2016
+ *      Author: Owner
  */
 
-#include "WPILib.h"
-#include "Constants.cpp"
-#include "pthread.h"
-#include "math.h"
+#ifndef SRC_POSITION_H_
+#define SRC_POSITION_H_
 
-#define PI 3.14159265
+#include "WPILib.h"
+#include "pthread.h"
+#include "AHRS.h"
 
 class Position {
+	AHRS gyro; //navx mxp
+	BuiltInAccelerometer accel;
 	Timer xTimer;
 	Timer yTimer;
-	AnalogGyro *gyro;
-	BuiltInAccelerometer *accel;
 	float xAcceleration;
 	float yAcceleration;
 	float xDistance;
@@ -26,40 +27,13 @@ class Position {
 	float xPos = Constants::xStartPos;
 	float yPos = Constants::yStartPos;
 
-
-public:
-
-	//TODO: Add in absolute locations of obstacles so that the robot can move to them && add in vision capabilities
-	//TODO: Set in Robot.cpp to update every ms - Kyle
-
-	Position(AnalogGyro gyroPtr, BuiltInAccelerometer accelPtr):
-	gyro(gyroPtr), //"cannot convert 'AnalogGyro' to 'AnalogGyro' in initialization
-	accel(accelPtr) //"cannot convert 'BuiltInAccelerometer' to 'BuiltInAccelerometer' in initialization
-	{}
-
-	void Setup() {
-		xTimer.Start();
-		xTimer.Reset();
-		yTimer.Start();
-		yTimer.Reset();
-		gyro->Reset();
-	}
-	float trackX() {
-		xAcceleration = accel->GetX() * cos((gyro->GetAngle() - 90) * PI / 180); //angle + 90? Will have to test
-		xDistance = .5 * xAcceleration * xTimer.Get() * xTimer.Get();
-		xPos = xPos + xDistance;
-		return xPos;
-		xTimer.Reset();
-	}
-
-	float trackY() {
-		yAcceleration = accel->GetY() * sin((gyro->GetAngle() - 90) * PI / 180); //again, we'll have to play with it
-		yDistance = .5 * yAcceleration * yTimer.Get() * yTimer.Get();
-		yPos = yPos + yDistance;
-		return yPos;
-		yTimer.Reset();
-	}
-
-
-
+public :
+	Position();
+	void Setup();
+	float trackX();
+	float trackY();
+	float angleToTower();
 };
+
+
+#endif /* SRC_POSITION_H_ */
