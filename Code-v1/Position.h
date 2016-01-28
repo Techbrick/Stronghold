@@ -1,3 +1,4 @@
+
 /*
  * Position.h
  *
@@ -10,15 +11,28 @@
 
 #include "WPILib.h"
 #include "pthread.h"
+#include "AHRS.h"
 
 class Position {
-	AnalogGyro &gyro;
-	BuiltInAccelerometer &accel;
+	AHRS gyro; //navx mxp
+	BuiltInAccelerometer accel;
+	Timer xTimer;
+	Timer yTimer;
+	float xAcceleration;
+	float yAcceleration;
+	float xDistance;
+	float yDistance;
+	//static float xPos = Constants::xStartPos; //doesn't like static without constexpr
+	//static float yPos = Constants::yStartPos;
+	float xPos = Constants::xStartPos;
+	float yPos = Constants::yStartPos;
+
 public :
-	Position(AnalogGyro &gyroPtr, BuiltInAccelerometer &accelPtr);
+	Position(int gyroPin);
 	void Setup();
 	float trackX();
 	float trackY();
+	float angleToTower();
 };
 
 
