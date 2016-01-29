@@ -13,8 +13,6 @@
 
 #define PI 3.14159265
 
-
-	//TODO: Add in absolute locations of obstacles so that the robot can move to them && add in vision capabilities
 	//TODO: Set to update every ms - Kyle
 
 	Position::Position():
