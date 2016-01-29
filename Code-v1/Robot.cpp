@@ -25,8 +25,6 @@ class Robot: public SampleRobot
 	Switch armBottom;
 	Switch armTop;
 	Talon armTalon;
-	AnalogGyro gyro;
-	BuiltInAccelerometer accel;
 	Position position;
 	const std::string autoNameDefault = "Default";
 	const std::string autoNameCustom = "My Auto";
@@ -35,7 +33,7 @@ class Robot: public SampleRobot
 
 public:
 	Robot() :
-			myRobot(Constants::driveFrontLeftPin, Constants::driveRearLeftPin, Constants::driveFrontRightPin, Constants::driveRearRightPin),	// these must be initialized in the same order
+			myRobot(Constants::driveLeftPin, Constants::driveRightPin),	// these must be initialized in the same order
 			chooser(),
 			leftStick(Constants::leftDriveChannel), // as they are declared above.
 			rightStick(Constants::rightDriveChannel),
@@ -45,8 +43,6 @@ public:
 			armBottom(Constants::armBottomPin),
 			armTop(Constants::armTopPin),
 			armTalon(Constants::armTalonPin),
-			gyro(Constants::gyroPin),
-			accel(),
 			position()
 	{
 		//Note SmartDashboard is not initialized here, wait until RobotInit to make SmartDashboard calls
