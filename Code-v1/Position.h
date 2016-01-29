@@ -3,7 +3,7 @@
  * Position.h
  *
  *  Created on: Jan 26, 2016
- *      Author: Owner
+ *      Author: Noah Zbozny
  */
 
 #ifndef SRC_POSITION_H_
@@ -22,10 +22,10 @@ class Position {
 	float yAcceleration;
 	float xDistance;
 	float yDistance;
-	//static float xPos = Constants::xStartPos; //doesn't like static without constexpr
-	//static float yPos = Constants::yStartPos;
 	float xPos = Constants::xStartPos;
 	float yPos = Constants::yStartPos;
+	//static float xPos = Constants::xStartPos; //doesn't like static without constexpr
+	//static float yPos = Constants::yStartPos;
 
 public :
 	Position();
