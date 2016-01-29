@@ -5,17 +5,15 @@
  *      Author: Noah Zbozny
  */
 
-#pragma once //necessary until headers are made
+#pragma once //makes sure the constants file is only included once during compile - error caused by including constants in a file, then including another file that also includes constants
 class Constants {
 public:
 
 	//Drive
 	static constexpr int leftDriveChannel = 0;
 	static constexpr int rightDriveChannel = 0;
-	static constexpr int driveFrontRightPin = 0;
-	static constexpr int driveFrontLeftPin = 0;
-	static constexpr int driveRearRightPin = 0;
-	static constexpr int driveRearLeftPin = 0;
+	static constexpr int driveRightPin = 0;
+	static constexpr int driveLeftPin = 0;
 
 
 	//Operator
@@ -33,13 +31,10 @@ public:
 
 
 	//Position
-	static constexpr float accelerometerSensitivity = .018;
-	static constexpr float accelerometerZero = 2.5;
-	static constexpr float xStartPos = 0;
-	static constexpr float yStartPos = 0;
-	static constexpr int gyroPin = 0;
-	static constexpr float towerX = 0;
-	static constexpr float towerY = 0;
+	static constexpr float xStartPos = 0; //relative to origin
+	static constexpr float yStartPos = 0; //relative to origin
+	static constexpr float towerX = 0; //relative to origin
+	static constexpr float towerY = 0; //relative to origin
 
 
 
