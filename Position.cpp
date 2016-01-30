@@ -32,6 +32,7 @@
 		yTimer.Reset();
 		gyro.Reset();
 	}
+	
 	float Position::trackX() {
 		xAcceleration = accel.GetX() * cos((gyro.GetAngle() - 90) * PI / 180); //angle + 90? Will have to test
 		xDistance = .5 * xAcceleration * xTimer.Get() * xTimer.Get();
