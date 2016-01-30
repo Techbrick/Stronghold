@@ -5,7 +5,7 @@
  *      Author: Mitchell
  */
 
-#include <Switch.h>
+#include "Switch.h"
 
 Switch::Switch(uint32_t channel) :
 DigitalInput(channel) {
