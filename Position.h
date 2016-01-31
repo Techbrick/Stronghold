@@ -30,9 +30,13 @@ class Position {
 public :
 	Position();
 	void Setup();
-	float trackX();
-	float trackY();
-	float angleToTower();
+	void TrackX();
+	void TrackY();
+	void Update();
+	float GetX();
+	float GetY();
+	float AngleToTower();
+	float DistanceToTower();
 };
 
 
