@@ -22,6 +22,10 @@ class Position {
 	float yAcceleration;
 	float xDistance;
 	float yDistance;
+	float xPosAccel;
+	float yPosAccel;
+	float xPosTalon;
+	float yPosTalon;
 	float xPos = Constants::xStartPos;
 	float yPos = Constants::yStartPos;
 	//static float xPos = Constants::xStartPos; //doesn't like static without constexpr
@@ -30,8 +34,11 @@ class Position {
 public :
 	Position();
 	void Setup();
-	void TrackX();
-	void TrackY();
+	void AccelerometerTrackX();
+	void AccelerometerTrackY();
+	void TalonTrackX();
+	void TalonTrackY();
+	void Merge();
 	void Update();
 	float GetX();
 	float GetY();
