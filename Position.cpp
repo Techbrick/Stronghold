@@ -23,6 +23,10 @@
 		yAcceleration = 0;
 		xDistance = 0;
 		yDistance = 0;
+		xPosAccel = Constants::xStartPos;
+		yPosAccel = Constants::yStartPos;
+		xPosTalon = Constants::xStartPos;
+		yPosTalon = Constants::yStartPos;
 	}
 
 	void Position::Setup() {
@@ -32,23 +36,35 @@
 		yTimer.Reset();
 		gyro.Reset();
 	}
-	void Position::TrackX() {
+	void Position::AccelerometerTrackX() {
 		xAcceleration = accel.GetX() * cos((gyro.GetAngle() - 90) * PI / 180); //angle + 90? Will have to test
 		xDistance = .5 * xAcceleration * xTimer.Get() * xTimer.Get();
-		xPos = xPos + xDistance;
+		xPosAccel = xPosAccel + xDistance;
 		xTimer.Reset();
 	}
 
-	void Position::TrackY() {
+	void Position::AccelerometerTrackY() {
 		yAcceleration = accel.GetY() * sin((gyro.GetAngle() - 90) * PI / 180); //again, we'll have to play with it
 		yDistance = .5 * yAcceleration * yTimer.Get() * yTimer.Get();
-		yPos = yPos + yDistance;
+		yPosAccel = yPosAccel + yDistance;
 		yTimer.Reset();
 	}
 
+	void Position::TalonTrackX() {
+
+	}
+
+	void Position::TalonTrackY() {
+
+	}
+
 	void Position::Update() {
-		TrackX();
-		TrackY();
+		AccelerometerTrackX();
+		AccelerometerTrackY();
+		TalonTrackX();
+		TalonTrackY();
+		xPos = (xPosAccel + xPosTalon) / 2;
+		yPos = (yPosAccel + yPosTalon) / 2;
 	}
 
 	float Position::GetX() {
