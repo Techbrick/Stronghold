@@ -38,7 +38,6 @@ public :
 	void AccelerometerTrackY();
 	void TalonTrackX();
 	void TalonTrackY();
-	void Merge();
 	void Update();
 	float GetX();
 	float GetY();
