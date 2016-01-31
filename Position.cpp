@@ -64,6 +64,16 @@
 		angleToTower = acos(dotProduct/(uLength * vLength)); //linear algebra
 		return angleToTower;
 	}
+	
+	float Position::DistanceToTower() {
+		float xPart;
+		float yPart;
+		float distance;
 
+		xPart = Constants::towerX - xPos;
+		yPart = Constants::towerY - yPos;
+		distance = sqrt(pow(xPart, 2) + pow(yPart, 2));
+		return distance;
+	}
 
 
