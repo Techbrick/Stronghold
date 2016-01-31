@@ -32,24 +32,34 @@
 		yTimer.Reset();
 		gyro.Reset();
 	}
-	
-	float Position::trackX() {
+	void Position::TrackX() {
 		xAcceleration = accel.GetX() * cos((gyro.GetAngle() - 90) * PI / 180); //angle + 90? Will have to test
 		xDistance = .5 * xAcceleration * xTimer.Get() * xTimer.Get();
 		xPos = xPos + xDistance;
 		xTimer.Reset();
-		return xPos;
 	}
 
-	float Position::trackY() {
+	void Position::TrackY() {
 		yAcceleration = accel.GetY() * sin((gyro.GetAngle() - 90) * PI / 180); //again, we'll have to play with it
 		yDistance = .5 * yAcceleration * yTimer.Get() * yTimer.Get();
 		yPos = yPos + yDistance;
 		yTimer.Reset();
+	}
+
+	void Position::Update() {
+		TrackX();
+		TrackY();
+	}
+
+	float Position::GetX() {
+		return xPos;
+	}
+
+	float Position::GetY() {
 		return yPos;
 	}
 
-	float Position::angleToTower() {
+	float Position::AngleToTower() {
 		float theta = gyro.GetAngle();
 		float xToTower = Constants::towerX - xPos;
 		float yToTower = Constants::towerY - yPos;
@@ -64,7 +74,7 @@
 		angleToTower = acos(dotProduct/(uLength * vLength)); //linear algebra
 		return angleToTower;
 	}
-	
+
 	float Position::DistanceToTower() {
 		float xPart;
 		float yPart;
