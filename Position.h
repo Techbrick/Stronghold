@@ -16,10 +16,18 @@
 class Position {
 	AHRS gyro; //navx mxp
 	BuiltInAccelerometer accel;
-	Timer xTimer;
-	Timer yTimer;
+	CANTalon &leftFrontTalon;
+	CANTalon &leftRearTalon;
+	CANTalon &rightFrontTalon;
+	CANTalon &rightRearTalon;
+	Timer xAccelTimer;
+	Timer yAccelTimer;
+	Timer xTalonTimer;
+	Timer yTalonTimer;
 	float xAcceleration;
 	float yAcceleration;
+	float xVelocity;
+	float yVelocity;
 	float xDistance;
 	float yDistance;
 	float xPosAccel;
@@ -32,7 +40,7 @@ class Position {
 	//static float yPos = Constants::yStartPos;
 
 public :
-	Position();
+	Position(CANTalon &leftFrontTalon_, CANTalon &leftRearTalon_, CANTalon &rightFrontTalon_, CANTalon &rightRearTalon_);
 	void Setup();
 	void AccelerometerTrackX();
 	void AccelerometerTrackY();
