@@ -14,6 +14,14 @@ public:
 	static constexpr int rightDriveChannel = 0;
 	static constexpr int driveRightPin = 0;
 	static constexpr int driveLeftPin = 0;
+	static constexpr int leftFrontTalonPin = 0;
+	static constexpr int leftRearTalonPin = 0;
+	static constexpr int rightFrontTalonPin = 0;
+	static constexpr int rightRearTalonPin = 0;
+	static constexpr int CANTalonP = 0;
+	static constexpr int CANTalonI = 0;
+	static constexpr int CANTalonD = 0;
+	static constexpr int CANTalonF = 0;
 
 
 	//Operator
