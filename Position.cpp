@@ -15,47 +15,75 @@
 
 	//TODO: Set to update every ms - Kyle
 
-	Position::Position():
+	Position::Position(CANTalon &leftFrontTalon_, CANTalon &leftRearTalon_, CANTalon &rightFrontTalon_, CANTalon &rightRearTalon_):
 	gyro(I2C::Port::kMXP), //assuming we're on this port
-	accel()
+	accel(),
+	leftFrontTalon(leftFrontTalon_),
+	leftRearTalon(leftRearTalon_),
+	rightFrontTalon(rightFrontTalon_),
+	rightRearTalon(rightRearTalon_)
 	{
 		xAcceleration = 0;
 		yAcceleration = 0;
+		xVelocity = 0;
+		yVelocity = 0;
 		xDistance = 0;
 		yDistance = 0;
 		xPosAccel = Constants::xStartPos;
 		yPosAccel = Constants::yStartPos;
 		xPosTalon = Constants::xStartPos;
 		yPosTalon = Constants::yStartPos;
+		leftFrontTalon.SetPID(Constants::CANTalonP, Constants::CANTalonI, Constants::CANTalonD, Constants::CANTalonF);
+		leftFrontTalon.EnableControl();
+		leftFrontTalon.SetControlMode(CANSpeedController::kSpeed);
+		leftRearTalon.SetPID(Constants::CANTalonP, Constants::CANTalonI, Constants::CANTalonD, Constants::CANTalonF);
+		leftRearTalon.EnableControl();
+		leftRearTalon.SetControlMode(CANSpeedController::kSpeed);
+		rightFrontTalon.SetPID(Constants::CANTalonP, Constants::CANTalonI, Constants::CANTalonD, Constants::CANTalonF);
+		rightFrontTalon.EnableControl();
+		rightFrontTalon.SetControlMode(CANSpeedController::kSpeed);
+		rightRearTalon.SetPID(Constants::CANTalonP, Constants::CANTalonI, Constants::CANTalonD, Constants::CANTalonF);
+		rightRearTalon.EnableControl();
+		rightRearTalon.SetControlMode(CANSpeedController::kSpeed);
 	}
 
 	void Position::Setup() {
-		xTimer.Start();
-		xTimer.Reset();
-		yTimer.Start();
-		yTimer.Reset();
+		xAccelTimer.Start();
+		xAccelTimer.Reset();
+		yAccelTimer.Start();
+		yAccelTimer.Reset();
+		xTalonTimer.Start();
+		xTalonTimer.Reset();
+		yTalonTimer.Start();
+		yTalonTimer.Reset();
 		gyro.Reset();
 	}
 	void Position::AccelerometerTrackX() {
 		xAcceleration = accel.GetX() * cos((gyro.GetAngle() - 90) * PI / 180); //angle + 90? Will have to test
-		xDistance = .5 * xAcceleration * xTimer.Get() * xTimer.Get();
+		xDistance = .5 * xAcceleration * xAccelTimer.Get() * xAccelTimer.Get();
 		xPosAccel = xPosAccel + xDistance;
-		xTimer.Reset();
+		xAccelTimer.Reset();
+		//xAccelTimer.Start();
 	}
 
 	void Position::AccelerometerTrackY() {
 		yAcceleration = accel.GetY() * sin((gyro.GetAngle() - 90) * PI / 180); //again, we'll have to play with it
-		yDistance = .5 * yAcceleration * yTimer.Get() * yTimer.Get();
+		yDistance = .5 * yAcceleration * yAccelTimer.Get() * yAccelTimer.Get();
 		yPosAccel = yPosAccel + yDistance;
-		yTimer.Reset();
+		yAccelTimer.Reset();
+		//yAccelTimer.Start();
 	}
 
 	void Position::TalonTrackX() {
-
+		xVelocity = ((leftFrontTalon.GetSpeed() + leftRearTalon.GetSpeed() + rightFrontTalon.GetSpeed() + rightRearTalon.GetSpeed()) / 4.0) * cos(gyro.GetAngle());
+		xPosTalon = xVelocity * xTalonTimer.Get();
+		xTalonTimer.Reset();
 	}
 
 	void Position::TalonTrackY() {
-
+		yVelocity = ((leftFrontTalon.GetSpeed() + leftRearTalon.GetSpeed() + rightFrontTalon.GetSpeed() + rightRearTalon.GetSpeed()) / 4.0) * sin(gyro.GetAngle());
+		yPosTalon = yVelocity * yTalonTimer.Get();
+		yTalonTimer.Reset();
 	}
 
 	void Position::Update() {
