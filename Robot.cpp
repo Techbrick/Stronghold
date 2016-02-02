@@ -24,6 +24,10 @@ class Robot: public SampleRobot
 	Switch shooterTop;
 	Switch armBottom;
 	Switch armTop;
+	CANTalon leftFrontTalon;
+	CANTalon leftRearTalon;
+	CANTalon rightFrontTalon;
+	CANTalon rightRearTalon;
 	Talon armTalon;
 	Position position;
 	const std::string autoNameDefault = "Default";
@@ -43,7 +47,11 @@ public:
 			armBottom(Constants::armBottomPin),
 			armTop(Constants::armTopPin),
 			armTalon(Constants::armTalonPin),
-			position()
+			leftFrontTalon(Constants::leftFrontTalonPin),
+			leftRearTalon(Constants::leftRearTalonPin),
+			rightFrontTalon(Constants::rightFrontTalonPin),
+			rightRearTalon(Constants::rightRearTalonPin),
+			position(leftFrontTalon, leftRearTalon, rightFrontTalon, rightRearTalon)
 	{
 		//Note SmartDashboard is not initialized here, wait until RobotInit to make SmartDashboard calls
 		myRobot.SetExpiration(0.1);
