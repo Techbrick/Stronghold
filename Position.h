@@ -14,8 +14,7 @@
 #include "AHRS.h"
 
 class Position {
-	AHRS gyro; //navx mxp
-	BuiltInAccelerometer accel;
+	AHRS mxp; //navx mxp
 	CANTalon &leftFrontTalon;
 	CANTalon &leftRearTalon;
 	CANTalon &rightFrontTalon;
