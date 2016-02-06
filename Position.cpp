@@ -4,62 +4,101 @@
  *  Created on: Jan 25, 2016
  *      Author: Noah Zbozny
  */
-
+//origin is nearest left corner
 #include "WPILib.h"
-#include "Constants.cpp"
-#include <pthread.h>
-#include <math.h>
+#include "Constants.h"
+#include "pthread.h"
+#include "math.h"
+#include "Position.h"
 
 #define PI 3.14159265
 
-class Position {
-	Timer xTimer;
-	Timer yTimer;
-	AnalogGyro gyro;
-	BuiltInAccelerometer accel;
-	float xAcceleration;
-	float yAcceleration;
-	float xDistance;
-	float yDistance;
-	//static float xPos = Constants::xStartPos; //doesn't like static without constexpr
-	//static float yPos = Constants::yStartPos;
-	float xPos = Constants::xStartPos;
-	float yPos = Constants::yStartPos;
+	//TODO: Set to update every ms - Kyle
 
+	Position::Position():
+	gyro(I2C::Port::kMXP), //assuming we're on this port
+	accel()
+	{
+		xAcceleration = 0;
+		yAcceleration = 0;
+		xVelocity = 0;
+		yVelocity = 0;
+		xDistance = 0;
+		yDistance = 0;
+		xPosAccel = Constants::xStartPos;
+		yPosAccel = Constants::yStartPos;
 
-public:
+	}
 
-	//TODO: Add in absolute locations of obstacles so that the robot can move to them && add in vision capabilities
-	//TODO: Set in Robot.cpp to update every ms - Kyle
-
-	Position(AnalogGyro gyro, BuiltInAccelerometer accel):
-	gyro(gyro), //"cannot convert 'AnalogGyro' to 'AnalogGyro' in initialization
-	accel(accel) //"cannot convert 'BuiltInAccelerometer' to 'BuiltInAccelerometer' in initialization
-	{}
-
-	void Setup() {
-		xTimer.Start();
-		xTimer.Reset();
-		yTimer.Start();
-		yTimer.Reset();
+	void Position::Setup() {
+		xAccelTimer.Start();
+		xAccelTimer.Reset();
+		yAccelTimer.Start();
+		yAccelTimer.Reset();
+		xTalonTimer.Start();
+		xTalonTimer.Reset();
+		yTalonTimer.Start();
+		yTalonTimer.Reset();
 		gyro.Reset();
 	}
-	float trackX() {
+	void Position::AccelerometerTrackX() {
 		xAcceleration = accel.GetX() * cos((gyro.GetAngle() - 90) * PI / 180); //angle + 90? Will have to test
-		xDistance = .5 * xAcceleration * xTimer.Get() * xTimer.Get();
-		xPos = xPos + xDistance;
-		return xPos;
-		xTimer.Reset();
+		xDistance = .5 * xAcceleration * xAccelTimer.Get() * xAccelTimer.Get();
+		xPosAccel = xPosAccel + xDistance;
+		//xAccelTimer.Reset();
 	}
 
-	float trackY() {
+	void Position::AccelerometerTrackY() {
 		yAcceleration = accel.GetY() * sin((gyro.GetAngle() - 90) * PI / 180); //again, we'll have to play with it
-		yDistance = .5 * yAcceleration * yTimer.Get() * yTimer.Get();
-		yPos = yPos + yDistance;
-		return yPos;
-		yTimer.Reset();
+		yDistance = .5 * yAcceleration * yAccelTimer.Get() * yAccelTimer.Get();
+		yPosAccel = yPosAccel + yDistance;
+		yAccelTimer.Reset();
 	}
 
+	void Position::Update() {
+		AccelerometerTrackX();
+		AccelerometerTrackY();
+		xPos = xPosAccel;
+		yPos = yPosAccel;
+		SmartDashboard::PutNumber("xPos", xPos);
+		SmartDashboard::PutNumber("yPos", yPos);
+		SmartDashboard::PutNumber("xAccel", xAcceleration);
+		SmartDashboard::PutNumber("yAccel", yAcceleration);
+		SmartDashboard::PutNumber("xTimer", xAccelTimer.Get());
+		SmartDashboard::PutNumber("yTimer", yAccelTimer.Get());
+	}
 
+	float Position::GetX() {
+		return xPos;
+	}
 
-};
+	float Position::GetY() {
+		return yPos;
+	}
+
+	float Position::AngleToTower() {
+		float theta = gyro.GetAngle();
+		float xToTower = Constants::towerX - xPos;
+		float yToTower = Constants::towerY - yPos;
+		float dotProduct;
+		float uLength;
+		float vLength;
+		float angleToTower;
+
+		dotProduct = (-1 * xPos) * (xToTower) + (-1 * xPos * tan(90 - theta)) * (yToTower);
+		uLength = sqrt(pow(-1 * xPos, 2) + pow(-1 * xPos * tan(90 - theta), 2));
+		vLength = sqrt(pow(xToTower, 2) + pow(yToTower, 2));
+		angleToTower = acos(dotProduct/(uLength * vLength)); //linear algebra
+		return angleToTower;
+	}
+
+	float Position::DistanceToTower() {
+		float xPart;
+		float yPart;
+		float distance;
+
+		xPart = Constants::towerX - xPos;
+		yPart = Constants::towerY - yPos;
+		distance = sqrt(pow(xPart, 2) + pow(yPart, 2));
+		return distance;
+	}
