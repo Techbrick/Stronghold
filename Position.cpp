@@ -16,8 +16,7 @@
 	//TODO: Set to update every ms - Kyle
 
 	Position::Position(CANTalon &leftFrontTalon_, CANTalon &leftRearTalon_, CANTalon &rightFrontTalon_, CANTalon &rightRearTalon_):
-	gyro(I2C::Port::kMXP), //assuming we're on this port
-	accel(),
+	mxp(I2C::Port::kMXP), //assuming we're on this port
 	leftFrontTalon(leftFrontTalon_),
 	leftRearTalon(leftRearTalon_),
 	rightFrontTalon(rightFrontTalon_),
@@ -56,10 +55,10 @@
 		xTalonTimer.Reset();
 		yTalonTimer.Start();
 		yTalonTimer.Reset();
-		gyro.Reset();
+		mxp.Reset();
 	}
 	void Position::AccelerometerTrackX() {
-		xAcceleration = accel.GetX() * cos((gyro.GetAngle() - 90) * PI / 180); //angle + 90? Will have to test
+		xAcceleration = mxp.GetRawAccelX();
 		xDistance = .5 * xAcceleration * xAccelTimer.Get() * xAccelTimer.Get();
 		xPosAccel = xPosAccel + xDistance;
 		xAccelTimer.Reset();
@@ -67,7 +66,7 @@
 	}
 
 	void Position::AccelerometerTrackY() {
-		yAcceleration = accel.GetY() * sin((gyro.GetAngle() - 90) * PI / 180); //again, we'll have to play with it
+		yAcceleration = mxp.GetRawAccelY();
 		yDistance = .5 * yAcceleration * yAccelTimer.Get() * yAccelTimer.Get();
 		yPosAccel = yPosAccel + yDistance;
 		yAccelTimer.Reset();
@@ -75,13 +74,13 @@
 	}
 
 	void Position::TalonTrackX() {
-		xVelocity = ((leftFrontTalon.GetSpeed() + leftRearTalon.GetSpeed() + rightFrontTalon.GetSpeed() + rightRearTalon.GetSpeed()) / 4.0) * cos(gyro.GetAngle());
+		xVelocity = ((leftFrontTalon.GetSpeed() + leftRearTalon.GetSpeed() + rightFrontTalon.GetSpeed() + rightRearTalon.GetSpeed()) / 4.0) * cos(mxp.GetAngle());
 		xPosTalon = xVelocity * xTalonTimer.Get();
 		xTalonTimer.Reset();
 	}
 
 	void Position::TalonTrackY() {
-		yVelocity = ((leftFrontTalon.GetSpeed() + leftRearTalon.GetSpeed() + rightFrontTalon.GetSpeed() + rightRearTalon.GetSpeed()) / 4.0) * sin(gyro.GetAngle());
+		yVelocity = ((leftFrontTalon.GetSpeed() + leftRearTalon.GetSpeed() + rightFrontTalon.GetSpeed() + rightRearTalon.GetSpeed()) / 4.0) * sin(mxp.GetAngle());
 		yPosTalon = yVelocity * yTalonTimer.Get();
 		yTalonTimer.Reset();
 	}
@@ -104,7 +103,7 @@
 	}
 
 	float Position::AngleToTower() {
-		float theta = gyro.GetAngle();
+		float theta = mxp.GetAngle();
 		float xToTower = Constants::towerX - xPos;
 		float yToTower = Constants::towerY - yPos;
 		float dotProduct;
@@ -129,5 +128,3 @@
 		distance = sqrt(pow(xPart, 2) + pow(yPart, 2));
 		return distance;
 	}
-
-
