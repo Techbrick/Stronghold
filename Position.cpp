@@ -6,15 +6,14 @@
  */
 //origin is nearest left corner
 #include "WPILib.h"
-#include "Constants.cpp"
-#include "pthread.h"
-#include "math.h"
+#include "Constants.h"
+#include <pthread.h>
+#include <math.h>
 #include "Position.h"
 
 #define PI 3.14159265
 
 	//TODO: Set to update every ms - Kyle
-
 	Position::Position(CANTalon &leftFrontTalon_, CANTalon &leftRearTalon_, CANTalon &rightFrontTalon_, CANTalon &rightRearTalon_):
 	mxp(I2C::Port::kMXP), //assuming we're on this port
 	leftFrontTalon(leftFrontTalon_),
