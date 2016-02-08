@@ -27,6 +27,8 @@
 		yVelocity = 0;
 		xDistance = 0;
 		yDistance = 0;
+		xTime = 0;
+		yTime = 0;
 		xPosAccel = Constants::xStartPos;
 		yPosAccel = Constants::yStartPos;
 		xPosTalon = Constants::xStartPos;
@@ -43,9 +45,6 @@
 		rightRearTalon.SetPID(Constants::CANTalonP, Constants::CANTalonI, Constants::CANTalonD, Constants::CANTalonF);
 		rightRearTalon.EnableControl();
 		rightRearTalon.SetControlMode(CANSpeedController::kSpeed);
-	}
-
-	void Position::Setup() {
 		xAccelTimer.Start();
 		xAccelTimer.Reset();
 		yAccelTimer.Start();
@@ -56,23 +55,30 @@
 		yTalonTimer.Reset();
 		mxp.Reset();
 	}
+	
 	void Position::AccelerometerTrackX() {
+		xTime = xAccelTimer.Get();
 		xAcceleration = mxp.GetRawAccelX();
-		xDistance = .5 * xAcceleration * xAccelTimer.Get() * xAccelTimer.Get();
+		xVelocity = xVelocity + xAcceleration * xTime;
+		xDistance = xDistance + xVelocity * xTime;
 		xPosAccel = xPosAccel + xDistance;
 		xAccelTimer.Reset();
-		//xAccelTimer.Start();
+		xVelocity = 0;
+		xDistance = 0;
 	}
 
 	void Position::AccelerometerTrackY() {
 		yAcceleration = mxp.GetRawAccelY();
-		yDistance = .5 * yAcceleration * yAccelTimer.Get() * yAccelTimer.Get();
-		yPosAccel = yPosAccel + yDistance;
+		yTime = yAccelTimer.Get();
+		yVelocity = yVelocity + yAcceleration * yTime;
+		yDistance = yDistance + yVelocity * yTime;
+		yPosAccel = yPosAccel +yDistance;
 		yAccelTimer.Reset();
-		//yAccelTimer.Start();
+		yVelocity = 0;
+		yDistance = 0;
 	}
 
-	void Position::TalonTrackX() {
+/*	void Position::TalonTrackX() {
 		xVelocity = ((leftFrontTalon.GetSpeed() + leftRearTalon.GetSpeed() + rightFrontTalon.GetSpeed() + rightRearTalon.GetSpeed()) / 4.0) * cos(mxp.GetAngle());
 		xPosTalon = xVelocity * xTalonTimer.Get();
 		xTalonTimer.Reset();
@@ -83,14 +89,16 @@
 		yPosTalon = yVelocity * yTalonTimer.Get();
 		yTalonTimer.Reset();
 	}
-
+*/
 	void Position::Update() {
 		AccelerometerTrackX();
 		AccelerometerTrackY();
-		TalonTrackX();
+		xPos = xPosAccel;
+		yPos = yPosAccel;
+	/*	TalonTrackX();
 		TalonTrackY();
 		xPos = (xPosAccel + xPosTalon) / 2;
-		yPos = (yPosAccel + yPosTalon) / 2;
+		yPos = (yPosAccel + yPosTalon) / 2;*/
 	}
 
 	float Position::GetX() {
