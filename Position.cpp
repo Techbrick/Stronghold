@@ -71,7 +71,7 @@
 		yTime = yAccelTimer.Get();
 		yVelocity = yVelocity + yAcceleration * yTime;
 		yDistance = yDistance + yVelocity * yTime;
-		yPosAccel = yPosAccel +yDistance;
+		yPosAccel = yPosAccel + yDistance;
 		yVelocity = 0;
 		yDistance = 0;
 		yAccelTimer.Reset();
