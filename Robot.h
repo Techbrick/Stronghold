@@ -10,6 +10,7 @@ class Robot : public SampleRobot {
 	RobotDrive robotDrive;
 	Joystick driveStick;
 	Shooter shooter;
+	Position position;
 public:
 	Robot();
 	
