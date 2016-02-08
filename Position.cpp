@@ -13,7 +13,6 @@
 
 #define PI 3.14159265
 
-	//TODO: Set to update every ms - Kyle
 	Position::Position(CANTalon &leftFrontTalon_, CANTalon &leftRearTalon_, CANTalon &rightFrontTalon_, CANTalon &rightRearTalon_):
 	mxp(I2C::Port::kMXP), //assuming we're on this port
 	leftFrontTalon(leftFrontTalon_),
