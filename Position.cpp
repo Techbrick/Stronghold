@@ -62,9 +62,9 @@
 		xVelocity = xVelocity + xAcceleration * xTime;
 		xDistance = xDistance + xVelocity * xTime;
 		xPosAccel = xPosAccel + xDistance;
-		xAccelTimer.Reset();
 		xVelocity = 0;
 		xDistance = 0;
+		xAccelTimer.Reset();
 	}
 
 	void Position::AccelerometerTrackY() {
@@ -73,9 +73,9 @@
 		yVelocity = yVelocity + yAcceleration * yTime;
 		yDistance = yDistance + yVelocity * yTime;
 		yPosAccel = yPosAccel +yDistance;
-		yAccelTimer.Reset();
 		yVelocity = 0;
 		yDistance = 0;
+		yAccelTimer.Reset();
 	}
 
 /*	void Position::TalonTrackX() {
