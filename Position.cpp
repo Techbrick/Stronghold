@@ -94,6 +94,12 @@
 		AccelerometerTrackY();
 		xPos = xPosAccel;
 		yPos = yPosAccel;
+		SmartDashboard::PutNumber("xPos", xPos);
+		SmartDashboard::PutNumber("yPos", yPos);
+		SmartDashboard::PutNumber("xVel", xVelocity);
+		SmartDashboard::PutNumber("yVel", yVelocity);
+		SmartDashboard::PutNumber("xAccel", xAcceleration);
+		SmartDashboard::PutNumber("yAccel", yAcceleration);
 	/*	TalonTrackX();
 		TalonTrackY();
 		xPos = (xPosAccel + xPosTalon) / 2;
