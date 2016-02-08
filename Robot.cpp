@@ -1,4 +1,5 @@
 #include "Robot.h"
+#include "Position.h"
 
 #include <math.h>
 #include <iostream>
@@ -17,9 +18,17 @@ void threadTestFunction(bool* keepRunning)
 	SmartDashboard::PutNumber("SmartDash Number", 99999);
 }
 
+void updatePositionFunction(bool *keepRunning) {
+	while (*keepRunning == true) {
+		Position::Update(); //Not sure if this will work. May need to make a separate object
+		Wait(.005);
+	}
+}
+
 Robot::Robot() :
 	robotDrive(Constants::driveLeftPin,Constants::driveRightPin),
-	driveStick(Constants::driveStickChannel)
+	driveStick(Constants::driveStickChannel),
+	position()
 	//shooter(Constants::shooterLeftPin, Constants::shooterRightPin)
 {
 	robotDrive.SetExpiration(0.1); // safety feature
@@ -29,9 +38,10 @@ void Robot::OperatorControl() //teleop code
 {
 	CameraServer::GetInstance()->SetQuality(50);
 	CameraServer::GetInstance()->StartAutomaticCapture("cam0");
-
 	bool testThreadRun = true;
+	bool updateThreadRun = true;
 	std::thread testThread(threadTestFunction, &testThreadRun);
+	std::threat updateThread(updatePositionFunction, &updateThreadRun);
 	
 	while(IsOperatorControl() && IsEnabled())
 	{
@@ -48,6 +58,8 @@ void Robot::OperatorControl() //teleop code
 	
 	testThreadRun = false;
 	testThread.join();
+	updateThreadRun = false;
+	updateThread.join();
 	
 	robotDrive.SetSafetyEnabled(true);
 }
