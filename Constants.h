@@ -7,13 +7,14 @@ namespace Constants {
 	static constexpr int driveRightTalonID = 0;
 	
 	//Joystick axis and buttons
+	static constexpr int driveJoystickChannel = 0;
 	static constexpr int driveLeftStickX = 0;
 	static constexpr int driveLeftStickY = 1;
 	static constexpr int driveL2         = 3;
 	
 	//Shooter
-	static constexpr int shooterBottomPin = 0;
-	static constexpr int shooterTopPin    = 0;
+	static constexpr int shooterLeftPin = 0;
+	static constexpr int shooterRightPin    = 0;
 
 	//Arm
 	static constexpr int armTalonPin  = 0;

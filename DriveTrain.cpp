@@ -16,7 +16,7 @@ void DriveTrain::EnableTalons()
 void DriveTrain::DisableTalons ()
 {
 	if (leftTalon.IsEnabled())
-		lefTalon.Enable();
+		leftTalon.Enable();
 
 	if (rightTalon.IsEnabled())
 		rightTalon.Disable();
