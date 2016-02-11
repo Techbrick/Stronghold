@@ -56,7 +56,7 @@
 	}
 	
 	void Position::AccelerometerTrackX() {
-		xTime = xAccelTimer.Get();
+		xTime = xAccelTimer.Get * 1000; //I'm pretty sure its in ms
 		xAcceleration = mxp.GetWorldLinearAccelX();
 		xVelocity = xVelocity + xAcceleration * xTime;
 		xDistance = xDistance + xVelocity * xTime;
@@ -68,7 +68,7 @@
 
 	void Position::AccelerometerTrackY() {
 		yAcceleration = mxp.GetWorldLinearAccelY();
-		yTime = yAccelTimer.Get();
+		yTime = yAccelTimer.Get() * 1000; //I'm pretty sure its in ms
 		yVelocity = yVelocity + yAcceleration * yTime;
 		yDistance = yDistance + yVelocity * yTime;
 		yPosAccel = yPosAccel + yDistance;
