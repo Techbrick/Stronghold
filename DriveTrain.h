@@ -5,11 +5,15 @@
 
 class DriveTrain : public RobotDrive
 {
+	CANTalon leftTalon, rightTalon;
+
+public:
 	DriveTrain (uint32_t leftMotorChannel, uint32_t rightMotorChannel);
-	DriveTrain (uint32_t frontLeftMotorChannel, uint32_t rearLeftMotorChannel, uint32_t frontRightMotorChannel, uint32_t rearRightMotorChannel);
-	DriveTrain (SpeedController *leftMotor, SpeedController *rightMotor);
-	DriveTrain (SpeedController *frontLeftMotor, SpeedController *rearLeftMotor, SpeedController *frontRightMotor, SpeedController *rearRightMotor);
-	DriveTrain (SpeedController &frontLeftMotor, SpeedController &rearLeftMotor, SpeedController &frontRightMotor, SpeedController &rearRightMotor);
+	
+	void EnableTalons();
+	
+	void DisableTalons();
+	
 }
 
 #endif

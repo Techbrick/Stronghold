@@ -1,5 +1,6 @@
 #include "WPILib.h"
 
+#include "DriveTrain.h"
 #include "Constants.h"
 #include "Shooter.h"
 
@@ -7,7 +8,7 @@
 #define SRC_ROBOT_H_
 
 class Robot : public SampleRobot {
-	RobotDrive robotDrive;
+	DriveTrain driveTrain;
 	Joystick driveStick;
 	Shooter shooter;
 public:

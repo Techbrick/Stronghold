@@ -1,20 +1,23 @@
 #include "DriveTrain.h"
 
 DriveTrain::DriveTrain (uint32_t leftMotorChannel, uint32_t rightMotorChannel)
-	: RobotDrive(leftMotorChannel, rightMotorChannel)
+	: leftTalon(leftMotorChannel), rightTalon(rightMotorChannel), RobotDrive(leftTalon, rightTalon)
 {}
 
-DriveTrain::DriveTrain (uint32_t frontLeftMotorChannel, uint32_t rearLeftMotorChannel, uint32_t frontRightMotorChannel, uint32_t rearRightMotorChannel)
-	: RobotDrive (frontLeftMotorChannel, rearLeftMotorChannel, frontRightMotorChannel, rearRightMotorChannel) 
-{}
+void DriveTrain::EnableTalons()
+{
+	if (leftTalon.IsEnabled() == false)
+		leftTalon.Enable();
+		
+	if (rightTalon.IsEnabled() == false)
+		rightTalon.Enable();
+}
 
-DriveTrain::DriveTrain (SpeedController *leftMotor, SpeedController *rightMotor)
-	: RobotDrive (leftMotor, rightMotor)
-{}
-DriveTrain::DriveTrain (SpeedController *frontLeftMotor, SpeedController *rearLeftMotor, SpeedController *frontRightMotor, SpeedController *rearRightMotor)
-	: RobotDrive (frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor)
-{}
+void DriveTrain::DisableTalons ()
+{
+	if (leftTalon.IsEnabled())
+		lefTalon.Enable();
 
-DriveTrain::DriveTrain (SpeedController &frontLeftMotor, SpeedController &rearLeftMotor, SpeedController &frontRightMotor, SpeedController &rearRightMotor)
-	: RobotDrive (frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor)
-{}
+	if (rightTalon.IsEnabled())
+		rightTalon.Disable();
+}

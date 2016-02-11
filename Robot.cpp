@@ -18,11 +18,11 @@ void threadTestFunction(bool* keepRunning)
 }
 
 Robot::Robot() :
-	robotDrive(Constants::driveLeftPin,Constants::driveRightPin),
+	driveTrain(Constants::driveLeftPin,Constants::driveRightPin),
 	driveStick(Constants::driveStickChannel)
 	//shooter(Constants::shooterLeftPin, Constants::shooterRightPin)
 {
-	robotDrive.SetExpiration(0.1); // safety feature
+	driveTrain.SetExpiration(0.1); // safety feature
 }
 	
 void Robot::OperatorControl() //teleop code
@@ -43,13 +43,13 @@ void Robot::OperatorControl() //teleop code
 		SmartDashboard::PutNumber("Move Value", moveValue);
 		SmartDashboard::PutNumber("Rotate Value", rotateValue);
 		
-		robotDrive.ArcadeDrive(moveValue, rotateValue, true);
+		driveTrain.ArcadeDrive(moveValue, rotateValue, true);
 	}
 	
 	testThreadRun = false;
 	testThread.join();
 	
-	robotDrive.SetSafetyEnabled(true);
+	driveTrain.SetSafetyEnabled(true);
 }
 
 START_ROBOT_CLASS(Robot);
