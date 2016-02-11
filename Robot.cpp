@@ -29,6 +29,8 @@ void Robot::OperatorControl() //teleop code
 {
 	CameraServer::GetInstance()->SetQuality(50);
 	CameraServer::GetInstance()->StartAutomaticCapture("cam0");
+	
+	driveTrain.EnableTalons();
 
 	bool testThreadRun = true;
 	std::thread testThread(threadTestFunction, &testThreadRun);
@@ -49,6 +51,8 @@ void Robot::OperatorControl() //teleop code
 	testThreadRun = false;
 	testThread.join();
 	
+	
+	driveTrain.DisableTalons();
 	driveTrain.SetSafetyEnabled(true);
 }
 
