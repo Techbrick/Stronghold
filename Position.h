@@ -33,6 +33,8 @@ class Position {
 	float yPosAccel;
 	float xPosTalon;
 	float yPosTalon;
+	float xTime;
+	float yTime;
 	float xPos = Constants::xStartPos;
 	float yPos = Constants::yStartPos;
 	//static float xPos = Constants::xStartPos; //doesn't like static without constexpr

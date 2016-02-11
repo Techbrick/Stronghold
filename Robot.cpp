@@ -1,123 +1,68 @@
-#include "WPILib.h"
-#include "Switch.h"
-#include "Constants.cpp"
-#include "Position.h"
+#include "Robot.h"
 
-/**
- * This is a demo program showing the use of the RobotDrive class.
- * The SampleRobot class is the base of a robot application that will automatically call your
- * Autonomous and OperatorControl methods at the right time as controlled by the switches on
- * the driver station or the field controls.
- *
- * WARNING: While it may look like a good choice to use for your code if you're inexperienced,
- * don't. Unless you know what you are doing, complex code will be much more difficult under
- * this system. Use IterativeRobot or Command-Based instead if you're new.
- */
-class Robot: public SampleRobot
+#include <math.h>
+#include <iostream>
+#include <thread>
+
+void threadTestFunction(bool* keepRunning)
 {
-	RobotDrive myRobot; // robot drive system
-	SendableChooser *chooser;
-	Joystick leftStick; // left drive joystick
-	Joystick rightStick; //right drive joystick
-	Joystick operatorStick; //operator joystick
-	Switch shooterBottom;
-	Switch shooterTop;
-	Switch armBottom;
-	Switch armTop;
-	CANTalon leftFrontTalon;
-	CANTalon leftRearTalon;
-	CANTalon rightFrontTalon;
-	CANTalon rightRearTalon;
-	Talon armTalon;
-	Position position;
-	const std::string autoNameDefault = "Default";
-	const std::string autoNameCustom = "My Auto";
-
-
-
-public:
-	Robot() :
-			myRobot(Constants::driveLeftPin, Constants::driveRightPin),	// these must be initialized in the same order
-			chooser(),
-			leftStick(Constants::leftDriveChannel), // as they are declared above.
-			rightStick(Constants::rightDriveChannel),
-			operatorStick(Constants::operatorStickChannel),
-			shooterBottom(Constants::shooterBottomPin),
-			shooterTop(Constants::shooterTopPin),
-			armBottom(Constants::armBottomPin),
-			armTop(Constants::armTopPin),
-			armTalon(Constants::armTalonPin),
-			leftFrontTalon(Constants::leftFrontTalonPin),
-			leftRearTalon(Constants::leftRearTalonPin),
-			rightFrontTalon(Constants::rightFrontTalonPin),
-			rightRearTalon(Constants::rightRearTalonPin),
-			position(leftFrontTalon, leftRearTalon, rightFrontTalon, rightRearTalon)
+	int a = 0;
+	while (*keepRunning == true)
 	{
-		//Note SmartDashboard is not initialized here, wait until RobotInit to make SmartDashboard calls
-		myRobot.SetExpiration(0.1);
+		a++; a %= 10;
+		SmartDashboard::PutNumber("SmartDash Number", a);
+		Wait(1);
 	}
+	
+	SmartDashboard::PutNumber("SmartDash Number", 99999);
+}
 
-	void RobotInit()
+void updatePositionFunction(bool *keepRunning) {
+	//Position position = new Position();
+	while (*keepRunning == true) {
+		Position::Update(); //Not sure if this will work. May need to make a separate object
+		//position.Update();
+		Wait(.005);
+	}
+}
+
+Robot::Robot() :
+	robotDrive(Constants::driveLeftPin,Constants::driveRightPin),
+	driveStick(Constants::driveStickChannel),
+	position()
+	//shooter(Constants::shooterLeftPin, Constants::shooterRightPin)
+{
+	robotDrive.SetExpiration(0.1); // safety feature
+}
+	
+void Robot::OperatorControl() //teleop code
+{
+	CameraServer::GetInstance()->SetQuality(50);
+	CameraServer::GetInstance()->StartAutomaticCapture("cam0");
+	bool testThreadRun = true;
+	bool updateThreadRun = true;
+	std::thread testThread(threadTestFunction, &testThreadRun);
+	std::threat updateThread(updatePositionFunction, &updateThreadRun);
+	
+	while(IsOperatorControl() && IsEnabled())
 	{
-		chooser = new SendableChooser();
-		chooser->AddDefault(autoNameDefault, (void*)&autoNameDefault);
-		chooser->AddObject(autoNameCustom, (void*)&autoNameCustom);
-		SmartDashboard::PutData("Auto Modes", chooser);
+		float throttle = (((-driveStick.GetRawAxis(Constants::driveL2)) + 1.0)/2.0); //[0, 1]
+		float moveValue = throttle * driveStick.GetY();
+		float rotateValue = -driveStick.GetX();
+		
+		SmartDashboard::PutNumber("Throttle Value", throttle);
+		SmartDashboard::PutNumber("Move Value", moveValue);
+		SmartDashboard::PutNumber("Rotate Value", rotateValue);
+		
+		robotDrive.ArcadeDrive(moveValue, rotateValue, true);
 	}
+	
+	testThreadRun = false;
+	testThread.join();
+	updateThreadRun = false;
+	updateThread.join();
+	
+	robotDrive.SetSafetyEnabled(true);
+}
 
-	/**
-	 * This autonomous (along with the chooser code above) shows how to select between different autonomous modes
-	 * using the dashboard. The sendable chooser code works with the Java SmartDashboard. If you prefer the LabVIEW
-	 * Dashboard, remove all of the chooser code and uncomment the GetString line to get the auto name from the text box
-	 * below the Gyro
-	 *
-	 * You can add additional auto modes by adding additional comparisons to the if-else structure below with additional strings.
-	 * If using the SendableChooser make sure to add them to the chooser code above as well.
-	 */
-	void Autonomous()
-	{
-		std::string autoSelected = *((std::string*)chooser->GetSelected());
-		//std::string autoSelected = SmartDashboard::GetString("Auto Selector", autoNameDefault);
-		std::cout << "Auto selected: " << autoSelected << std::endl;
-
-		if(autoSelected == autoNameCustom){
-			//Custom Auto goes here
-			std::cout << "Running custom Autonomous" << std::endl;
-			myRobot.SetSafetyEnabled(false);
-			myRobot.Drive(-0.5, 1.0); 	// spin at half speed
-			Wait(2.0); 				//    for 2 seconds
-			myRobot.Drive(0.0, 0.0); 	// stop robot
-		} else {
-			//Default Auto goes here
-			std::cout << "Running default Autonomous" << std::endl;
-			myRobot.SetSafetyEnabled(false);
-			myRobot.Drive(-0.5, 0.0); 	// drive forwards half speed
-			Wait(2.0); 				//    for 2 seconds
-			myRobot.Drive(0.0, 0.0); 	// stop robot
-		}
-
-	}
-
-	/**
-	 * Runs the motors with arcade steering.
-	 */
-	void OperatorControl()
-	{
-		myRobot.SetSafetyEnabled(true);
-		position.Setup();
-		while (IsOperatorControl() && IsEnabled())
-		{
-			myRobot.TankDrive(leftStick, rightStick); //drive
-			Wait(0.005);				// wait for a motor update time
-		}
-	}
-
-	/**
-	 * Runs during test mode
-	 */
-	void Test()
-	{
-	}
-};
-
-START_ROBOT_CLASS(Robot)
+START_ROBOT_CLASS(Robot);

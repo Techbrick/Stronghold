@@ -6,14 +6,12 @@
  */
 //origin is nearest left corner
 #include "WPILib.h"
-#include "Constants.cpp"
-#include "pthread.h"
-#include "math.h"
+#include "Constants.h"
+#include <pthread.h>
+#include <math.h>
 #include "Position.h"
 
 #define PI 3.14159265
-
-	//TODO: Set to update every ms - Kyle
 
 	Position::Position(CANTalon &leftFrontTalon_, CANTalon &leftRearTalon_, CANTalon &rightFrontTalon_, CANTalon &rightRearTalon_):
 	mxp(I2C::Port::kMXP), //assuming we're on this port
@@ -28,6 +26,8 @@
 		yVelocity = 0;
 		xDistance = 0;
 		yDistance = 0;
+		xTime = 0;
+		yTime = 0;
 		xPosAccel = Constants::xStartPos;
 		yPosAccel = Constants::yStartPos;
 		xPosTalon = Constants::xStartPos;
@@ -44,9 +44,6 @@
 		rightRearTalon.SetPID(Constants::CANTalonP, Constants::CANTalonI, Constants::CANTalonD, Constants::CANTalonF);
 		rightRearTalon.EnableControl();
 		rightRearTalon.SetControlMode(CANSpeedController::kSpeed);
-	}
-
-	void Position::Setup() {
 		xAccelTimer.Start();
 		xAccelTimer.Reset();
 		yAccelTimer.Start();
@@ -57,23 +54,30 @@
 		yTalonTimer.Reset();
 		mxp.Reset();
 	}
+	
 	void Position::AccelerometerTrackX() {
+		xTime = xAccelTimer.Get();
 		xAcceleration = mxp.GetRawAccelX();
-		xDistance = .5 * xAcceleration * xAccelTimer.Get() * xAccelTimer.Get();
+		xVelocity = xVelocity + xAcceleration * xTime;
+		xDistance = xDistance + xVelocity * xTime;
 		xPosAccel = xPosAccel + xDistance;
+		xVelocity = 0;
+		xDistance = 0;
 		xAccelTimer.Reset();
-		//xAccelTimer.Start();
 	}
 
 	void Position::AccelerometerTrackY() {
 		yAcceleration = mxp.GetRawAccelY();
-		yDistance = .5 * yAcceleration * yAccelTimer.Get() * yAccelTimer.Get();
+		yTime = yAccelTimer.Get();
+		yVelocity = yVelocity + yAcceleration * yTime;
+		yDistance = yDistance + yVelocity * yTime;
 		yPosAccel = yPosAccel + yDistance;
+		yVelocity = 0;
+		yDistance = 0;
 		yAccelTimer.Reset();
-		//yAccelTimer.Start();
 	}
 
-	void Position::TalonTrackX() {
+/*	void Position::TalonTrackX() {
 		xVelocity = ((leftFrontTalon.GetSpeed() + leftRearTalon.GetSpeed() + rightFrontTalon.GetSpeed() + rightRearTalon.GetSpeed()) / 4.0) * cos(mxp.GetAngle());
 		xPosTalon = xVelocity * xTalonTimer.Get();
 		xTalonTimer.Reset();
@@ -84,14 +88,22 @@
 		yPosTalon = yVelocity * yTalonTimer.Get();
 		yTalonTimer.Reset();
 	}
-
+*/
 	void Position::Update() {
 		AccelerometerTrackX();
 		AccelerometerTrackY();
-		TalonTrackX();
+		xPos = xPosAccel;
+		yPos = yPosAccel;
+		SmartDashboard::PutNumber("xPos", xPos);
+		SmartDashboard::PutNumber("yPos", yPos);
+		SmartDashboard::PutNumber("xVel", xVelocity);
+		SmartDashboard::PutNumber("yVel", yVelocity);
+		SmartDashboard::PutNumber("xAccel", xAcceleration);
+		SmartDashboard::PutNumber("yAccel", yAcceleration);
+	/*	TalonTrackX();
 		TalonTrackY();
 		xPos = (xPosAccel + xPosTalon) / 2;
-		yPos = (yPosAccel + yPosTalon) / 2;
+		yPos = (yPosAccel + yPosTalon) / 2;*/
 	}
 
 	float Position::GetX() {
