@@ -14,6 +14,6 @@ public:
 	
 	void DisableTalons();
 	
-}
+};
 
 #endif

@@ -18,8 +18,9 @@ void threadTestFunction(bool* keepRunning)
 }
 
 Robot::Robot() :
-	driveTrain(Constants::driveLeftPin,Constants::driveRightPin),
-	driveStick(Constants::driveStickChannel)
+	driveTrain(Constants::driveLeftTalonID, Constants::driveRightTalonID),
+	driveStick(Constants::driveStickChannel),
+	shooter(Constants::shooterLeftPin, Constants::shooterRightPin)
 	//shooter(Constants::shooterLeftPin, Constants::shooterRightPin)
 {
 	driveTrain.SetExpiration(0.1); // safety feature
