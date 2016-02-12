@@ -13,15 +13,16 @@
 
 #define PI 3.14159265
 
-	Position::Position(CANTalon &leftFrontTalon_, CANTalon &leftRearTalon_, CANTalon &rightFrontTalon_, CANTalon &rightRearTalon_):
-	mxp(I2C::Port::kMXP), //assuming we're on this port
-	leftFrontTalon(leftFrontTalon_),
-	leftRearTalon(leftRearTalon_),
-	rightFrontTalon(rightFrontTalon_),
-	rightRearTalon(rightRearTalon_)
+	Position::Position():
+	mxp(I2C::Port::kMXP) //assuming we're on this port
 	{
+		mxp.Reset();
+		mxp.ZeroYaw();
+		mxp.ResetDisplacement();
 		xAcceleration = 0;
 		yAcceleration = 0;
+		xPos = 0;
+		yPos = 0;
 		xVelocity = 0;
 		yVelocity = 0;
 		xDistance = 0;
@@ -30,51 +31,33 @@
 		yTime = 0;
 		xPosAccel = Constants::xStartPos;
 		yPosAccel = Constants::yStartPos;
-		xPosTalon = Constants::xStartPos;
-		yPosTalon = Constants::yStartPos;
-		leftFrontTalon.SetPID(Constants::CANTalonP, Constants::CANTalonI, Constants::CANTalonD, Constants::CANTalonF);
-		leftFrontTalon.EnableControl();
-		leftFrontTalon.SetControlMode(CANSpeedController::kSpeed);
-		leftRearTalon.SetPID(Constants::CANTalonP, Constants::CANTalonI, Constants::CANTalonD, Constants::CANTalonF);
-		leftRearTalon.EnableControl();
-		leftRearTalon.SetControlMode(CANSpeedController::kSpeed);
-		rightFrontTalon.SetPID(Constants::CANTalonP, Constants::CANTalonI, Constants::CANTalonD, Constants::CANTalonF);
-		rightFrontTalon.EnableControl();
-		rightFrontTalon.SetControlMode(CANSpeedController::kSpeed);
-		rightRearTalon.SetPID(Constants::CANTalonP, Constants::CANTalonI, Constants::CANTalonD, Constants::CANTalonF);
-		rightRearTalon.EnableControl();
-		rightRearTalon.SetControlMode(CANSpeedController::kSpeed);
 		xAccelTimer.Start();
 		xAccelTimer.Reset();
 		yAccelTimer.Start();
 		yAccelTimer.Reset();
-		xTalonTimer.Start();
-		xTalonTimer.Reset();
-		yTalonTimer.Start();
-		yTalonTimer.Reset();
-		mxp.ResetDisplacement();
-		mxp.Reset();
 	}
-	
+
 	void Position::AccelerometerTrackX() {
-		xTime = xAccelTimer.Get(); 
+		xTime = .005;
 		xAcceleration = mxp.GetWorldLinearAccelX() / 9.8;
 		xVelocity = xVelocity + xAcceleration * xTime;
 		xDistance = xDistance + xVelocity * xTime;
-		xPosAccel = xPosAccel + xDistance;
-		xVelocity = 0;
-		xDistance = 0;
+		//xDistance = xAcceleration * xAccelTimer.Get() * xAccelTimer.Get();
+		xPosAccel = Constants::xStartPos + xDistance;
+		//xVelocity = 0;
+		//xDistance = 0;
 		xAccelTimer.Reset();
 	}
 
 	void Position::AccelerometerTrackY() {
 		yAcceleration = mxp.GetWorldLinearAccelY() / 9.8;
-		yTime = yAccelTimer.Get();
+		yTime = .005;
 		yVelocity = yVelocity + yAcceleration * yTime;
 		yDistance = yDistance + yVelocity * yTime;
-		yPosAccel = yPosAccel + yDistance;
-		yVelocity = 0;
-		yDistance = 0;
+		//yDistance = yAcceleration * yAccelTimer.Get() * yAccelTimer.Get();
+		yPosAccel = Constants::yStartPos + yDistance;
+		//yVelocity = 0;
+		//yDistance = 0;
 		yAccelTimer.Reset();
 	}
 
@@ -83,7 +66,6 @@
 		xPosTalon = xVelocity * xTalonTimer.Get();
 		xTalonTimer.Reset();
 	}
-
 	void Position::TalonTrackY() {
 		yVelocity = ((leftFrontTalon.GetSpeed() + leftRearTalon.GetSpeed() + rightFrontTalon.GetSpeed() + rightRearTalon.GetSpeed()) / 4.0) * sin(mxp.GetAngle());
 		yPosTalon = yVelocity * yTalonTimer.Get();
@@ -93,19 +75,32 @@
 	void Position::Update() {
 		AccelerometerTrackX();
 		AccelerometerTrackY();
-		mxp.UpdateDisplacement(mxp.GetWorldLinearAccelX(), mxp.GetWorldLinearAccelY(), 0, mxp.IsMoving());
 		xPos = xPosAccel;
 		yPos = yPosAccel;
+		//mxp.UpdateDisplacement(mxp.GetWorldLinearAccelX(), mxp.GetWorldLinearAccelY(), 0, mxp.IsMoving());
+		SmartDashboard::PutNumber("xTimer", xAccelTimer.Get());
+		SmartDashboard::PutNumber("yTimer", yAccelTimer.Get());
 		SmartDashboard::PutNumber("xPos", xPos);
 		SmartDashboard::PutNumber("yPos", yPos);
 		SmartDashboard::PutNumber("xVel", xVelocity);
 		SmartDashboard::PutNumber("yVel", yVelocity);
 		SmartDashboard::PutNumber("xAccel", xAcceleration);
 		SmartDashboard::PutNumber("yAccel", yAcceleration);
-		SmartDashboard::PutNumber("xDisp", mxp.GetDisplacementX());
-		SmartDashboard::PutNumber("yDisp", mxp.GetDisplacementY());
+		SmartDashboard::PutNumber("worldAccelX",  mxp.GetWorldLinearAccelX());
+		SmartDashboard::PutNumber("worldAccelY", mxp.GetWorldLinearAccelY());
+		SmartDashboard::PutNumber("mxpXAccel", mxp.GetRawAccelX());
+		SmartDashboard::PutNumber("mxpYAccel", mxp.GetRawAccelY());
+		SmartDashboard::PutNumber("mxpXVel", mxp.GetVelocityX());
+		SmartDashboard::PutNumber("mxpYVel", mxp.GetVelocityY());
+		SmartDashboard::PutNumber("mxpXDisp", mxp.GetDisplacementX());
+		SmartDashboard::PutNumber("mxpYDisp", mxp.GetDisplacementY());
+		SmartDashboard::PutNumber("pitch", mxp.GetPitch());
+		SmartDashboard::PutNumber("yaw", mxp.GetYaw());
+		SmartDashboard::PutNumber("roll", mxp.GetRoll());
+		SmartDashboard::PutNumber("magX", mxp.GetRawMagX());
+		SmartDashboard::PutNumber("magY", mxp.GetRawMagY());
 		SmartDashboard::PutBoolean("IsMagneticDisturbance", mxp.IsMagneticDisturbance());
-		SmartDashboard::PutBoolean("IsMagnemometerCalibrated", mxp.IsMagnemometerCalibrated());
+		SmartDashboard::PutBoolean("IsMagnemometerCalibrated", mxp.IsMagnetometerCalibrated());
 	/*	TalonTrackX();
 		TalonTrackY();
 		xPos = (xPosAccel + xPosTalon) / 2;
