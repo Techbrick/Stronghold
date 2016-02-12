@@ -52,12 +52,13 @@
 		xTalonTimer.Reset();
 		yTalonTimer.Start();
 		yTalonTimer.Reset();
+		mxp.ResetDisplacement();
 		mxp.Reset();
 	}
 	
 	void Position::AccelerometerTrackX() {
-		xTime = xAccelTimer.Get * 1000; //I'm pretty sure its in ms
-		xAcceleration = mxp.GetWorldLinearAccelX();
+		xTime = xAccelTimer.Get(); 
+		xAcceleration = mxp.GetWorldLinearAccelX() / 9.8;
 		xVelocity = xVelocity + xAcceleration * xTime;
 		xDistance = xDistance + xVelocity * xTime;
 		xPosAccel = xPosAccel + xDistance;
@@ -67,8 +68,8 @@
 	}
 
 	void Position::AccelerometerTrackY() {
-		yAcceleration = mxp.GetWorldLinearAccelY();
-		yTime = yAccelTimer.Get() * 1000; //I'm pretty sure its in ms
+		yAcceleration = mxp.GetWorldLinearAccelY() / 9.8;
+		yTime = yAccelTimer.Get();
 		yVelocity = yVelocity + yAcceleration * yTime;
 		yDistance = yDistance + yVelocity * yTime;
 		yPosAccel = yPosAccel + yDistance;
@@ -92,6 +93,7 @@
 	void Position::Update() {
 		AccelerometerTrackX();
 		AccelerometerTrackY();
+		mxp.UpdateDisplacement(mxp.GetWorldLinearAccelX(), mxp.GetWorldLinearAccelY(), 0, mxp.IsMoving());
 		xPos = xPosAccel;
 		yPos = yPosAccel;
 		SmartDashboard::PutNumber("xPos", xPos);
@@ -100,6 +102,10 @@
 		SmartDashboard::PutNumber("yVel", yVelocity);
 		SmartDashboard::PutNumber("xAccel", xAcceleration);
 		SmartDashboard::PutNumber("yAccel", yAcceleration);
+		SmartDashboard::PutNumber("xDisp", mxp.GetDisplacementX());
+		SmartDashboard::PutNumber("yDisp", mxp.GetDisplacementY());
+		SmartDashboard::PutBoolean("IsMagneticDisturbance", mxp.IsMagneticDisturbance());
+		SmartDashboard::PutBoolean("IsMagnemometerCalibrated", mxp.IsMagnemometerCalibrated());
 	/*	TalonTrackX();
 		TalonTrackY();
 		xPos = (xPosAccel + xPosTalon) / 2;
