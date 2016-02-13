@@ -15,14 +15,9 @@
 
 class Position {
 	AHRS mxp; //navx mxp
-	CANTalon &leftFrontTalon;
-	CANTalon &leftRearTalon;
-	CANTalon &rightFrontTalon;
-	CANTalon &rightRearTalon;
 	Timer xAccelTimer;
 	Timer yAccelTimer;
-	Timer xTalonTimer;
-	Timer yTalonTimer;
+	Timer runOnceTimer;
 	float xAcceleration;
 	float yAcceleration;
 	float xVelocity;
@@ -31,17 +26,16 @@ class Position {
 	float yDistance;
 	float xPosAccel;
 	float yPosAccel;
-	float xPosTalon;
-	float yPosTalon;
 	float xTime;
 	float yTime;
 	float xPos = Constants::xStartPos;
 	float yPos = Constants::yStartPos;
+	int counter = 0;
 	//static float xPos = Constants::xStartPos; //doesn't like static without constexpr
 	//static float yPos = Constants::yStartPos;
 
 public :
-	Position(CANTalon &leftFrontTalon_, CANTalon &leftRearTalon_, CANTalon &rightFrontTalon_, CANTalon &rightRearTalon_);
+	Position();
 	void Setup();
 	void AccelerometerTrackX();
 	void AccelerometerTrackY();
