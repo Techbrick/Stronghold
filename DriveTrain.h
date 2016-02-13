@@ -1,19 +1,14 @@
+#include "WPILib.h"
+
 #ifndef SRC_DRIVETRAIN_H
 #define SRC_DRIVETRAIN_H
 
-#include "WPILib.h"
-
-class DriveTrain : public RobotDrive
+class driveTrain : public RobotDrive
 {
-	CANTalon leftTalon, rightTalon;
-
+	CANTalon left, right;
 public:
-	DriveTrain (uint32_t leftMotorChannel, uint32_t rightMotorChannel);
-	
-	void EnableTalons();
-	
-	void DisableTalons();
-	
+	driveTrain(uint32_t leftDeviceID, uint32_t rightDeviceID);
+
 };
 
 #endif

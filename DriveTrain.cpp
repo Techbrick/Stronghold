@@ -1,23 +1,6 @@
 #include "DriveTrain.h"
 
-DriveTrain::DriveTrain (uint32_t leftMotorChannel, uint32_t rightMotorChannel)
-	: leftTalon(leftMotorChannel), rightTalon(rightMotorChannel), RobotDrive(leftTalon, rightTalon)
-{}
-
-void DriveTrain::EnableTalons()
+driveTrain::driveTrain(uint32_t leftDeviceID, uint32_t rightDeviceID)
+	: left(leftDeviceID), right(rightDeviceID), RobotDrive(left, right)
 {
-	if (leftTalon.IsEnabled() == false)
-		leftTalon.Enable();
-		
-	if (rightTalon.IsEnabled() == false)
-		rightTalon.Enable();
-}
-
-void DriveTrain::DisableTalons ()
-{
-	if (leftTalon.IsEnabled())
-		leftTalon.Enable();
-
-	if (rightTalon.IsEnabled())
-		rightTalon.Disable();
 }
