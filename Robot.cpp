@@ -41,8 +41,12 @@ void Robot::OperatorControl() //teleop code
 		SmartDashboard::PutNumber("Move Value", moveValue);
 		SmartDashboard::PutNumber("Rotate Value", rotateValue);
 		
+		float shooterSpeed = -driveStick.GetRawAxis(Constants::driveRightStickY);
+		if (shooterSpeed < -0.35)
+			shooterSpeed = -0.35;
+		
 		driveTrain.ArcadeDrive(moveValue, rotateValue, true);
-		shooter.setSpeed(-driveStick.GetRawAxis(Constants::driveRightStickY), driveStick.GetRawAxis(Constants::driveRightStickY));
+		shooter.setSpeed(shooterSpeed, -shooterSpeed);
 	}
 	
 	shooter.Disable();
