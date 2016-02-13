@@ -1,9 +1,5 @@
 #include "Robot.h"
 
-#include <math.h>
-#include <iostream>
-#include <thread>
-
 void threadTestFunction(bool* keepRunning)
 {
 	int a = 0;
@@ -27,22 +23,25 @@ void updatePositionFunction(bool *keepRunning) {
 }
 
 Robot::Robot() :
-	robotDrive(Constants::driveLeftPin,Constants::driveRightPin),
-	driveStick(Constants::driveStickChannel),
+	driveTrain(Constants::driveLeftTalonID, Constants::driveRightTalonID),
+	driveStick(Constants::driveJoystickChannel),
+	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID),
 	position()
-	//shooter(Constants::shooterLeftPin, Constants::shooterRightPin)
 {
-	robotDrive.SetExpiration(0.1); // safety feature
+	driveTrain.SetExpiration(0.1); // safety feature
 }
 	
 void Robot::OperatorControl() //teleop code
 {
 	CameraServer::GetInstance()->SetQuality(50);
 	CameraServer::GetInstance()->StartAutomaticCapture("cam0");
+
 	bool testThreadRun = true;
 	bool updateThreadRun = true;
 	std::thread testThread(threadTestFunction, &testThreadRun);
-	std::threat updateThread(updatePositionFunction, &updateThreadRun);
+	std::thread updateThread(updatePositionFunction, &updateThreadRun);
+
+	shooter.Enable();
 	
 	while(IsOperatorControl() && IsEnabled())
 	{
@@ -54,15 +53,22 @@ void Robot::OperatorControl() //teleop code
 		SmartDashboard::PutNumber("Move Value", moveValue);
 		SmartDashboard::PutNumber("Rotate Value", rotateValue);
 		
-		robotDrive.ArcadeDrive(moveValue, rotateValue, true);
+		float shooterSpeed = -driveStick.GetRawAxis(Constants::driveRightStickY);
+		if (shooterSpeed < -0.35)
+			shooterSpeed = -0.35;
+		
+		driveTrain.ArcadeDrive(moveValue, rotateValue, true);
+		shooter.setSpeed(shooterSpeed, -shooterSpeed);
 	}
+	
+	shooter.Disable();
 	
 	testThreadRun = false;
 	testThread.join();
 	updateThreadRun = false;
 	updateThread.join();
 	
-	robotDrive.SetSafetyEnabled(true);
+	driveTrain.SetSafetyEnabled(true);
 }
 
 START_ROBOT_CLASS(Robot);
