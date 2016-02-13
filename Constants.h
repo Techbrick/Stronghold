@@ -11,10 +11,11 @@ namespace Constants {
 	static constexpr int driveLeftStickX = 0;
 	static constexpr int driveLeftStickY = 1;
 	static constexpr int driveL2         = 3;
+	static constexpr int driveRightStickY = 5;
 	
 	//Shooter
-	static constexpr int shooterLeftPin = 0;
-	static constexpr int shooterRightPin    = 0;
+	static constexpr int shooterLeftTalonID = 7;
+	static constexpr int shooterRightTalonID = 8;
 
 	//Arm
 	static constexpr int armTalonPin  = 0;

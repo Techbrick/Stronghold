@@ -4,13 +4,16 @@
 #define SRC_SHOOTER_H
 
 class Shooter {
-	TalonSRX left;
-	TalonSRX right;
+	CANTalon left;
+	CANTalon right;
 
 public:
 	Shooter(uint32_t leftTalon, uint32_t rightTalon);
+	
+	void Enable();
+	void Disable();
 
-	void setSpeed(float speed);
+	void setSpeed(float leftSpeed, float rightSpeed);
 };
 
 #endif

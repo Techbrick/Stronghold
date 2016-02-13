@@ -3,11 +3,11 @@
 #ifndef SRC_DRIVETRAIN_H
 #define SRC_DRIVETRAIN_H
 
-class driveTrain : public RobotDrive
+class DriveTrain : public RobotDrive
 {
 	CANTalon left, right;
 public:
-	driveTrain(uint32_t leftDeviceID, uint32_t rightDeviceID);
+	DriveTrain(uint32_t leftDeviceID, uint32_t rightDeviceID);
 
 };
 

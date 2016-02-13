@@ -1,9 +1,5 @@
 #include "Robot.h"
 
-#include <math.h>
-#include <iostream>
-#include <thread>
-
 void threadTestFunction(bool* keepRunning)
 {
 	int a = 0;
@@ -20,7 +16,7 @@ void threadTestFunction(bool* keepRunning)
 Robot::Robot() :
 	driveTrain(Constants::driveLeftTalonID, Constants::driveRightTalonID),
 	driveStick(Constants::driveJoystickChannel),
-	shooter(Constants::shooterLeftPin, Constants::shooterRightPin)
+	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID)
 {
 	driveTrain.SetExpiration(0.1); // safety feature
 }
@@ -29,11 +25,11 @@ void Robot::OperatorControl() //teleop code
 {
 	CameraServer::GetInstance()->SetQuality(50);
 	CameraServer::GetInstance()->StartAutomaticCapture("cam0");
-	
-	driveTrain.EnableTalons();
 
 	bool testThreadRun = true;
 	std::thread testThread(threadTestFunction, &testThreadRun);
+	
+	shooter.Enable();
 	
 	while(IsOperatorControl() && IsEnabled())
 	{
@@ -46,13 +42,14 @@ void Robot::OperatorControl() //teleop code
 		SmartDashboard::PutNumber("Rotate Value", rotateValue);
 		
 		driveTrain.ArcadeDrive(moveValue, rotateValue, true);
+		shooter.setSpeed(-driveStick.GetRawAxis(Constants::driveRightStickY), driveStick.GetRawAxis(Constants::driveRightStickY));
 	}
+	
+	shooter.Disable();
 	
 	testThreadRun = false;
 	testThread.join();
 	
-	
-	driveTrain.DisableTalons();
 	driveTrain.SetSafetyEnabled(true);
 }
 

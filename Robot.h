@@ -4,6 +4,9 @@
 #include "Constants.h"
 #include "Shooter.h"
 
+#include <math.h>
+#include <thread>
+
 #ifndef SRC_ROBOT_H_
 #define SRC_ROBOT_H_
 
