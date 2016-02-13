@@ -22,7 +22,7 @@ void updatePositionFunction(bool *keepRunning) {
 	while (*keepRunning == true) {
 		Position::Update(); //Not sure if this will work. May need to make a separate object
 		//position.Update();
-		Wait(.005);
+		Wait(.025);
 	}
 }
 
