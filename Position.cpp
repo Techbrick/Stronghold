@@ -14,7 +14,7 @@
 #define PI 3.14159265
 
 	Position::Position():
-	mxp(I2C::Port::kMXP) //assuming we're on this port
+	mxp(I2C::Port::kMXP, 40)
 	{
 		mxp.Reset();
 		mxp.ZeroYaw();
@@ -27,19 +27,25 @@
 		yVelocity = 0;
 		xDistance = 0;
 		yDistance = 0;
-		xTime = 0;
-		yTime = 0;
+		xTime = .025;
+		yTime = .025;
 		xPosAccel = Constants::xStartPos;
 		yPosAccel = Constants::yStartPos;
 		xAccelTimer.Start();
 		xAccelTimer.Reset();
 		yAccelTimer.Start();
 		yAccelTimer.Reset();
+		runOnceTimer.Start();
+		runOnceTimer.Reset();
 	}
 
 	void Position::AccelerometerTrackX() {
-		xTime = .005;
 		xAcceleration = mxp.GetWorldLinearAccelX() / 9.8;
+		if (mxp.IsMoving() == false) {
+			xAcceleration = 0;
+			xVelocity = 0;
+			return;
+		}
 		xVelocity = xVelocity + xAcceleration * xTime;
 		xDistance = xDistance + xVelocity * xTime;
 		//xDistance = xAcceleration * xAccelTimer.Get() * xAccelTimer.Get();
@@ -51,7 +57,11 @@
 
 	void Position::AccelerometerTrackY() {
 		yAcceleration = mxp.GetWorldLinearAccelY() / 9.8;
-		yTime = .005;
+		if (mxp.IsMoving() == false) {
+			yAcceleration = 0;
+			yVelocity = 0;
+			return;
+		}
 		yVelocity = yVelocity + yAcceleration * yTime;
 		yDistance = yDistance + yVelocity * yTime;
 		//yDistance = yAcceleration * yAccelTimer.Get() * yAccelTimer.Get();
@@ -73,6 +83,7 @@
 	}
 */
 	void Position::Update() {
+		runOnceTimer.Reset();
 		AccelerometerTrackX();
 		AccelerometerTrackY();
 		xPos = xPosAccel;
@@ -80,8 +91,8 @@
 		//mxp.UpdateDisplacement(mxp.GetWorldLinearAccelX(), mxp.GetWorldLinearAccelY(), 0, mxp.IsMoving());
 		SmartDashboard::PutNumber("xTimer", xAccelTimer.Get());
 		SmartDashboard::PutNumber("yTimer", yAccelTimer.Get());
-		SmartDashboard::PutNumber("xPos", xPos);
-		SmartDashboard::PutNumber("yPos", yPos);
+		SmartDashboard::PutNumber("xPos", xPos * 3.281 * 1000);
+		SmartDashboard::PutNumber("yPos", yPos * 3.281 * 1000);
 		SmartDashboard::PutNumber("xVel", xVelocity);
 		SmartDashboard::PutNumber("yVel", yVelocity);
 		SmartDashboard::PutNumber("xAccel", xAcceleration);
@@ -101,10 +112,14 @@
 		SmartDashboard::PutNumber("magY", mxp.GetRawMagY());
 		SmartDashboard::PutBoolean("IsMagneticDisturbance", mxp.IsMagneticDisturbance());
 		SmartDashboard::PutBoolean("IsMagnemometerCalibrated", mxp.IsMagnetometerCalibrated());
-	/*	TalonTrackX();
-		TalonTrackY();
-		xPos = (xPosAccel + xPosTalon) / 2;
-		yPos = (yPosAccel + yPosTalon) / 2;*/
+		if (counter == 0) {
+			SmartDashboard::PutNumber("Time for one run (ms)", runOnceTimer.Get() * 1000);
+			counter++;
+		}
+		if (counter == 1) {
+			SmartDashboard::PutNumber("Time for run 2 (ms)", runOnceTimer.Get() * 1000);
+			counter++;
+		}
 	}
 
 	float Position::GetX() {
