@@ -16,8 +16,7 @@ void threadTestFunction(bool* keepRunning)
 void updatePositionFunction(bool *keepRunning) {
 	//Position position = new Position();
 	while (*keepRunning == true) {
-		Position::Update(); //Not sure if this will work. May need to make a separate object
-		//position.Update();
+		position.Update();
 		Wait(.025);
 	}
 }
