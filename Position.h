@@ -2,7 +2,7 @@
  * Position.h
  *
  *  Created on: Feb 13, 2016
- *      Author: Owner
+ *      Author: Noah
  */
 
 #ifndef SRC_POSITION_H_
