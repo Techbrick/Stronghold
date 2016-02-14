@@ -48,7 +48,7 @@ void Shooter::PrepareShooter(float angle, float speed) {
 
 void Shooter::LoadBall() {
 	while (HasBall() == false) {
-		SetSpeed(.35, -.35);
+		SetSpeed(-.35, .35);
 	}
 	SetSpeed(0, 0);
 }
