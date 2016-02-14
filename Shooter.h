@@ -14,11 +14,10 @@ class Shooter {
 
 public:
 	Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon);
-
-	void SetSpeed(float leftSpeed, float rightSpeed);
-	void SetAngle(float angle);
 	void Enable();
 	void Disable();
+	void SetSpeed(float leftSpeed, float rightSpeed);
+	void SetAngle(float angle);
 	void PrepareShooter();
 	void PrepareShooter(float angle, float speed);
 	void LoadBall();
