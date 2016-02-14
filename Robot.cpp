@@ -20,6 +20,7 @@ void updateThreadFunction(bool *keepRunning, Joystick *driveStick, Position *pos
 			movingForward = true;
 		}
 		position->Update(movingForward);
+		Wait(.02);
 	}
 }
 
