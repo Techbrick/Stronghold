@@ -1,125 +1,92 @@
 /*
  * Position.cpp
  *
- *  Created on: Jan 25, 2016
- *      Author: Noah Zbozny
+ *  Created on: Feb 13, 2016
+ *      Author: Owner
  */
-//origin is nearest left corner
-#include "WPILib.h"
-#include "Constants.h"
-#include <pthread.h>
-#include <math.h>
-#include "Position.h"
 
+#include "Position.h"
+#include "math.h"
 #define PI 3.14159265
+
 
 	Position::Position():
 	mxp(I2C::Port::kMXP, 40)
 	{
-		mxp.Reset();
 		mxp.ZeroYaw();
-		mxp.ResetDisplacement();
-		xAcceleration = 0;
-		yAcceleration = 0;
-		xPos = 0;
-		yPos = 0;
-		xVelocity = 0;
-		yVelocity = 0;
-		xDistance = 0;
-		yDistance = 0;
-		xTime = .025;
-		yTime = .025;
-		xPosAccel = Constants::xStartPos;
-		yPosAccel = Constants::yStartPos;
-		xAccelTimer.Start();
-		xAccelTimer.Reset();
-		yAccelTimer.Start();
-		yAccelTimer.Reset();
-		runOnceTimer.Start();
-		runOnceTimer.Reset();
+		xPos = Constants::xStartPos;
+		yPos = Constants::yStartPos;
+		angle = mxp.GetYaw();
+		pitch = mxp.GetPitch();
+		encoderTicks = 0;
 	}
 
-	void Position::AccelerometerTrackX() {
-		xAcceleration = mxp.GetWorldLinearAccelX() / 9.8;
-		if (mxp.IsMoving() == false) {
-			xAcceleration = 0;
-			xVelocity = 0;
-			return;
-		}
-		xVelocity = xVelocity + xAcceleration * xTime;
-		xDistance = xDistance + xVelocity * xTime;
-		//xDistance = xAcceleration * xAccelTimer.Get() * xAccelTimer.Get();
-		xPosAccel = Constants::xStartPos + xDistance;
-		//xVelocity = 0;
-		//xDistance = 0;
-		xAccelTimer.Reset();
+	inline float Position::GetAngle() {
+		return (mxp.GetYaw() + Constants::gyroOffset) * PI / 180;
 	}
 
-	void Position::AccelerometerTrackY() {
-		yAcceleration = mxp.GetWorldLinearAccelY() / 9.8;
-		if (mxp.IsMoving() == false) {
-			yAcceleration = 0;
-			yVelocity = 0;
-			return;
-		}
-		yVelocity = yVelocity + yAcceleration * yTime;
-		yDistance = yDistance + yVelocity * yTime;
-		//yDistance = yAcceleration * yAccelTimer.Get() * yAccelTimer.Get();
-		yPosAccel = Constants::yStartPos + yDistance;
-		//yVelocity = 0;
-		//yDistance = 0;
-		yAccelTimer.Reset();
+	inline float Position::GetPitch() {
+		return mxp.GetPitch() * PI / 180;
 	}
 
-/*	void Position::TalonTrackX() {
-		xVelocity = ((leftFrontTalon.GetSpeed() + leftRearTalon.GetSpeed() + rightFrontTalon.GetSpeed() + rightRearTalon.GetSpeed()) / 4.0) * cos(mxp.GetAngle());
-		xPosTalon = xVelocity * xTalonTimer.Get();
-		xTalonTimer.Reset();
-	}
-	void Position::TalonTrackY() {
-		yVelocity = ((leftFrontTalon.GetSpeed() + leftRearTalon.GetSpeed() + rightFrontTalon.GetSpeed() + rightRearTalon.GetSpeed()) / 4.0) * sin(mxp.GetAngle());
-		yPosTalon = yVelocity * yTalonTimer.Get();
-		yTalonTimer.Reset();
-	}
-*/
-	void Position::Update() {
-		runOnceTimer.Reset();
-		AccelerometerTrackX();
-		AccelerometerTrackY();
-		xPos = xPosAccel;
-		yPos = yPosAccel;
-		//mxp.UpdateDisplacement(mxp.GetWorldLinearAccelX(), mxp.GetWorldLinearAccelY(), 0, mxp.IsMoving());
-		SmartDashboard::PutNumber("xTimer", xAccelTimer.Get());
-		SmartDashboard::PutNumber("yTimer", yAccelTimer.Get());
-		SmartDashboard::PutNumber("xPos", xPos * 3.281 * 1000);
-		SmartDashboard::PutNumber("yPos", yPos * 3.281 * 1000);
-		SmartDashboard::PutNumber("xVel", xVelocity);
-		SmartDashboard::PutNumber("yVel", yVelocity);
-		SmartDashboard::PutNumber("xAccel", xAcceleration);
-		SmartDashboard::PutNumber("yAccel", yAcceleration);
-		SmartDashboard::PutNumber("worldAccelX",  mxp.GetWorldLinearAccelX());
-		SmartDashboard::PutNumber("worldAccelY", mxp.GetWorldLinearAccelY());
-		SmartDashboard::PutNumber("mxpXAccel", mxp.GetRawAccelX());
-		SmartDashboard::PutNumber("mxpYAccel", mxp.GetRawAccelY());
-		SmartDashboard::PutNumber("mxpXVel", mxp.GetVelocityX());
-		SmartDashboard::PutNumber("mxpYVel", mxp.GetVelocityY());
-		SmartDashboard::PutNumber("mxpXDisp", mxp.GetDisplacementX());
-		SmartDashboard::PutNumber("mxpYDisp", mxp.GetDisplacementY());
-		SmartDashboard::PutNumber("pitch", mxp.GetPitch());
-		SmartDashboard::PutNumber("yaw", mxp.GetYaw());
-		SmartDashboard::PutNumber("roll", mxp.GetRoll());
-		SmartDashboard::PutNumber("magX", mxp.GetRawMagX());
-		SmartDashboard::PutNumber("magY", mxp.GetRawMagY());
-		SmartDashboard::PutBoolean("IsMagneticDisturbance", mxp.IsMagneticDisturbance());
-		SmartDashboard::PutBoolean("IsMagnemometerCalibrated", mxp.IsMagnetometerCalibrated());
-		if (counter == 0) {
-			SmartDashboard::PutNumber("Time for one run (ms)", runOnceTimer.Get() * 1000);
-			counter++;
+	void Position::TrackX(bool movingForward) {
+		float distance;
+		float xDistance;
+		angle = GetAngle();
+		pitch = GetPitch();
+		distance = encoderTicks / Constants::ticksPerRotation * 2 * PI * wheelRadius;
+		xDistance = distance * cos(angle) * cos(pitch);
+		/*
+		 * you're basically just rotating the 2D plane to be using the Z and X axes, so using cosine of pitch
+		 * will work to give you the correct value. I can draw it out for anyone who wants
+		 */
+		if (movingForward) {
+			xPos = xPos + xDistance;
+		} else {
+			xPos = xPos - xDistance;
 		}
-		if (counter == 1) {
-			SmartDashboard::PutNumber("Time for run 2 (ms)", runOnceTimer.Get() * 1000);
-			counter++;
+	}
+
+	void Position::TrackY(bool movingForward) {
+		float distance;
+		float yDistance;
+		angle = GetAngle();
+		pitch = GetPitch();
+		distance = encoderTicks / Constants::ticksPerRotation * 2 * PI * wheelRadius;
+		yDistance = distance * sin(angle) * cos(pitch);
+		/*
+		 * you're basically just rotating the 2D plane to be using the Z and Y axes, so using the cosine of pitch
+		 * will work to give you the correct value. I can draw it out for anyone who wants
+		 */
+		if (movingForward) {
+			yPos = yPos + yDistance;
+		} else {
+			yPos = yPos - yDistance;
 		}
+	}
+
+	void Position::Update(bool movingForward) {
+		TrackX(movingForward);
+		TrackY(movingForward);
+	}
+
+	int Position::NearestObstacle() {
+		double obstacleDistance [5] = {
+				sqrt(pow(xPos - obstacleXPos[0], 2) + pow(yPos - obstacleYPos[0], 2)),
+				sqrt(pow(xPos - obstacleXPos[1], 2) + pow(yPos - obstacleYPos[1], 2)),
+				sqrt(pow(xPos - obstacleXPos[2], 2) + pow(yPos - obstacleYPos[2], 2)),
+				sqrt(pow(xPos - obstacleXPos[3], 2) + pow(yPos - obstacleYPos[3], 2)),
+				sqrt(pow(xPos - obstacleXPos[4], 2) + pow(yPos - obstacleYPos[4], 2))
+		};
+		int nearestObstacle = 0;
+		int minDistance = obstacleDistance[0];
+		for (int i = 0; i < 5; i++) {
+			if (obstacleDistance[i] < minDistance) {
+				minDistance = obstacleDistance[i];
+				nearestObstacle = i;
+			}
+		}
+		return nearestObstacle;
 	}
 
 	float Position::GetX() {
@@ -138,7 +105,6 @@
 		float uLength;
 		float vLength;
 		float angleToTower;
-
 		dotProduct = (-1 * xPos) * (xToTower) + (-1 * xPos * tan(90 - theta)) * (yToTower);
 		uLength = sqrt(pow(-1 * xPos, 2) + pow(-1 * xPos * tan(90 - theta), 2));
 		vLength = sqrt(pow(xToTower, 2) + pow(yToTower, 2));
@@ -150,9 +116,14 @@
 		float xPart;
 		float yPart;
 		float distance;
-
 		xPart = Constants::towerX - xPos;
 		yPart = Constants::towerY - yPos;
 		distance = sqrt(pow(xPart, 2) + pow(yPart, 2));
 		return distance;
+	}
+
+	void Position::Calibrate() {
+		int nearestObstacle = NearestObstacle();
+		xPos = obstacleXPos[nearestObstacle];
+		yPos = obstacleYPos[nearestObstacle];
 	}
