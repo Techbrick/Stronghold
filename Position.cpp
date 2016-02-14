@@ -2,7 +2,7 @@
  * Position.cpp
  *
  *  Created on: Feb 13, 2016
- *      Author: Owner
+ *      Author: Noah
  */
 
 #include "Position.h"
