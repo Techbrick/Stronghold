@@ -10,6 +10,7 @@ class Shooter {
 	CANTalon aim;
 	DigitalInput ballSensor;
 	Servo servo;
+	AnalogPotentiometer pot;
 
 public:
 	Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon);
