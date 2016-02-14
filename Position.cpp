@@ -11,7 +11,7 @@
 
 
 	Position::Position():
-	mxp(I2C::Port::kMXP, 40)
+	mxp(I2C::Port::kMXP, 50)
 	{
 		mxp.ZeroYaw();
 		xPos = Constants::xStartPos;
