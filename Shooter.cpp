@@ -5,7 +5,8 @@ Shooter::Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon) :
 	right(rightTalon),
 	aim(angleTalon),
 	ballSensor(Constants::shooterIRPin),
-	servo(Constants::servoPin)
+	servo(Constants::servoPin),
+	pot(Constants::potPin, 90, 0)
 {
 	left.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	right.SetControlMode(CANTalon::ControlMode::kPercentVbus);
@@ -19,7 +20,11 @@ void Shooter::SetSpeed(float leftSpeed, float rightSpeed)
 }
 
 void Shooter::SetAngle(float angle) { //degrees
-	aim.Set(angle * Constants::angleToPosition);
+	int value;
+	while (pot.Get() < angle) {
+		aim.Set(value);
+		value++;
+	}
 }
 
 void Shooter::Enable()
@@ -54,9 +59,9 @@ void Shooter::LoadBall() {
 }
 
 void Shooter::Shoot() {
-	servo.SetAngle(servo.GetMaxAngle());
+	servo.SetAngle(servo.GetMaxAngle()); //angle will need to be adjusted with testing
 	Wait(.5);
-	servo.SetAngle(servo.GetMinAngle());
+	servo.SetAngle(servo.GetMinAngle()); //angle will need to be adjusted with testing
 }
 
 bool Shooter::HasBall() {
@@ -76,5 +81,5 @@ float Shooter::WheelSpeed() {
 }
 
 float Shooter::Angle() {
-	return aim.Get() * Constants::positionToAngle;
+	return pot.Get();
 }
