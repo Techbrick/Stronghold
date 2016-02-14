@@ -1,3 +1,10 @@
+/*
+ * Shooter.cpp
+ *
+ *  Created on: Feb 13, 2016
+ *      Author: Noah
+ */
+
 #include "Shooter.h"
 
 Shooter::Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon) :
