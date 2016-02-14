@@ -1,3 +1,10 @@
+/*
+ * Shooter.h
+ *
+ *  Created on: Feb 13, 2016
+ *      Author: Noah
+ */
+
 #include "WPILib.h"
 #include "Constants.h"
 
