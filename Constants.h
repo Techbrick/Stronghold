@@ -12,20 +12,21 @@ namespace Constants {
 	static constexpr int driveLeftStickY = 1;
 	static constexpr int driveL2         = 3;
 	static constexpr int driveRightStickY = 5;
+	static constexpr int calibrateButton = 99;
 	
 	//Shooter
 	static constexpr int shooterLeftTalonID = 7;
 	static constexpr int shooterRightTalonID = 8;
-	static constexpr int shooterAimTalonID = 0;
-	static constexpr int shooterIRPin = 0;
-	static constexpr int servoPin = 0;
-	static constexpr int potPin = 0;
+	static constexpr int shooterAimTalonID = 99;
+	static constexpr int shooterIRPin = 99;
+	static constexpr int servoPin = 99;
+	static constexpr int potPin = 99;
 
 
 	//Arm
-	static constexpr int armTalonPin  = 0;
-	static constexpr int armBottomPin = 0;
-	static constexpr int armTopPin    = 0;
+	static constexpr int armTalonPin  = 99;
+	static constexpr int armBottomPin = 99;
+	static constexpr int armTopPin    = 99;
 
 	//Position
 	static constexpr float towerX = 0;
