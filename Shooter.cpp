@@ -13,20 +13,6 @@ Shooter::Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon) :
 	aim.SetControlMode(CANTalon::ControlMode::kPosition);
 }
 
-void Shooter::SetSpeed(float leftSpeed, float rightSpeed)
-{
-	left.Set(leftSpeed);
-	right.Set(rightSpeed);
-}
-
-void Shooter::SetAngle(float angle) { //degrees
-	int value;
-	while (pot.Get() < angle) {
-		aim.Set(value);
-		value++;
-	}
-}
-
 void Shooter::Enable()
 {
 	left.Enable();
@@ -39,6 +25,20 @@ void Shooter::Disable()
 	left.Disable();
 	right.Disable();
 	aim.Disable();
+}
+
+void Shooter::SetSpeed(float leftSpeed, float rightSpeed) //speeds are a percentage of the maximum possible speed
+{
+	left.Set(leftSpeed);
+	right.Set(rightSpeed);
+}
+
+void Shooter::SetAngle(float angle) { //degrees
+	int value;
+	while (pot.Get() < angle) {
+		aim.Set(value);
+		value++;
+	}
 }
 
 void Shooter::PrepareShooter() {
