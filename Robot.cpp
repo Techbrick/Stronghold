@@ -13,18 +13,20 @@ void threadTestFunction(bool* keepRunning)
 	SmartDashboard::PutNumber("SmartDash Number", 99999);
 }
 
-void updatePositionFunction(bool *keepRunning) {
-	//Position position = new Position();
+void updateThreadFunction(bool *keepRunning, Joystick *driveStick, Position *position) { //will need to be updated if drivesticks are updated
+	bool movingForward = false;
 	while (*keepRunning == true) {
-		position.Update();
-		Wait(.025);
+		if (driveStick->GetY() > 0) {
+			movingForward = true;
+		}
+		position->Update(movingForward);
 	}
 }
 
 Robot::Robot() :
 	driveTrain(Constants::driveLeftTalonID, Constants::driveRightTalonID),
 	driveStick(Constants::driveJoystickChannel),
-	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID),
+	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID, Constants::shooterAimTalonID),
 	position()
 {
 	driveTrain.SetExpiration(0.1); // safety feature
@@ -38,7 +40,7 @@ void Robot::OperatorControl() //teleop code
 	bool testThreadRun = true;
 	bool updateThreadRun = true;
 	std::thread testThread(threadTestFunction, &testThreadRun);
-	std::thread updateThread(updatePositionFunction, &updateThreadRun);
+	std::thread updateThread(updatePositionFunction, &updateThreadRun, &driveStick, &position);
 
 	shooter.Enable();
 	
