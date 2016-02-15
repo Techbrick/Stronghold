@@ -22,6 +22,11 @@ namespace Constants {
 	static constexpr int shooterIRPin = 99;
 	static constexpr int servoPin = 99;
 	static constexpr int potPin = 99;
+	static constexpr float minShootAngle = 0; //needs to be found
+	static constexpr float shooter100Velocity = 12.33; //via physics major
+	static constexpr float shooter75Velocity = 9.2475; //may need to be changed. Currently assuming percent voltage to velocity is linear
+	static constexpr float shooter50Velocity = 6.165; //may need to be changed. Currently assuming percent voltage to velocity is linear
+
 
 
 	//Arm
