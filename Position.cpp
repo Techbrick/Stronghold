@@ -22,7 +22,7 @@
 	}
 
 	inline float Position::GetAngle() {
-		return (mxp.GetYaw() + Constants::gyroOffset) * PI / 180;
+		return fmod((mxp.GetYaw() + Constants::gyroOffset), 360) * PI / 180;
 	}
 
 	inline float Position::GetPitch() {
