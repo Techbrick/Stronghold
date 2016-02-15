@@ -25,8 +25,8 @@ class Position {
 
 public:
 	Position();
-	inline float GetAngle();
-	inline float GetPitch();
+	float GetAngle();
+	float GetPitch();
 	void TrackX(bool movingForward);
 	void TrackY(bool movingForward);
 	void Update(bool movingForward);
