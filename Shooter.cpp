@@ -90,3 +90,29 @@ float Shooter::WheelSpeed() {
 float Shooter::Angle() {
 	return pot.Get();
 }
+
+float Shooter::AngleToShoot() {
+	float theta = Constants::minShootAngle; //degrees
+	float velocity = Constants::shooter100Velocity; //meters/second
+	float length = position.DistanceToTower();
+	float equation1 = pow(velocity, 2) * length * sin(2 * theta);
+	float equation2 = 2 + 2 * cos(2 * theta) + 9.8 * pow(length, 2);
+	while (abs(equation1 - equation2) < .1) { //.1 is arbitrary. We need to determine what is a good margin of error
+		theta = theta + .1;
+		equation1 = pow(velocity, 2) * length * sin(2 * theta);
+		equation2 = 2 + 2 * cos(2 * theta) + 9.8 * pow(length, 2);
+		if (theta > 90 && velocity == Constants::shooter100Velocity) {
+			velocity = Constants::shooter75Velocity;
+			theta = Constants::minShootAngle;
+		} else if (theta > 90 && velocity  == Constants::shooter75Velocity) {
+			velocity = Constants::shooter50Velocity;
+			theta = Constants::minShootAngle;
+		}
+	} //may need to find a more efficient algorithm for this loop. Depends on how long it takes to loop
+	if (velocity == Constants::shooter75Velocity) {
+		SetSpeed(.75);
+	} else if (velocity == Constants::shooter50Velocity) {
+		SetSpeed(.5);
+	}
+	return theta;
+}
