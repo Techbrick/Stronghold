@@ -88,6 +88,7 @@ void Robot::OperatorControl() //teleop code
 		}
 		SmartDashboard::PutNumber("xPos", position.GetX());
 		SmartDashboard::PutNumber("yPos", position.GetY());
+		SmartDashboard::PutString("Version", "Noah 2/14/16, 11:16 PM")
 	}
 	
 	shooter.Disable();
