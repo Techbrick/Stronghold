@@ -37,8 +37,6 @@ namespace Constants {
 	static constexpr float wheelRadius = 3; //INCHES
 	static constexpr float gyroOffset = 90;
 	static constexpr int ticksPerRotation = 2048;
-
-	Constants();
 };
 
 #endif
