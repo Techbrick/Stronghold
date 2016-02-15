@@ -13,6 +13,7 @@ namespace Constants {
 	static constexpr int driveL2         = 3;
 	static constexpr int driveRightStickY = 5;
 	static constexpr int calibrateButton = 99;
+	static constexpr int shootButton = 99;
 	
 	//Shooter
 	static constexpr int shooterLeftTalonID = 7;
