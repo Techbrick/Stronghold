@@ -27,6 +27,7 @@ void DriveTrain::TankDrive(float leftSpeed, float rightSpeed) {
 }
 
 void DriveTrain::TurnToAngle(float angle) {
+	angle = angle * PI / 180;
 	if (position.GetAngle() < angle) {
 		while (position.GetAngle() < angle) {
 			left.Set(-.5);
