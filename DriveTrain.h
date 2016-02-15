@@ -3,6 +3,7 @@
 
 #ifndef SRC_DRIVETRAIN_H
 #define SRC_DRIVETRAIN_H
+#define PI 3.14159265
 
 class DriveTrain : public RobotDrive
 {
