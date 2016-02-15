@@ -13,7 +13,8 @@ Shooter::Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon) :
 	aim(angleTalon),
 	ballSensor(Constants::shooterIRPin),
 	servo(Constants::servoPin),
-	pot(Constants::potPin, 90, 0)
+	pot(Constants::potPin, 90, 0),
+	position()
 {
 	left.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	right.SetControlMode(CANTalon::ControlMode::kPercentVbus);
@@ -38,6 +39,11 @@ void Shooter::SetSpeed(float leftSpeed, float rightSpeed) //speeds are a percent
 {
 	left.Set(leftSpeed);
 	right.Set(rightSpeed);
+}
+
+void Shooter::SetSpeed(float speed) {
+	left.Set(speed);
+	right.Set(-speed);
 }
 
 void Shooter::SetAngle(float angle) { //degrees
