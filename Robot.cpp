@@ -42,14 +42,22 @@ void Robot::OperatorControl() //teleop code
 	bool updateThreadRun = true;
 	std::thread testThread(threadTestFunction, &testThreadRun);
 	std::thread updateThread(updatePositionFunction, &updateThreadRun, &driveStick, &position);
-
+	float throttle;
+	float moveValue;
+	float rotateValue;
+	float shooterSpeed;
+	float shooterAngle;
+	
 	shooter.Enable();
+	driveTrain.Enable();
 	
 	while(IsOperatorControl() && IsEnabled())
 	{
-		float throttle = (((-driveStick.GetRawAxis(Constants::driveL2)) + 1.0)/2.0); //[0, 1]
-		float moveValue = throttle * driveStick.GetY();
-		float rotateValue = -driveStick.GetX();
+		throttle = (((-driveStick.GetRawAxis(Constants::driveL2)) + 1.0)/2.0); //[0, 1]
+		moveValue = throttle * driveStick.GetY();
+		rotateValue = -driveStick.GetX();
+		shooterSpeed = -driveStick.GetRawAxis(Constants::driveRightStickY); //change
+		shooterAngle = 0; //change
 		
 		SmartDashboard::PutNumber("Throttle Value", throttle);
 		SmartDashboard::PutNumber("Move Value", moveValue);
@@ -66,11 +74,24 @@ void Robot::OperatorControl() //teleop code
 		if (driveStick.GetRawButton(Constants::calibrateButton)) {
 			position.Calibrate();
 		}
+		if (driveStick.GetRawButton(Constants::shootButton)) {
+			if (!shooter.HasBall()) {
+				shooter.LoadBall();
+			}
+			if (shooter.HasBall()) {
+				shooter.PrepareShooter(shooterAngle, shooterSpeed); //TODO: Change these. Get physics major's equation
+			}
+			Wait(1); //how long to wait to shoot. Will need to be adjusted with testing
+			if (shooter.Angle() > shooterAngle - 2 && shooter.Angle() < shooterAngle + 2 && shooter.WheelSpeed() == shooterSpeed) {
+				shooter.Shoot();
+			}
+		}
 		SmartDashboard::PutNumber("xPos", position.GetX());
 		SmartDashboard::PutNumber("yPos", position.GetY());
 	}
 	
 	shooter.Disable();
+	driveTrain.Disable();
 	
 	testThreadRun = false;
 	testThread.join();
