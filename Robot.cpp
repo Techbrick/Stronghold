@@ -13,7 +13,7 @@ void threadTestFunction(bool* keepRunning)
 	SmartDashboard::PutNumber("SmartDash Number", 99999);
 }
 
-void updateThreadFunction(bool *keepRunning, Joystick *driveStick, Position *position) { //will need to be updated if drivesticks are updated
+void updatePositionFunction(bool *keepRunning, Joystick *driveStick, Position *position) { //will need to be updated if drivesticks are updated
 	bool movingForward = false;
 	while (*keepRunning == true) {
 		if (driveStick->GetY() > 0) {
@@ -69,7 +69,7 @@ void Robot::OperatorControl() //teleop code
 		}
 		
 		driveTrain.ArcadeDrive(moveValue, rotateValue, true);
-		shooter.setSpeed(shooterSpeed, -shooterSpeed);
+		shooter.SetSpeed(shooterSpeed, -shooterSpeed);
 		
 		if (driveStick.GetRawButton(Constants::calibrateButton)) {
 			position.Calibrate();
