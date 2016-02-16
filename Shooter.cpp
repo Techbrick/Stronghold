@@ -103,8 +103,8 @@ float Shooter::AngleToShoot() {
 	float angleToShoot;
 	int index = 0;
 	for (int i = 0; i < 420; i++) {
-		if (abs(Constants::distances[i] - actual) < abs(min - actual)) {
-			min = Constants::distances[i];
+		if (abs(Constants::distances[i] - actual) < abs(min - actual)) { //these lines don't seem to want to work
+			min = Constants::distances[i]; //these lines don't seem to want to work
 			index = i;
 		}
 	}
