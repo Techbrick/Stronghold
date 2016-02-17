@@ -1,6 +1,5 @@
 #include "WPILib.h"
 #include <memory>
-//#include "NetworkTables/NetworkTable.h"
 
 #ifndef SRC_AIMER_H
 #define SRC_AIMER_H

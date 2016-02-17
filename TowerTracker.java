@@ -1,6 +1,7 @@
-
+package src;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 import org.opencv.core.Core;
@@ -16,6 +17,7 @@ import org.opencv.videoio.VideoCapture;
 
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
+
 /**
  * 
  * @author Elijah Kaufman
@@ -30,10 +32,12 @@ public class TowerTracker {
 	/**
 	 * static method to load opencv and networkTables
 	 */
+	public static String ip = "192.168.1.157";
 	static{ 
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		//NetworkTable.setClientMode();
-		//NetworkTable.setIPAddress("192.168.1.5");
+		//NetworkTable.setClientMode();
+		//NetworkTable.setIPAddress(ip);
 	}
 //	constants for the color RGB values
 	public static final Scalar 
@@ -43,8 +47,8 @@ public class TowerTracker {
 	BLACK = new Scalar(0,0,0),
 	YELLOW = new Scalar(0, 255, 255),
 //	these are the threshold values in order 
-	LOWER_BOUNDS = new Scalar(87,151,28),
-	UPPER_BOUNDS = new Scalar(108,255,131);
+	LOWER_BOUNDS = new Scalar(58,0,109),
+	UPPER_BOUNDS = new Scalar(93,255,240);
 	
 //	the size for resizing the image
 	public static final Size resize = new Size(320,240);
@@ -59,7 +63,7 @@ public class TowerTracker {
 //	the physical height of the camera lens
 	public static final int TOP_CAMERA_HEIGHT = 31;
 //	projectile speed in mph
-	public static final double PROJECTILE_SPEED = 24;
+	public static final double PROJECTILE_SPEED = 40;
 	
 //	camera details, can usually be found on the datasheets of the camera
 	public static final double VERTICAL_FOV  = 33.58;
@@ -82,12 +86,25 @@ public class TowerTracker {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		matOriginal = new Mat();
+		int camLocation = 0;
+		if(args.length > 0){
+			ip = args[0];
+			System.out.println("ip entered is " + ip);
+		}
+		if(args.length > 1){
+			camLocation = Integer.parseInt(args[1]);
+			System.out.println("camera location is " + args[1]);
+		}
+		if(args.length > 2 && args[2] == "1")
+		{
+			production = true;
+		}
 		matHSV = new Mat();
 		matThresh = new Mat();
 		clusters = new Mat();
 		matHeirarchy = new Mat();
-		//NetworkTable.setClientMode();
-		//NetworkTable.setIPAddress("192.168.1.5");
+		NetworkTable.setClientMode();
+		NetworkTable.setIPAddress(ip);
 		try 
 		{
 		table = NetworkTable.getTable("datatable");
@@ -100,10 +117,12 @@ public class TowerTracker {
 		while(shouldRun){
 			try {
 //				opens up the camera stream and tries to load it
-				videoCapture = new VideoCapture(0);
-//				replaces the ##.## with your team number
-//
-				videoCapture.open(0);
+				videoCapture = new VideoCapture(camLocation);
+//				replaces the ##.## with your team num
+				//videoCapture.set(Videoio.CAP_PROP_AUTO_EXPOSURE, 1);
+				//videoCapture.set(Videoio.CAP_PROP_EXPOSURE, 20);
+				
+				videoCapture.open(camLocation);
 //				videoCapture.open("C:/Users/David/Pictures/Camera Roll/WIN_20160131_14_58_37_Pro.mp4");
 //				Example
 //				cap.open("http://10.30.19.11/mjpg/video.mjpg");
@@ -126,9 +145,10 @@ public class TowerTracker {
 	 */
 	public static void processImage(){
 		ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-		double y,targetX,distance,azimuth;
-//		frame counter
+		double y,targetX,distance,azimuth;//		frame counter
 		int FrameCount = 0;
+		Date date1 = new Date();
+
 		//long before = System.currentTimeMillis();
 //		only run for the specified time
 		//int averageCounter = 0;
@@ -137,7 +157,8 @@ public class TowerTracker {
 		boolean frameStop = true;
 		
 		while(frameStop){
-			if(FrameCount >= 100 && !production && table.getNumber("stop", 0) != 1)
+			Date date2 = new Date();
+			if(FrameCount >= 9 && !production)
 			{
 				frameStop = false;
 			}
@@ -149,9 +170,11 @@ public class TowerTracker {
 				double	averageAzimuthOut = averageAzimuth / goodValues;
 				double	averageShootyAngleOut = averageShootyAngle / goodValues;
 				double	averageDistanceOut = averageDistance / goodValues;
-				System.out.println("Average Azimuth: " + averageAzimuth);
+				System.out.println("Average Azimuth: " + averageAzimuthOut);
 				System.out.println("Average Shooty Angle: " + averageShootyAngleOut);
 				System.out.println("Average Distance: " + averageDistanceOut);
+				Imgcodecs.imwrite("output.png", matOriginal);
+				date1 = new Date();
 				if(networkAvailible)
 				{
 					table.putNumber("averageAzimuthOut", averageAzimuthOut);
@@ -217,6 +240,7 @@ public class TowerTracker {
 				averageShootyAngle =+ shootyAngle;
 				averageAzimuth += azimuth;
 				averageDistance += distance;
+				
 				//if(networkAvailible)
 				//{
 				//	table.putNumber("0", shootyAngle);
@@ -225,22 +249,30 @@ public class TowerTracker {
 				//}
 				
 			}
+			table.putNumber("sinceLastUpdate", (date2.getTime() - date1.getTime()) / 1000);
 //			output an image for debugging
-			Imgcodecs.imwrite("output.png", matOriginal);
 			FrameCount++;
 			System.out.println("Framecount:" + FrameCount);
+			System.out.println((date2.getTime() - date1.getTime()) / 1000);
+			if ((int)((date2.getTime() - date1.getTime()) / 1000) % 5 == 0)
+			{
+				Imgcodecs.imwrite("output.png", matOriginal);
+				System.out.println("Image");
+			}
 		}
+		
 		shouldRun = false;
 	}
 	/**
 	 * @param angle a nonnormalized angle
 	 */
+	//NO LONGER DOES xbox 360, because XBones are better
 	public static double normalize360(double angle){
-		while(angle >= 360.0)
+		while(angle >= 180.0)
         {
             angle -= 360.0;
         }
-        while(angle < 0.0)
+        while(angle < -180.0)
         {
             angle += 360.0;
         }

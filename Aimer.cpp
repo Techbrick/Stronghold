@@ -7,20 +7,20 @@ Aimer::Aimer()
 
 float Aimer::GetAngleToTower()
 {
-	return 0;
+	return (float)table->GetNumber("averageAzimuthOut", 42);
 }
 
 float Aimer::GetDistanceToTower()
 {
-	return 0;
+	return (float)table->GetNumber("averageDistanceOut", 42);
 }
 
 float Aimer::GetSpeedToShoot()
 {
-	return 0;
+	return 42;
 }
 
 float Aimer::GetAngleToShoot()
 {
-	return 0;
+	return (float)table->GetNumber("averageShootyAngleOut", 42);
 }
