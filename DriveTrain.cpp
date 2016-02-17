@@ -1,20 +1,51 @@
 #include "DriveTrain.h"
 
-DriveTrain::DriveTrain (uint32_t leftMotorChannel, uint32_t rightMotorChannel)
-	: RobotDrive(leftMotorChannel, rightMotorChannel)
-{}
+DriveTrain::DriveTrain(uint32_t leftDeviceID, uint32_t rightDeviceID):
+	left(leftDeviceID),
+	right(rightDeviceID),
+	RobotDrive(left, right)
+{
+	left.SetControlMode(CANTalon::ControlMode::kPercentVbus);
+	right.SetControlMode(CANTalon::ControlMode::kPercentVbus);
+}
 
-DriveTrain::DriveTrain (uint32_t frontLeftMotorChannel, uint32_t rearLeftMotorChannel, uint32_t frontRightMotorChannel, uint32_t rearRightMotorChannel)
-	: RobotDrive (frontLeftMotorChannel, rearLeftMotorChannel, frontRightMotorChannel, rearRightMotorChannel) 
-{}
+void DriveTrain::Enable()
+{
+	left.Enable();
+	right.Enable();
+}
 
-DriveTrain::DriveTrain (SpeedController *leftMotor, SpeedController *rightMotor)
-	: RobotDrive (leftMotor, rightMotor)
-{}
-DriveTrain::DriveTrain (SpeedController *frontLeftMotor, SpeedController *rearLeftMotor, SpeedController *frontRightMotor, SpeedController *rearRightMotor)
-	: RobotDrive (frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor)
-{}
+void DriveTrain::Disable()
+{
+	left.Disable();
+	right.Disable();
+}
 
-DriveTrain::DriveTrain (SpeedController &frontLeftMotor, SpeedController &rearLeftMotor, SpeedController &frontRightMotor, SpeedController &rearRightMotor)
-	: RobotDrive (frontLeftMotor, rearLeftMotor, frontRightMotor, rearRightMotor)
-{}
+void DriveTrain::TankDrive(float leftSpeed, float rightSpeed) {
+	left.Set(leftSpeed);
+	right.Set(rightSpeed);
+}
+
+void DriveTrain::TurnToAngle(float angle) {
+	angle = angle * PI / 180;
+	if (position.GetAngle() < angle) {
+		while (position.GetAngle() < angle) {
+			left.Set(-.5);
+			right.Set(.5);
+		}
+	} else if (position.GetAngle() > angle) {
+		while (position.GetAngle() > angle) {
+			left.Set(.5);
+			right.Set(-.5);
+		}
+	}
+}
+
+void DriveTrain::MoveDistance(float distance, float speed) {
+	float xOffset = position.GetX();
+	float yOffset = position.GetY();
+	while (sqrt(pow(position.GetX() - xOffset, 2) + pow(position.GetY() - yOffset, 2)) < distance) {
+		left.Set(speed);
+		right.Set(speed);
+	}
+}

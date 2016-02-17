@@ -1,15 +1,23 @@
+#include "WPILib.h"
+#include "Position.h"
+
 #ifndef SRC_DRIVETRAIN_H
 #define SRC_DRIVETRAIN_H
-
-#include "WPILib.h"
+#define PI 3.14159265
 
 class DriveTrain : public RobotDrive
 {
-	DriveTrain (uint32_t leftMotorChannel, uint32_t rightMotorChannel);
-	DriveTrain (uint32_t frontLeftMotorChannel, uint32_t rearLeftMotorChannel, uint32_t frontRightMotorChannel, uint32_t rearRightMotorChannel);
-	DriveTrain (SpeedController *leftMotor, SpeedController *rightMotor);
-	DriveTrain (SpeedController *frontLeftMotor, SpeedController *rearLeftMotor, SpeedController *frontRightMotor, SpeedController *rearRightMotor);
-	DriveTrain (SpeedController &frontLeftMotor, SpeedController &rearLeftMotor, SpeedController &frontRightMotor, SpeedController &rearRightMotor);
-}
+	CANTalon left;
+	CANTalon right;
+	Position position;
+public:
+	DriveTrain(uint32_t leftDeviceID, uint32_t rightDeviceID);
+	void Enable();
+	void Disable();
+	void TankDrive(float leftSpeed, float rightSpeed);
+	void TurnToAngle(float angle);
+	void MoveDistance(float distance, float speed);
+
+};
 
 #endif
