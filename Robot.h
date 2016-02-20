@@ -4,6 +4,7 @@
 #include "Constants.h"
 #include "Shooter.h"
 #include "Position.h"
+#include "Aimer.h"
 
 #include <math.h>
 #include <thread>
@@ -16,9 +17,10 @@ class Robot : public SampleRobot {
 	Joystick driveStick;
 	Shooter shooter;
 	Position position;
+	Aimer aimer;
 public:
 	Robot();
-	
+
 	void OperatorControl();
 };
 
