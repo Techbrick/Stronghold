@@ -40,7 +40,6 @@ namespace Constants {
 	static constexpr float towerHeight = 0;
 	static constexpr float xStartPos = 0;
 	static constexpr float yStartPos = 0;
-	static constexpr float wheelRadius = 3; //INCHES
 	static constexpr float gyroOffset = 90;
 	static constexpr int ticksPerRotation = 2048;
 	static constexpr float quadratureEncoderFactor = .25;

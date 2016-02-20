@@ -105,13 +105,4 @@ void Robot::OperatorControl() //teleop code
 	driveTrain.SetSafetyEnabled(true);
 }
 
-	shooter.Disable();
-	driveTrain.Disable();
-
-	testThreadRun = false;
-	testThread.join();
-
-	driveTrain.SetSafetyEnabled(true);
-}
-
 START_ROBOT_CLASS(Robot);
