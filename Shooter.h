@@ -19,10 +19,10 @@ class Shooter {
 	DigitalInput ballSensor;
 	Servo servo;
 	AnalogPotentiometer pot;
-	Position position;
+	Position *position;
 
 public:
-	Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon);
+	Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon, Position *position_);
 	void Enable();
 	void Disable();
 	void SetSpeed(float leftSpeed, float rightSpeed);
