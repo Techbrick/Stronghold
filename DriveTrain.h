@@ -12,7 +12,7 @@ class DriveTrain : public RobotDrive
 	CANTalon right;
 	Position *position;
 public:
-	DriveTrain(uint32_t leftDeviceID, uint32_t rightDeviceID, Position& position_);
+	DriveTrain(uint32_t leftDeviceID, uint32_t rightDeviceID, Position *position_);
 	void Enable();
 	void Disable();
 	void TankDrive(float leftSpeed, float rightSpeed);

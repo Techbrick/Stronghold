@@ -7,19 +7,18 @@
 
 #include "Shooter.h"
 
-Shooter::Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon, Position& position_) :
+Shooter::Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon, Position *position_) :
 	left(leftTalon),
 	right(rightTalon),
 	aim(angleTalon),
 	ballSensor(Constants::shooterIRPin),
 	servo(Constants::servoPin),
-	pot(Constants::potPin, 90, 0),
-	position(position_)
+	position(position_),
+	pot(Constants::potPin, 90, 0)
 {
 	left.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	right.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	aim.SetControlMode(CANTalon::ControlMode::kPosition);
-	aim.FeedbackDevice(2);
 }
 
 void Shooter::Enable()

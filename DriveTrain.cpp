@@ -1,7 +1,7 @@
 #include "DriveTrain.h"
 #define PI 3.14159265
 
-DriveTrain::DriveTrain(uint32_t leftDeviceID, uint32_t rightDeviceID, Position& position_):
+DriveTrain::DriveTrain(uint32_t leftDeviceID, uint32_t rightDeviceID, Position *position_):
 	left(leftDeviceID),
 	right(rightDeviceID),
 	position(position_),
