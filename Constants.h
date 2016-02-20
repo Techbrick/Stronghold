@@ -41,11 +41,6 @@ public:
 	static constexpr float shooter75Velocity = 9.2475; //may need to be changed. Currently assuming percent voltage to velocity is linear
 	static constexpr float shooter50Velocity = 6.165; //may need to be changed. Currently assuming percent voltage to velocity is linear
 
-	//Arm
-	static constexpr int armTalonPin  = 99;
-	static constexpr int armBottomPin = 99;
-	static constexpr int armTopPin    = 99;
-
 	//Position
 	static constexpr float towerX = 0;
 	static constexpr float towerY = 0;

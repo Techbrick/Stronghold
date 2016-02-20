@@ -1,8 +1,10 @@
 #include "DriveTrain.h"
+#define PI 3.14159265
 
-DriveTrain::DriveTrain(uint32_t leftDeviceID, uint32_t rightDeviceID):
+DriveTrain::DriveTrain(uint32_t leftDeviceID, uint32_t rightDeviceID, Position& position_):
 	left(leftDeviceID),
 	right(rightDeviceID),
+	position(position_),
 	RobotDrive(left, right)
 {
 	left.SetControlMode(CANTalon::ControlMode::kPercentVbus);
@@ -27,43 +29,26 @@ void DriveTrain::TankDrive(float leftSpeed, float rightSpeed) {
 }
 
 void DriveTrain::TurnToAngle(float angle) { //give angle in degrees
-	angle = angle * PI / 180;
-	if (position.GetAngle() < angle) {
-		while (position.GetAngle() < angle) {
-			left.Set(-.5);
-			right.Set(.5);
-		}
-	} else if (position.GetAngle() > angle) {
-		while (position.GetAngle() > angle) {
-			left.Set(.5);
-			right.Set(-.5);
-		}
+	float currentAngle = 0;
+	float p = .75 / 180;
+	float offset;
+	while (abs(currentAngle - angle) > 1.0)
+	{
+		offset = angle - currentAngle;
+		left.Set(offset * p);
+		right.Set(-offset * p);
+		currentAngle = position->GetAngle();
 	}
 }
 
 void DriveTrain::TurnToRelativeAngle(float angle) {
-	float angleOffset = position.GetAngle();
-	float currentAngle = 0;
-	angle = -angle;
-	if (currentAngle < angle) {
-		while (currentAngle < angle) {
-			left.Set(-.5);
-			right.Set(.5);
-			currentAngle = position.GetAngle() - angleOffset;
-		}
-	} else if (currentAngle > angle) {
-		while (currentAngle > angle) {
-			left.Set(.5);
-			right.Set(-.5);
-			currentAngle = position.GetAngle() - angleOffset;
-		}
-	}
+	TurnToAngle(angle + position->GetAngle());
 }
 
 void DriveTrain::MoveDistance(float distance, float speed) {
-	float xOffset = position.GetX();
-	float yOffset = position.GetY();
-	while (sqrt(pow(position.GetX() - xOffset, 2) + pow(position.GetY() - yOffset, 2)) < distance) {
+	float xOffset = position->GetX();
+	float yOffset = position->GetY();
+	while (sqrt(pow(position->GetX() - xOffset, 2) + pow(position->GetY() - yOffset, 2)) < distance) {
 		left.Set(speed);
 		right.Set(speed);
 	}

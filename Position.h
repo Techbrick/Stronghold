@@ -17,6 +17,7 @@ class Position {
 	float angle;
 	float pitch;
 	float encoderTicks;
+	float encoderTicksOffset;
 	float xPos;
 	float yPos;
 	float wheelRadius = Constants::wheelRadius;

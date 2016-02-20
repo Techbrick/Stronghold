@@ -28,10 +28,10 @@ void updateThreadFunction(bool *keepRunning, Joystick *driveStick, Position *pos
 }
 
 Robot::Robot() :
-	driveTrain(Constants::driveLeftTalonID, Constants::driveRightTalonID),
 	driveStick(Constants::driveJoystickChannel),
 	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID, Constants::shooterAimTalonID),
 	position(),
+	driveTrain(Constants::driveLeftTalonID, Constants::driveRightTalonID, position),
 	aimer()
 {
 	driveTrain.SetExpiration(0.1); // safety feature
@@ -77,7 +77,7 @@ void Robot::OperatorControl() //teleop code
 		shooter.SetSpeed(shooterSpeed, -shooterSpeed);
 
 		if (driveStick.GetRawButton(Constants::calibrateButton)) {
-			position.Calibrate();
+			//position.Calibrate();
 		}
 		if (driveStick.GetRawButton(Constants::shootButton)) {
 			if (!shooter.HasBall()) {

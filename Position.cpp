@@ -22,7 +22,6 @@
 	}
 
 	void Position::TrackX(bool movingForward, int encoderTickValue) {
-		encoderTicks = encoderTickValue;
 		float distance;
 		float xDistance;
 		angle = GetAngle();
@@ -41,7 +40,6 @@
 	}
 
 	void Position::TrackY(bool movingForward, int encoderTickValue) {
-		encoderTicks = encoderTickValue;
 		float distance;
 		float yDistance;
 		angle = GetAngle();
@@ -60,15 +58,17 @@
 	}
 
 	void Position::Update(bool movingForward, int encoderTickValue) {
-		TrackX(movingForward, encoderTickValue);
-		TrackY(movingForward, encoderTickValue);
+		encoderTicks = encoderTickValue - encoderTicksOffset;
+		encoderTicksOffset = encoderTicksOffset + encoderTickValue;
+		TrackX(movingForward, encoderTicks);
+		TrackY(movingForward, encoderTicks);
 	}
 
-	void Position::Calibrate() {
+/*	void Position::Calibrate() {
 		int nearestObstacle = NearestObstacle();
 		xPos = obstacleXPos[nearestObstacle];
 		yPos = obstacleYPos[nearestObstacle];
-	}
+	}*/
 
 	int Position::NearestObstacle() {
 		double obstacleDistance [5] = {
