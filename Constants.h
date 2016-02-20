@@ -25,7 +25,8 @@ namespace Constants {
 	static constexpr float shooter100Velocity = 12.33; //via physics major
 	static constexpr float shooter75Velocity = 9.2475; //may need to be changed. Currently assuming percent voltage to velocity is linear
 	static constexpr float shooter50Velocity = 6.165; //may need to be changed. Currently assuming percent voltage to velocity is linear
-
+	static constexpr float minimumAngle = 32;	//Actual value: needs more accuracy
+	static constexpr float maximumAngle = 70; //TODO: temporary value
 
 
 	//Arm

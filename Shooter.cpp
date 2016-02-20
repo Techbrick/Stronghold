@@ -47,28 +47,18 @@ void Shooter::SetSpeed(float speed) {
 }
 
 void Shooter::SetAngle(float angle) { //degrees
-	int value;
-	while (pot.Get() < angle) {
-		aim.Set(value);
-		value++;
-	}
-}
-
-void Shooter::PrepareShooter() {
-	SetSpeed(.75, -.75);
-	SetAngle(45);
+	//TODO: use TalonSRX with Pot
+	//TODO: Don't set angle more than Constants::maximumAngle or less than Constants::minimumAngle
 }
 
 void Shooter::PrepareShooter(float angle, float speed) {
 	SetAngle(angle);
-	SetSpeed(speed, -speed);
+	SetSpeed(speed);
 }
 
 void Shooter::LoadBall() {
-	while (HasBall() == false) {
-		SetSpeed(-.35, .35);
-	}
-	SetSpeed(0, 0);
+	SetAngle(35);
+	SetSpeed(-.35);
 }
 
 void Shooter::Shoot() {
@@ -78,19 +68,11 @@ void Shooter::Shoot() {
 }
 
 bool Shooter::HasBall() {
-	if (ballSensor.Get() == 0) { //may be 1. The website says 0 is found barrier but then the output of the example code according to their instructions says otherwise
-		return true;
-	} else {
-		return false;
-	}
+	return ballSensor.Get();
 }
 
 float Shooter::WheelSpeed() {
-	if (left.Get() != right.Get()) {
-		return -1;
-	} else {
-		return left.Get();
-	}
+	return left.Get();
 }
 
 float Shooter::Angle() {

@@ -7,4 +7,4 @@ main: $(CPP_files) $(H_files)
 	arm-frc-linux-gnueabi-g++ -std=c++14 $(CPP_files) -I$(NAVX_Includes) -L$(NAVX_Link_file) -lnavx_frc_cpp -lwpi -o bin/FRCUserProgram
 
 open:
-	mousepad $(CPP_files) $(H_files) &
+	vim $(CPP_files) $(H_files)
