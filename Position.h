@@ -1,8 +1,9 @@
+
 /*
  * Position.h
  *
- *  Created on: Feb 13, 2016
- *      Author: Noah
+ *  Created on: Jan 26, 2016
+ *      Author: Noah Zbozny
  */
 
 #ifndef SRC_POSITION_H_
@@ -12,11 +13,14 @@
 #include "AHRS.h"
 #include "Constants.h"
 
+#include <math.h>
+
 class Position {
 	AHRS mxp; //navx mxp
 	float angle;
 	float pitch;
 	float encoderTicks;
+	float encoderTicksOffset;
 	float xPos;
 	float yPos;
 	float wheelRadius = Constants::wheelRadius;
@@ -25,17 +29,19 @@ class Position {
 
 public:
 	Position();
-	float GetAngle();
-	float GetPitch();
-	void TrackX(bool movingForward);
-	void TrackY(bool movingForward);
-	void Update(bool movingForward);
+	void TrackX(bool movingForward, int encoderTickValue);
+	void TrackY(bool movingForward, int encoderTickValue);
+	void Update(bool movingForward, int encoderTickValue);
+	void Calibrate();
 	int NearestObstacle();
 	float GetX();
 	float GetY();
 	float AngleToTower();
 	float DistanceToTower();
-	void Calibrate();
+	float GetAngle();
+	float GetPitch();
+	bool IsTurning();
 };
+
 
 #endif /* SRC_POSITION_H_ */

@@ -2,13 +2,13 @@
  * Position.cpp
  *
  *  Created on: Feb 13, 2016
- *      Author: Noah
+ *      Author: Noah Zbozny
  */
 
 #include "Position.h"
 #include "math.h"
-#define PI 3.14159265
 
+#define PI 3.14159265
 
 	Position::Position():
 	mxp(I2C::Port::kMXP, 50)
@@ -21,20 +21,12 @@
 		encoderTicks = 0;
 	}
 
-	inline float Position::GetAngle() {
-		return fmod((mxp.GetYaw() + Constants::gyroOffset), 360) * PI / 180;
-	}
-
-	inline float Position::GetPitch() {
-		return mxp.GetPitch() * PI / 180;
-	}
-
-	void Position::TrackX(bool movingForward) {
+	void Position::TrackX(bool movingForward, int encoderTickValue) {
 		float distance;
 		float xDistance;
 		angle = GetAngle();
 		pitch = GetPitch();
-		distance = encoderTicks / Constants::ticksPerRotation * 2 * PI * wheelRadius;
+		distance = encoderTicks / Constants::ticksPerRotation * Constants::quadratureEncoderFactor * 2 * PI * wheelRadius;
 		xDistance = distance * cos(angle) * cos(pitch);
 		/*
 		 * you're basically just rotating the 2D plane to be using the Z and X axes, so using cosine of pitch
@@ -47,12 +39,12 @@
 		}
 	}
 
-	void Position::TrackY(bool movingForward) {
+	void Position::TrackY(bool movingForward, int encoderTickValue) {
 		float distance;
 		float yDistance;
 		angle = GetAngle();
 		pitch = GetPitch();
-		distance = encoderTicks / Constants::ticksPerRotation * 2 * PI * wheelRadius;
+		distance = encoderTicks / Constants::ticksPerRotation * Constants::quadratureEncoderFactor * 2 * PI * wheelRadius;
 		yDistance = distance * sin(angle) * cos(pitch);
 		/*
 		 * you're basically just rotating the 2D plane to be using the Z and Y axes, so using the cosine of pitch
@@ -65,10 +57,18 @@
 		}
 	}
 
-	void Position::Update(bool movingForward) {
-		TrackX(movingForward);
-		TrackY(movingForward);
+	void Position::Update(bool movingForward, int encoderTickValue) {
+		encoderTicks = encoderTickValue - encoderTicksOffset;
+		encoderTicksOffset = encoderTicksOffset + encoderTickValue;
+		TrackX(movingForward, encoderTicks);
+		TrackY(movingForward, encoderTicks);
 	}
+
+/*	void Position::Calibrate() {
+		int nearestObstacle = NearestObstacle();
+		xPos = obstacleXPos[nearestObstacle];
+		yPos = obstacleYPos[nearestObstacle];
+	}*/
 
 	int Position::NearestObstacle() {
 		double obstacleDistance [5] = {
@@ -105,6 +105,7 @@
 		float uLength;
 		float vLength;
 		float angleToTower;
+
 		dotProduct = (-1 * xPos) * (xToTower) + (-1 * xPos * tan(90 - theta)) * (yToTower);
 		uLength = sqrt(pow(-1 * xPos, 2) + pow(-1 * xPos * tan(90 - theta), 2));
 		vLength = sqrt(pow(xToTower, 2) + pow(yToTower, 2));
@@ -116,14 +117,21 @@
 		float xPart;
 		float yPart;
 		float distance;
+
 		xPart = Constants::towerX - xPos;
 		yPart = Constants::towerY - yPos;
 		distance = sqrt(pow(xPart, 2) + pow(yPart, 2));
 		return distance;
 	}
 
-	void Position::Calibrate() {
-		int nearestObstacle = NearestObstacle();
-		xPos = obstacleXPos[nearestObstacle];
-		yPos = obstacleYPos[nearestObstacle];
+	float Position::GetAngle() {
+		return fmod((mxp.GetYaw() + Constants::gyroOffset), 360) * PI / 180;
+	}
+
+	float Position::GetPitch() {
+		return mxp.GetPitch() * PI / 180;
+	}
+
+	bool Position::IsTurning() {
+		return mxp.IsRotating();
 	}
