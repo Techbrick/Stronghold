@@ -18,7 +18,6 @@ class Shooter {
 	CANTalon aim;
 	DigitalInput ballSensor;
 	Servo servo;
-	AnalogPotentiometer pot;
 	Position *position;
 
 public:
