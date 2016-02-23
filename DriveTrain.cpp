@@ -28,6 +28,7 @@ void DriveTrain::TankDrive(float leftSpeed, float rightSpeed) {
 	right.Set(rightSpeed);
 }
 
+//TODO: Take a sensitivity
 void DriveTrain::TurnToAngle(float angle) { //give angle in degrees
 	float currentAngle = 0;
 	float p = .75 / 180;
