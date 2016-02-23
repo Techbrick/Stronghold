@@ -62,9 +62,9 @@ void Shooter::LoadBall() {
 }
 
 void Shooter::Shoot() {
-	servo.SetAngle(servo.GetMaxAngle()); //angle will need to be adjusted with testing
+	servo.Set(Constants::servoMaxPosition); //angle will need to be adjusted with testing
 	Wait(.5);
-	servo.SetAngle(servo.GetMinAngle()); //angle will need to be adjusted with testing
+	servo.Set(Constants::servoMinPosition); //angle will need to be adjusted with testing
 }
 
 bool Shooter::HasBall() {
@@ -83,14 +83,6 @@ float Shooter::AngleToShoot() {
 	float min = Constants::distances[0];
 	float actual = position->DistanceToTower();
 	float angleToShoot;
-	//TODO: uncomment the following + fix
-	/*int index = 0;
-	for (int i = 0; i < 420; i++) {
-		if (abs(Constants::distances[i] - actual) < abs(min - actual)) { //these lines don't seem to want to work
-			min = Constants::distances[i]; //these lines don't seem to want to work
-			index = i;
-		}
-	}
-	angleToShoot = 30.55 + index * .05;*/
+
 	return angleToShoot;
 }
