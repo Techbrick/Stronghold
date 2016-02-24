@@ -103,4 +103,24 @@ void Robot::OperatorControl() //teleop code
 	driveTrain.SetSafetyEnabled(true);
 }
 
+void Robot::Test()
+{
+	uint32_t ID = 0;
+	while (IsTest() && IsEnabled())
+       	{
+		CANTalon *talon = new CANTalon(ID);
+		if (driveStick.GetRawButton(3))
+	       	{
+			ID++;
+			ID %= 16;
+		}
+		float testMove = -driveStick.GetRawAxis(1);
+		talon->Set(testMove);
+
+		SmartDashboard::PutNumber("Talon Analog Velocity", talon->GetAnalogInVel());
+		SmartDashboard::PutNumber("Talon Front Switch", talon->IsFwdLimitSwitchClosed());
+		SmartDashboard::PutBoolean("Talon Back Switch", talon->IsRevLimitSwitchClosed());
+	}
+}
+
 START_ROBOT_CLASS(Robot);
