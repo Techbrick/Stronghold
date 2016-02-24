@@ -1,7 +1,6 @@
-void Robot::Test() { //may need to be changed. Not sure how test mode works in SampleRobot
+void Robot::Test() {
 	int ID = 0;
-	driveStick = new Joystick(1);
-	while (IsEnabled) { //may need to be changed. Not sure how test mode works in SampleRobot
+	while (IsEnabled()) {
 		CANTalon *talon = new CANTalon(ID);
 		if (driveStick.GetRawButton(3)) {
 			ID++;
