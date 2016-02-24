@@ -46,8 +46,8 @@ void Shooter::SetSpeed(float speed) {
 }
 
 void Shooter::SetAngle(float angle) { //degrees
-	//TODO: use TalonSRX with Pot
 	//TODO: Don't set angle more than Constants::maximumAngle or less than Constants::minimumAngle
+	aim.Set(angle);
 }
 
 void Shooter::PrepareShooter(float angle, float speed) {

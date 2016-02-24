@@ -3,22 +3,24 @@
 
 namespace Constants {
 	//DriveTrain
-	static constexpr int driveLeftTalonID  = 1;
-	static constexpr int driveRightTalonID = 0;
+	static constexpr int driveLeftMasterID  = 12;
+	static constexpr int driveRightMasterID = 14;
+	static constexpr int driveLeftSlaveID = 13;
+	static constexpr int driveRightSlaveID = 15;
 
 	//Joystick axis and buttons
 	static constexpr int driveJoystickChannel = 0;
 	static constexpr int driveLeftStickX = 0;
 	static constexpr int driveLeftStickY = 1;
-	static constexpr int driveL2         = 3;
+	static constexpr int driveL2 = 3;
 	static constexpr int driveRightStickY = 5;
 	static constexpr int calibrateButton = 99;
 	static constexpr int shootButton = 99;
 	static constexpr int prepareToShootButton = 99;
 
 	//Shooter
-	static constexpr int shooterLeftTalonID = 7;
-	static constexpr int shooterRightTalonID = 8;
+	static constexpr int shooterLeftTalonID = 8;
+	static constexpr int shooterRightTalonID = 9;
 	static constexpr int shooterAimTalonID = 10;
 	static constexpr int shooterIRPin = 6;
 	static constexpr int servoPin = 0;
@@ -29,7 +31,6 @@ namespace Constants {
 	static constexpr float maximumAngle = 70; //TODO: temporary value
 	static constexpr float servoMaxPosition = 0.9;
 	static constexpr float servoMinPosition = 0.5;
-
 
 	//Arm
 	static constexpr int armTalonPin  = 11;

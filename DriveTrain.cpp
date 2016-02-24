@@ -1,31 +1,38 @@
 #include "DriveTrain.h"
 #define PI 3.14159265
 
-DriveTrain::DriveTrain(uint32_t leftDeviceID, uint32_t rightDeviceID, Position *position_):
-	left(leftDeviceID),
-	right(rightDeviceID),
+DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, uint32_t rightMasterDeviceID, uint32_t rightSlaveDeviceID, Position *position_):
+	leftMaster(leftMasterDeviceID),
+	leftSlave(leftSlaveDeviceID),
+	rightMaster(rightMasterDeviceID),
+	rightSlave(rightSlaveDeviceID),
 	position(position_),
-	RobotDrive(left, right)
+	RobotDrive(leftMaster, rightMaster)
 {
-	left.SetControlMode(CANTalon::ControlMode::kPercentVbus);
-	right.SetControlMode(CANTalon::ControlMode::kPercentVbus);
+	leftMaster.SetControlMode(CANTalon::ControlMode::kPercentVbus);
+	leftSlave.SetControlMode(CANTalon::ControlMode::kFollower);
+	leftSlave.Set(Constants::driveLeftMasterID);
+
+	rightMaster.SetControlMode(CANTalon::ControlMode::kPercentVbus);
+	rightSlave.SetControlMode(CANTalon::ControlMode::kFollower);
+	rightSlave.Set(Constants::driveRightMasterID);
 }
 
 void DriveTrain::Enable()
 {
-	left.Enable();
-	right.Enable();
+	leftMaster.Enable();
+	rightMaster.Enable();
 }
 
 void DriveTrain::Disable()
 {
-	left.Disable();
-	right.Disable();
+	leftMaster.Disable();
+	rightMaster.Disable();
 }
 
 void DriveTrain::TankDrive(float leftSpeed, float rightSpeed) {
-	left.Set(leftSpeed);
-	right.Set(rightSpeed);
+	leftMaster.Set(leftSpeed);
+	rightMaster.Set(rightSpeed);
 }
 
 //TODO: Take a sensitivity
@@ -36,8 +43,8 @@ void DriveTrain::TurnToAngle(float angle) { //give angle in degrees
 	while (abs(currentAngle - angle) > 1.0)
 	{
 		offset = angle - currentAngle;
-		left.Set(offset * p);
-		right.Set(-offset * p);
+		leftMaster.Set(offset * p);
+		rightMaster.Set(-offset * p);
 		currentAngle = position->GetAngle();
 	}
 }
@@ -50,7 +57,7 @@ void DriveTrain::MoveDistance(float distance, float speed) {
 	float xOffset = position->GetX();
 	float yOffset = position->GetY();
 	while (sqrt(pow(position->GetX() - xOffset, 2) + pow(position->GetY() - yOffset, 2)) < distance) {
-		left.Set(speed);
-		right.Set(speed);
+		leftMaster.Set(speed);
+		rightMaster.Set(speed);
 	}
 }
