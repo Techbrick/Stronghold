@@ -18,7 +18,7 @@ Robot::Robot() :
 	driveStick(Constants::driveJoystickChannel),
 	position(),
 	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID, Constants::shooterAimTalonID, &position),
-	driveTrain(Constants::driveLeftTalonID, Constants::driveRightTalonID, &position),
+	driveTrain(Constants::driveLeftMasterID, Constants::driveLeftSlaveID, Constants::driveRightMasterID, Constants::driveRightSlaveID, &position),
 	aimer()
 {
 	driveTrain.SetExpiration(0.1); // safety feature
