@@ -1,0 +1,17 @@
+void Robot::Test() { //may need to be changed. Not sure how test mode works in SampleRobot
+	int ID = 0;
+	driveStick = new Joystick(1);
+	while (IsEnabled) { //may need to be changed. Not sure how test mode works in SampleRobot
+		CANTalon *talon = new CANTalon(ID);
+		if (driveStick.GetRawButton(3)) {
+			ID++;
+			if (ID > 13) {
+				ID = 0;
+			}
+		}
+		float testMove = -driveStick.GetRawAxis(1);
+		talon->Set(testMove);
+
+		SmartDashboard::PutNumber("talon input value", talon->GetAnalogInRaw());
+	}
+}
