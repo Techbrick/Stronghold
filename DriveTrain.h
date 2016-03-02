@@ -9,8 +9,8 @@
 class DriveTrain : public RobotDrive
 {
 	CANTalon leftMaster;
-	CANTalon rightMaster;
 	CANTalon leftSlave;
+	CANTalon rightMaster;
 	CANTalon rightSlave;
 
 	Position *position;

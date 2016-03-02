@@ -33,7 +33,6 @@ public:
 	bool HasBall();
 	float WheelSpeed();
 	float Angle();
-	float AngleToShoot();
 };
 
 #endif
