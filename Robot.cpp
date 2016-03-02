@@ -15,10 +15,10 @@ void updateThreadFunction(bool *keepRunning, Joystick *driveStick, Position *pos
 }
 
 Robot::Robot() :
-	driveStick(Constants::driveJoystickChannel),
-	position(),
-	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID, Constants::shooterAimTalonID, &position),
 	driveTrain(Constants::driveLeftMasterID, Constants::driveLeftSlaveID, Constants::driveRightMasterID, Constants::driveRightSlaveID, &position),
+	driveStick(Constants::driveJoystickChannel),
+	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID, Constants::shooterAimTalonID, &position),
+	position(),
 	aimer()
 {
 	driveTrain.SetExpiration(0.1); // safety feature
