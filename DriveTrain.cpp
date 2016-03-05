@@ -9,6 +9,8 @@ DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, 
 	rightSlave(rightSlaveDeviceID),
 	position(position_)
 {
+	std::cout << "Drive Train is in the middle of constructing" << std::endl;
+
 	leftMaster.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	leftSlave.SetControlMode(CANTalon::ControlMode::kFollower);
 	leftSlave.Set(Constants::driveLeftMasterID);
@@ -16,6 +18,8 @@ DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, 
 	rightMaster.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	rightSlave.SetControlMode(CANTalon::ControlMode::kFollower);
 	rightSlave.Set(Constants::driveRightMasterID);
+
+	std::cout << "Drive Train finished constructing!!!" << std::endl;
 }
 
 void DriveTrain::Enable()
