@@ -14,20 +14,31 @@ void updateThreadFunction(bool *keepRunning, Joystick *driveStick, Position *pos
 	}
 }
 
+logger::logger(const char* msg_) : msg(msg_)
+{
+	std::cout << msg << std::endl;
+}		
+
 Robot::Robot() :
-	driveStick(Constants::driveJoystickChannel),
-	position(),
-	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID, Constants::shooterAimTalonID, &position),
+	l_1("logger 1"),
 	driveTrain(Constants::driveLeftMasterID, Constants::driveLeftSlaveID, Constants::driveRightMasterID, Constants::driveRightSlaveID, &position),
-	aimer()
+	l_2("logger 2"),
+	driveStick(Constants::driveJoystickChannel),
+	l_3("logger 3"),
+	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID, Constants::shooterAimTalonID, &position),
+	l_4("logger 4"),
+	position(),
+	l_5("logger 5"),
+	aimer(),
+	l_6("logger 6")
 {
 	driveTrain.SetExpiration(0.1); // safety feature
 }
 
-void Robot::OperatorControl() //teleop code
+/*void Robot::OperatorControl() //teleop code
 {
-	CameraServer::GetInstance()->SetQuality(50);
-	CameraServer::GetInstance()->StartAutomaticCapture("cam0");
+	//CameraServer::GetInstance()->SetQuality(50);
+	//CameraServer::GetInstance()->StartAutomaticCapture("cam0");
 
 	bool updateThreadRun = true;
 	std::thread updateThread(updateThreadFunction, &updateThreadRun, &driveStick, &position);
@@ -48,11 +59,10 @@ void Robot::OperatorControl() //teleop code
 		throttle = (((-driveStick.GetRawAxis(Constants::driveL2)) + 1.0)/4.0) + 0.5; //[0, 1]
 		moveValue = throttle * driveStick.GetY();
 		rotateValue = -driveStick.GetX();
-		
+
 		SmartDashboard::PutNumber("Throttle Value", throttle);
 		SmartDashboard::PutNumber("Move Value", moveValue);
-		SmartDashboard::PutNumber("Rotate Value", rotateValue);
-		
+		SmartDashboard::PutNumber("Rotate Value", rotateValue); 
 		driveTrain.ArcadeDrive(moveValue, rotateValue, true);
 
 		if (shooterPreparing)
@@ -96,31 +106,46 @@ void Robot::OperatorControl() //teleop code
 
 	shooter.Disable();
 	driveTrain.Disable();
-	
+
 	updateThreadRun = false;
 	updateThread.join();
-	
-	driveTrain.SetSafetyEnabled(true);
-}
 
-void Robot::Test()
+	driveTrain.SetSafetyEnabled(true);
+}*/
+
+void Robot::OperatorControl()
 {
 	uint32_t ID = 0;
-	while (IsTest() && IsEnabled())
-       	{
-		CANTalon *talon = new CANTalon(ID);
-		if (driveStick.GetRawButton(3))
-	       	{
+	CANTalon *talon = new CANTalon(ID);
+	bool buttonDown = false;
+	while (IsEnabled())
+	{
+		if (driveStick.GetRawButton(4) && buttonDown == false)
+		{
+			std::cout << "Button!" << std::endl;
 			ID++;
 			ID %= 16;
+			delete talon;
+			talon = new CANTalon(ID);
+			buttonDown = true;
 		}
-		float testMove = -driveStick.GetRawAxis(1);
+
+		if (driveStick.GetRawButton(4) == false)
+		{
+			buttonDown = false;
+		}
+
+		float testMove = -driveStick.GetRawAxis(5);
 		talon->Set(testMove);
 
-		SmartDashboard::PutNumber("Talon Analog Velocity", talon->GetAnalogInVel());
+		SmartDashboard::PutBoolean("Button 3", driveStick.GetRawButton(4));
+		SmartDashboard::PutNumber("Talon ID", ID);
+		SmartDashboard::PutNumber("Talon Encoder (position)", talon->GetEncPosition());
 		SmartDashboard::PutNumber("Talon Front Switch", talon->IsFwdLimitSwitchClosed());
 		SmartDashboard::PutBoolean("Talon Back Switch", talon->IsRevLimitSwitchClosed());
 	}
+
+	delete talon;
 }
 
 START_ROBOT_CLASS(Robot);

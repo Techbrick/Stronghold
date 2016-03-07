@@ -3,8 +3,8 @@
 
 namespace Constants {
 	//DriveTrain
-	static constexpr int driveLeftMasterID  = 12;
-	static constexpr int driveRightMasterID = 14;
+	static constexpr int driveLeftMasterID  = 2;//12
+	static constexpr int driveRightMasterID = 1;//14
 	static constexpr int driveLeftSlaveID = 13;
 	static constexpr int driveRightSlaveID = 15;
 
@@ -14,9 +14,9 @@ namespace Constants {
 	static constexpr int driveLeftStickY = 1;
 	static constexpr int driveL2 = 3;
 	static constexpr int driveRightStickY = 5;
-	static constexpr int calibrateButton = 99;
-	static constexpr int shootButton = 99;
-	static constexpr int prepareToShootButton = 99;
+	static constexpr int calibrateButton = 12;
+	static constexpr int shootButton = 5;
+	static constexpr int prepareToShootButton = 4;
 
 	//Shooter
 	static constexpr int shooterLeftTalonID = 8;

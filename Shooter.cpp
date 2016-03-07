@@ -75,13 +75,5 @@ float Shooter::WheelSpeed() {
 }
 
 float Shooter::Angle() {
-	//TODO:
-}
-
-float Shooter::AngleToShoot() {
-	float min = Constants::distances[0];
-	float actual = position->DistanceToTower();
-	float angleToShoot;
-
-	return angleToShoot;
+	return aim.Get();
 }
