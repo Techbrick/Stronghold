@@ -36,7 +36,6 @@ public:
 	Robot();
 
 	void OperatorControl();
-	void Test();
 };
 
 #endif /* SRC_ROBOT_H_ */
