@@ -21,6 +21,7 @@ class Robot : public SampleRobot {
 public:
 	Robot();
 
+	void RobotInit();
 	void OperatorControl();
 	void Test();
 };
