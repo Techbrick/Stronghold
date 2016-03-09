@@ -24,11 +24,14 @@ Robot::Robot() :
 	driveTrain.SetExpiration(0.1); // safety feature
 }
 
-void Robot::OperatorControl() //teleop code
+void Robot::RobotInit()
 {
 	CameraServer::GetInstance()->SetQuality(50);
 	CameraServer::GetInstance()->StartAutomaticCapture("cam0");
+}
 
+void Robot::OperatorControl() //teleop code
+{
 	bool updateThreadRun = true;
 	std::thread updateThread(updateThreadFunction, &updateThreadRun, &driveStick, &position);
 	float throttle;
