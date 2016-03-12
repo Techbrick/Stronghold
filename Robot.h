@@ -32,6 +32,7 @@ class Robot : public SampleRobot {
 	logger l_5;
 	Aimer aimer;
 	logger l_6;
+	Servo servo;
 public:
 	Robot();
 
