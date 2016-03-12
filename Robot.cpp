@@ -30,7 +30,8 @@ Robot::Robot() :
 	position(),
 	l_5("logger 5"),
 	aimer(),
-	l_6("logger 6")
+	l_6("logger 6"),
+	servo(0)
 {
 	driveTrain.SetExpiration(0.1); // safety feature
 }
@@ -133,6 +134,12 @@ void Robot::OperatorControl()
 		if (driveStick.GetRawButton(4) == false)
 		{
 			buttonDown = false;
+		}
+
+		if (driveStick.GetRawButton(Constants::xButton)) {
+			servo.Set(.6);
+			Wait(2);
+			servo.Set(.8);
 		}
 
 		float testMove = -driveStick.GetRawAxis(5);
