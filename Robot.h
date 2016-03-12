@@ -23,7 +23,6 @@ public:
 
 	void RobotInit();
 	void OperatorControl();
-	void Test();
 };
 
 #endif /* SRC_ROBOT_H_ */
