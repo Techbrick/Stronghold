@@ -34,6 +34,8 @@ namespace Constants {
 
 	//Arm
 	static constexpr int armTalonPin  = 11;
+	//Arm IR top 7
+	//"    " bottom 8
 
 	//Position
 	static constexpr float towerX = 0;
