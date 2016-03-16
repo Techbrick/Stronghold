@@ -47,6 +47,8 @@ void Shooter::SetSpeed(float speed) {
 
 void Shooter::SetAngle(float angle) { //degrees
 	//TODO: Don't set angle more than Constants::maximumAngle or less than Constants::minimumAngle
+	angle = (angle - Constants::shooterMinAngle)/(Constants::shooterMaxAngle-Constants::shooterMinAngle);
+	angle = angle * (Constants::shooterMaxPot - Constants::shooterMinPot) + Constants::shooterMinPot;
 	aim.Set(angle);
 }
 
