@@ -47,7 +47,13 @@ void Shooter::SetSpeed(float speed) {
 
 void Shooter::SetAngle(float angle) { //degrees
 	//TODO: Don't set angle more than Constants::maximumAngle or less than Constants::minimumAngle
+	aim.SetControlMode(CANTalon::ControlMode::kPosition);
 	aim.Set(angle);
+}
+
+void Shooter::Move(float speed) {
+	aim.SetControlMode(CANTalon::ControlMode::kPercentVbus);
+	aim.Set(speed);
 }
 
 void Shooter::PrepareShooter(float angle, float speed) {

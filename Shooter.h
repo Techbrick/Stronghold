@@ -27,6 +27,7 @@ public:
 	void SetSpeed(float leftSpeed, float rightSpeed);
 	void SetSpeed(float speed);
 	void SetAngle(float angle);
+	void Move(float speed);
 	void PrepareShooter(float angle = 45, float speed = 1.0);
 	void LoadBall();
 	void Shoot();

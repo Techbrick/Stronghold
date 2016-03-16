@@ -17,6 +17,7 @@ void updateThreadFunction(bool *keepRunning, Joystick *driveStick, Position *pos
 Robot::Robot() :
 	driveTrain(Constants::driveLeftMasterID, Constants::driveLeftSlaveID, Constants::driveRightMasterID, Constants::driveRightSlaveID, &position),
 	driveStick(Constants::driveJoystickChannel),
+	operatorStick(1),
 	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID, Constants::shooterAimTalonID, &position),
 	position(),
 	aimer(),
@@ -72,7 +73,7 @@ void Robot::OperatorControl() //teleop code
 		if (driveStick.GetRawButton(Constants::calibrateButton)) {
 			//position.Calibrate();
 		}
-		if (driveStick.GetRawButton(Constants::prepareToShootButton)) {// TODO: thread this
+		if (operatorStick.GetRawButton(Constants::prepareToShootButton)) {// TODO: thread this
 			if (shooter.HasBall())
 			{
 				shooterPreparing = true;
@@ -86,12 +87,18 @@ void Robot::OperatorControl() //teleop code
 				shooter.PrepareShooter(angleToShoot, 1.0);
 			}
 		}
-		if (driveStick.GetRawButton(Constants::shootButton)) {
+		if (operatorStick.GetRawButton(Constants::shootButton)) {
 			if (readyToShoot)
 			{
 				readyToShoot = false;
 				shooter.Shoot();
 			}
+		}
+		if (abs(operatorStick.GetRawAxis(1)) > .05) {
+			shooter.Move(operatorStick.GetRawAxis(1));
+		}
+		if (abs(operatorStick.GetRawAxis(1) < .05)) {
+			shooter.Move(0);
 		}
 		SmartDashboard::PutNumber("xPos", position.GetX());
 		SmartDashboard::PutNumber("yPos", position.GetY());
@@ -105,65 +112,6 @@ void Robot::OperatorControl() //teleop code
 	updateThread.join();
 	
 	driveTrain.SetSafetyEnabled(true);
-}
-
-<<<<<<< Updated upstream
-void Robot::Test()
-{
-	uint32_t ID = 0;
-	CANTalon *talon = new CANTalon(ID);
-	bool buttonDown = false;
-	while (IsEnabled())
-	{
-		if (driveStick.GetRawButton(4) && buttonDown == false)
-		{
-			std::cout << "Button!" << std::endl;
-			ID++;
-			ID %= 16;
-			delete talon;
-			talon = new CANTalon(ID);
-			buttonDown = true;
-		}
-
-		if (driveStick.GetRawButton(4) == false)
-		{
-			buttonDown = false;
-		}
-
-		if (driveStick.GetRawButton(Constants::xButton)) {
-			servo.Set(.6);
-			Wait(2);
-			servo.Set(.8);
-		}
-
-		float testMove = -driveStick.GetRawAxis(5);
-		talon->Set(testMove);
-
-		SmartDashboard::PutBoolean("Button 3", driveStick.GetRawButton(4));
-		SmartDashboard::PutNumber("Talon ID", ID);
-		SmartDashboard::PutNumber("Talon Encoder (position)", talon->GetEncPosition());
-		SmartDashboard::PutNumber("Talon Front Switch", talon->IsFwdLimitSwitchClosed());
-		SmartDashboard::PutBoolean("Talon Back Switch", talon->IsRevLimitSwitchClosed());
-	}
-
-	delete talon;
-=======
-void Robot::Test() {
-	uint32_t ID = 0;
-	while (IsTest() && IsEnabled()) {
-		CANTalon *talon = new CANTalon(ID);
-		if (driveStick.GetRawButton(3)) {
-			ID++;
-			ID %= 16;
-		}
-		float testMove = -driveStick.GetRawAxis(1);
-		talon->Set(testMove);
-
-		SmartDashboard::PutNumber("Talon Analog Velocity", talon->GetAnalogInVel());
-		SmartDashboard::PutNumber("Talon Front Switch", talon->IsFwdLimitSwitchClosed());
-		SmartDashboard::PutBoolean("Talon Back Switch", talon->IsRevLimitSwitchClosed());
-	}
->>>>>>> Stashed changes
 }
 
 START_ROBOT_CLASS(Robot);
