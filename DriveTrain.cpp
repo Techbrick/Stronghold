@@ -37,16 +37,29 @@ void DriveTrain::TankDrive(float leftSpeed, float rightSpeed) {
 
 //TODO: Take a sensitivity
 void DriveTrain::TurnToAngle(float angle) { //give angle in degrees
-	float currentAngle = 0;
-	float p = .75 / 180;
-	float offset;
+	float currentAngle = position->GetAngle();
+	float k_p = 0.75;
+	float k_i = 0.5;
+	float p   = 0;
+	float i   = 0;
+
+	float output = 0;
 	while (abs(currentAngle - angle) > 1.0)
 	{
-		offset = angle - currentAngle;
-		leftMaster.Set(offset * p);
-		rightMaster.Set(-offset * p);
+		std::cout << "PI Loop: " << std::endl;
+		std::cout << " P: " << p << std::endl;
+		std::cout << " I: " << i << std::endl;
+		std::cout << " Output: " << output << std::endl;
+		p = k_p * (angle - currentAngle);
+		i = i + k_i * output;
+		output = i + p;
+		leftMaster.Set(0.5);
+		rightMaster.Set(-0.5);
 		currentAngle = position->GetAngle();
 	}
+
+	leftMaster.Set(0);
+	rightMaster.Set(0);
 }
 
 void DriveTrain::TurnToRelativeAngle(float angle) {
