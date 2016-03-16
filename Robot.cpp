@@ -19,7 +19,8 @@ Robot::Robot() :
 	driveStick(Constants::driveJoystickChannel),
 	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID, Constants::shooterAimTalonID, &position),
 	position(),
-	aimer()
+	aimer(),
+	servo(0)
 {
 	driveTrain.SetExpiration(0.1); // safety feature
 }
@@ -51,7 +52,7 @@ void Robot::OperatorControl() //teleop code
 		throttle = (((-driveStick.GetRawAxis(Constants::driveL2)) + 1.0)/4.0) + 0.5; //[0, 1]
 		moveValue = throttle * driveStick.GetY();
 		rotateValue = -driveStick.GetX();
-		
+
 		SmartDashboard::PutNumber("Throttle Value", throttle);
 		SmartDashboard::PutNumber("Move Value", moveValue);
 		SmartDashboard::PutNumber("Rotate Value", rotateValue);
@@ -106,14 +107,52 @@ void Robot::OperatorControl() //teleop code
 	driveTrain.SetSafetyEnabled(true);
 }
 
+<<<<<<< Updated upstream
 void Robot::Test()
 {
 	uint32_t ID = 0;
-	while (IsTest() && IsEnabled())
-       	{
+	CANTalon *talon = new CANTalon(ID);
+	bool buttonDown = false;
+	while (IsEnabled())
+	{
+		if (driveStick.GetRawButton(4) && buttonDown == false)
+		{
+			std::cout << "Button!" << std::endl;
+			ID++;
+			ID %= 16;
+			delete talon;
+			talon = new CANTalon(ID);
+			buttonDown = true;
+		}
+
+		if (driveStick.GetRawButton(4) == false)
+		{
+			buttonDown = false;
+		}
+
+		if (driveStick.GetRawButton(Constants::xButton)) {
+			servo.Set(.6);
+			Wait(2);
+			servo.Set(.8);
+		}
+
+		float testMove = -driveStick.GetRawAxis(5);
+		talon->Set(testMove);
+
+		SmartDashboard::PutBoolean("Button 3", driveStick.GetRawButton(4));
+		SmartDashboard::PutNumber("Talon ID", ID);
+		SmartDashboard::PutNumber("Talon Encoder (position)", talon->GetEncPosition());
+		SmartDashboard::PutNumber("Talon Front Switch", talon->IsFwdLimitSwitchClosed());
+		SmartDashboard::PutBoolean("Talon Back Switch", talon->IsRevLimitSwitchClosed());
+	}
+
+	delete talon;
+=======
+void Robot::Test() {
+	uint32_t ID = 0;
+	while (IsTest() && IsEnabled()) {
 		CANTalon *talon = new CANTalon(ID);
-		if (driveStick.GetRawButton(3))
-	       	{
+		if (driveStick.GetRawButton(3)) {
 			ID++;
 			ID %= 16;
 		}
@@ -124,6 +163,7 @@ void Robot::Test()
 		SmartDashboard::PutNumber("Talon Front Switch", talon->IsFwdLimitSwitchClosed());
 		SmartDashboard::PutBoolean("Talon Back Switch", talon->IsRevLimitSwitchClosed());
 	}
+>>>>>>> Stashed changes
 }
 
 START_ROBOT_CLASS(Robot);

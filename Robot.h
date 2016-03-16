@@ -18,6 +18,7 @@ class Robot : public SampleRobot {
 	Shooter shooter;
 	Position position;
 	Aimer aimer;
+	Servo servo;
 public:
 	Robot();
 
