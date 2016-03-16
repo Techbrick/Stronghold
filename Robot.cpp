@@ -19,7 +19,8 @@ Robot::Robot() :
 	driveStick(Constants::driveJoystickChannel),
 	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID, Constants::shooterAimTalonID, &position),
 	position(),
-	aimer()
+	aimer(),
+	servo(0)
 {
 	driveTrain.SetExpiration(0.1); // safety feature
 }
@@ -51,7 +52,7 @@ void Robot::OperatorControl() //teleop code
 		throttle = (((-driveStick.GetRawAxis(Constants::driveL2)) + 1.0)/4.0) + 0.5; //[0, 1]
 		moveValue = throttle * driveStick.GetY();
 		rotateValue = -driveStick.GetX();
-		
+
 		SmartDashboard::PutNumber("Throttle Value", throttle);
 		SmartDashboard::PutNumber("Move Value", moveValue);
 		SmartDashboard::PutNumber("Rotate Value", rotateValue);
