@@ -10,8 +10,10 @@ DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, 
 	position(position_)
 {
 	leftMaster.SetControlMode(CANTalon::ControlMode::kPercentVbus);
-	leftSlave.SetControlMode(CANTalon::ControlMode::kFollower);
-	leftSlave.Set(Constants::driveLeftMasterID);
+	leftMaster.SetClosedLoopOutputDirection(true);
+	leftSlave.SetModeSelect(CanTalonSRX::kMode_SlaveFollower);
+	leftSlave.SetDemand(leftMasterDeviceID);
+	leftSlave.SetRevMotDuringCloseLoopEn(1);
 
 	rightMaster.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	rightSlave.SetControlMode(CANTalon::ControlMode::kFollower);
@@ -30,10 +32,6 @@ void DriveTrain::Disable()
 	rightMaster.Disable();
 }
 
-void DriveTrain::TankDrive(float leftSpeed, float rightSpeed) {
-	leftMaster.Set(leftSpeed);
-	rightMaster.Set(rightSpeed);
-}
 
 //TODO: Take a sensitivity
 void DriveTrain::TurnToAngle(float angle) { //give angle in degrees
@@ -53,7 +51,7 @@ void DriveTrain::TurnToAngle(float angle) { //give angle in degrees
 		p = k_p * (angle - currentAngle);
 		i = i + k_i * output;
 		output = i + p;
-		leftMaster.Set(0.5);
+		leftMaster.Set(0.5);   //TODO: Noah, try this, if it spins, then try replacing the 0.5 with 'output'
 		rightMaster.Set(-0.5);
 		currentAngle = position->GetAngle();
 	}

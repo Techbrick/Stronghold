@@ -41,15 +41,40 @@ void Shooter::SetSpeed(float leftSpeed, float rightSpeed) //speeds are a percent
 }
 
 void Shooter::SetSpeed(float speed) {
-	left.Set(speed);
-	right.Set(-speed);
+	left.Set(-speed);
+	right.Set(speed);
 }
 
 void Shooter::SetAngle(float angle) { //degrees
 	//TODO: Don't set angle more than Constants::maximumAngle or less than Constants::minimumAngle
-	angle = (angle - Constants::shooterMinAngle)/(Constants::shooterMaxAngle-Constants::shooterMinAngle);
-	angle = angle * (Constants::shooterMaxPot - Constants::shooterMinPot) + Constants::shooterMinPot;
-	aim.Set(angle);
+	if (angle < 0 || angle > 68.2) //TODO: Put these in Constants
+	{
+		SmartDashboard::PutString("Set Angle Failed", "Angle was out of bounds. Bounds are [0, 68.2]");
+		return;
+	}
+	aim.SetControlMode(CANTalon::ControlMode::kPosition);
+	int position = aim.Get();
+	int potValue = (int)(754 - (angle * Constants::aimDegreesToPotFactor));
+	if (potValue < 488) {
+		SmartDashboard::PutString("Set Angle Failed for a different reason", "Angle was out of bounds. Will not clear the bar");
+	}
+	if (aim.GetAnalogInRaw() < potValue) {
+		while (aim.GetAnalogInRaw() < potValue) {
+			aim.Set(position);
+			position--; //may need to change increment value
+		}
+	} else {
+		while (aim.GetAnalogInRaw() > potValue) {
+			aim.Set(position);
+			position++; //depending on how the talon is wired this may need to be -= and the other one may need to be +=
+		}
+	}
+	aim.SetControlMode(CANTalon::ControlMode::kPercentVbus);
+}
+
+void Shooter::Move(float speed) {
+	aim.SetControlMode(CANTalon::ControlMode::kPercentVbus);
+	aim.Set(speed);
 }
 
 void Shooter::PrepareShooter(float angle, float speed) {
@@ -58,7 +83,7 @@ void Shooter::PrepareShooter(float angle, float speed) {
 }
 
 void Shooter::LoadBall() {
-	SetAngle(35);
+	//TODO: should this set an angle too?
 	SetSpeed(-.35);
 }
 
@@ -78,4 +103,9 @@ float Shooter::WheelSpeed() {
 
 float Shooter::Angle() {
 	return aim.Get();
+}
+
+void Shooter::ReadPot() {
+	SmartDashboard::PutNumber("Pot Raw", aim.GetAnalogInRaw());
+	SmartDashboard::PutNumber("Pot reg", aim.GetAnalogIn());
 }
