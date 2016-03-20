@@ -10,9 +10,11 @@ class Arm {
 public:
 	Arm(uint32_t beltMover);
 
-	void EnableTalons();
+	void Enable();
 
-	void DisableTalons();
+	void Disable();
+
+	void ManualMoveBelt(float speed);
 
 	void MoveBelt(float speed);
 

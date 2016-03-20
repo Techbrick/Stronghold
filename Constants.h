@@ -15,8 +15,10 @@ namespace Constants {
 	static constexpr int driveL2 = 3;
 	static constexpr int driveRightStickY = 5;
 	static constexpr int calibrateButton = 12;
-	static constexpr int shootButton = 5;
-	static constexpr int prepareToShootButton = 4;
+	static constexpr int shootButton = 1;
+	static constexpr int prepareToShootButton = 3;
+	static constexpr int ejectButton = 14;
+	static constexpr int stopShooterWheels = 13;
 	static constexpr int xButton = 2;
 
 	//Shooter
@@ -28,17 +30,14 @@ namespace Constants {
 	static constexpr float shooter100Velocity = 12.33; //via physics major
 	static constexpr float shooter75Velocity = 9.2475; //may need to be changed. Currently assuming percent voltage to velocity is linear
 	static constexpr float shooter50Velocity = 6.165; //may need to be changed. Currently assuming percent voltage to velocity is linear
-	static constexpr float shooterMinAngle = 32;	//Actual value: needs more accuracy
-	static constexpr float shooterMaxAngle = 70; //TODO: temporary value
-	static constexpr float shooterMinPot = 0.0;
-	static constexpr float shooterMaxPot = 1.0;
+	static constexpr float minimumAngle = 32;	//Actual value: needs more accuracy
+	static constexpr float maximumAngle = 70; //TODO: temporary value
 	static constexpr float servoMaxPosition = 0.9;
-	static constexpr float servoMinPosition = 0.5;
+	static constexpr float servoMinPosition = 0.3;
+	static constexpr float aimDegreesToPotFactor = 545 / 68.2;
 
 	//Arm
 	static constexpr int armTalonPin  = 11;
-	//Arm IR top 7
-	//"    " bottom 8
 
 	//Position
 	static constexpr float towerX = 0;

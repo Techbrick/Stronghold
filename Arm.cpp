@@ -3,10 +3,10 @@
 Arm::Arm(uint32_t beltMoverID) :
 beltMover(beltMoverID)
 {
-
+	beltMover.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 }
 
-void Arm::EnableTalons ()
+void Arm::Enable()
 {
 	/* if (!ArmMover.IsEnabled())
 		ArmMover.Enable();
@@ -16,7 +16,7 @@ void Arm::EnableTalons ()
 		beltMover.Enable();
 }
 
-void Arm::DisableTalons ()
+void Arm::Disable()
 {
 	/* if (ArmMover.IsEnabled())
 		ArmMover.Disable();
@@ -25,7 +25,9 @@ void Arm::DisableTalons ()
 	if (beltMover.IsEnabled())
 		beltMover.Disable();
 }
-
+void Arm::ManualMoveBelt(float speed) {
+	beltMover.Set(speed);
+}
 void Arm::MoveBelt (float speed)
 {
 	if(beltMover.IsFwdLimitSwitchClosed() && speed > 0) /*upper limit switch hit && speed > 0*/
