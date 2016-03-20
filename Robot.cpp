@@ -192,7 +192,7 @@ void Robot::Autonomous()
 	}
 	//drive over defense
 	logfile << "Over the mountain" << std::endl;
-	if (timeTo10 < 8)
+	if (timeTo10 < 8) //TODO: TJ, should this really be less-than???
 		timeTo10 = 8;
 	driveTrain.ArcadeDrive(over9000, 0, false);
 	Wait(timeTo10);
