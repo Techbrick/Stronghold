@@ -47,8 +47,7 @@ void Shooter::SetSpeed(float speed) {
 
 void Shooter::SetAngle(float angle) { //degrees
 	//TODO: Don't set angle more than Constants::maximumAngle or less than Constants::minimumAngle
-	if (angle < 0 || angle > 68.2) //TODO: Put these in Constants
-	{
+	if (angle < 0 || angle > 68.2) {
 		SmartDashboard::PutString("Set Angle Failed", "Angle was out of bounds. Bounds are [0, 68.2]");
 		return;
 	}
@@ -57,7 +56,7 @@ void Shooter::SetAngle(float angle) { //degrees
 	int potValue = (int)(754 - (angle * Constants::aimDegreesToPotFactor));
 	if (potValue < 488) {
 		SmartDashboard::PutString("Set Angle Failed for a different reason", "Angle was out of bounds. Will not clear the bar");
-	}
+	}/*
 	if (aim.GetAnalogInRaw() < potValue) {
 		while (aim.GetAnalogInRaw() < potValue) {
 			aim.Set(position);
@@ -68,13 +67,23 @@ void Shooter::SetAngle(float angle) { //degrees
 			aim.Set(position);
 			position++; //depending on how the talon is wired this may need to be -= and the other one may need to be +=
 		}
-	}
+	}*/
+	aim.SetAnalogPosition(potValue);
 	aim.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 }
 
 void Shooter::Move(float speed) {
 	aim.SetControlMode(CANTalon::ControlMode::kPercentVbus);
-	aim.Set(speed);
+	//if (aim.GetAnalogInRaw() < 754 && speed > 0) {
+	//	aim.Set(speed);
+	//} else if (aim.GetAnalogInRaw() > 209 && speed < 0) {
+		aim.Set(speed);
+	//} else {
+	//	aim.Set(0);
+	//	return;
+	//}
+	SmartDashboard::PutBoolean("Shooter Top Limit Switch Hit", aim.GetReverseLimitOK());
+	SmartDashboard::PutBoolean("Shooter Bottom Limit Switch Hit", aim.GetForwardLimitOK());
 }
 
 void Shooter::PrepareShooter(float angle, float speed) {
@@ -83,8 +92,7 @@ void Shooter::PrepareShooter(float angle, float speed) {
 }
 
 void Shooter::LoadBall() {
-	//TODO: should this set an angle too?
-	SetSpeed(-.35);
+	SetSpeed(-.6);
 }
 
 void Shooter::Shoot() {
@@ -94,7 +102,7 @@ void Shooter::Shoot() {
 }
 
 bool Shooter::HasBall() {
-	return ballSensor.Get();
+	return !ballSensor.Get();
 }
 
 float Shooter::WheelSpeed() {
@@ -102,7 +110,7 @@ float Shooter::WheelSpeed() {
 }
 
 float Shooter::Angle() {
-	return aim.Get();
+	return (aim.GetAnalogInRaw() - 209) * Constants::aimDegreesToPotFactor; //may need adjustment
 }
 
 void Shooter::ReadPot() {
