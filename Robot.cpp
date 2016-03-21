@@ -121,9 +121,9 @@ void Robot::OperatorControl() //teleop code
 		shooterAngleInput = abs(shooterAngleInput) > 0.005 ? shooterAngleInput : 0.0;
 		shooter.Move(shooterAngleInput);
 
-		float manualMoveBeltInput = -operatorStick.GetRawAxis(5);
+		float manualMoveBeltInput = operatorStick.GetRawAxis(5);
 		manualMoveBeltInput = abs(manualMoveBeltInput) > 0.005 ? manualMoveBeltInput : 0.0;
-		arm.ManualMoveBelt(manualMoveBeltInput);
+		arm.ManualMoveBelt(manualMoveBeltInput / 5);
 
 		if (operatorStick.GetRawButton(Constants::stopShooterWheels))
 		{
@@ -137,24 +137,29 @@ void Robot::OperatorControl() //teleop code
 		{
 			shooter.LoadBall();
 		}
-		if (operatorStick.GetRawButton(Constants::ejectButton))
-		{
-			shooter.SetSpeed(.35);
+		if (operatorStick.GetRawButton(Constants::ejectButton)) {
+			shooter.SetSpeed(.4);
 			Wait(.05);
 			shooter.Shoot();
 		}
-		if (operatorStick.GetRawButton(5))
-		{
+		/*if (operatorStick.GetRawButton(5)) {
 			shooter.SetAngle(20);
 		}
-		if (operatorStick.GetRawButton(6))
-		{
+		if (operatorStick.GetRawButton(6)) {
 			shooter.SetAngle(50);
 		}
+		if (operatorStick.GetRawButton(3)) {
+			driveTrain.TurnToAngle(30);
+		}*/
+		/*if (operatorStick.GetRawButton(3)) {
+			driveTrain.TurnToRelativeAngle(30);
+		}*/
 		SmartDashboard::PutNumber("getPOV", operatorStick.GetPOV());
 		SmartDashboard::PutNumber("xPos", position.GetX());
 		SmartDashboard::PutNumber("yPos", position.GetY());
-		SmartDashboard::PutString("Version", "0.99");
+		SmartDashboard::PutString("Version", "0.9");
+		SmartDashboard::PutBoolean("Has Ball", shooter.HasBall());
+		SmartDashboard::PutNumber("Shooter Angle", shooter.Angle());
 		shooter.ReadPot();
 	}
 
@@ -184,40 +189,47 @@ void Robot::Autonomous()
 	float over9000 = table->GetNumber("powerLevel", 0.75);
 	logfile << startPos << " " << timeTo10 << " " << over9000 << std::endl;
 	//  .net rules!!!!!!!!!!!!
-	int failSafe = 0;
-	if (startPos == 0 || timeTo10 == 0 || over9000 == 0)
-	{
-		logfile << "ERROR.  RETURNING WITHOUT REGRETS BECAUSE ONE OF THE VALUES WAS SET TO 0!!!" << std::endl;
-		return;
-	}
-	//drive over defense
-	logfile << "Over the mountain" << std::endl;
-	if (timeTo10 < 8) //TODO: TJ, should this really be less-than???
-		timeTo10 = 8;
-	driveTrain.ArcadeDrive(over9000, 0, false);
+		int failSafe = 0;
+		if(startPos == 0|| timeTo10 == 0||over9000 == 0)
+		{
+			logfile<<"ERROR.  RETURNING WITHOUT REGRETS BECAUSE ONE OF THE VALUES WAS SET TO 0!!!"<<std::endl;
+			return;
+		}
+		//drive over defense
+		logfile<<"Over the mountain" << std::endl;
+	driveTrain.TankDrive(-over9000 - .2, over9000 + .185);
 	Wait(timeTo10);
-	driveTrain.ArcadeDrive(0.0, 0.0, false);
+	driveTrain.TankDrive(0.0, 0.0);
 	//turn 180 unless it's at the ends then turn  145
 	logfile << "Twist'n, baby!"<< std::endl;
 	float fraction = 1;
 	if (startPos == 1 || startPos == 5)
 	{
-		if (startPos == 1)
-			fraction = 145;
-		else fraction = 215;
-	}
-	else fraction = 180;
+		if(startPos == 1)
+			fraction = 215;
+		else fraction = 145;
+	}else fraction = 180;
 	//timer.Reset();
-	/*
-	driveTrain.ArcadeDrive(0.0, (over9000 / 2)*fraction, false);
-	while (timer.Get() <= timeToTurn && failSafe < 200)
+	float timeToTurn = .75;
+	//driveTrain.ArcadeDrive(0.0, fraction / 180, false);
+	/*while(timer.Get() <= timeToTurn && failSafe < 200)
 	{
-	        Wait(0.01);
-	        failSafe++;
-	        logfile << "loop 1: " << failSafe;
-	}
-	*/
-	float output1;
+		Wait(0.01);
+		failSafe++;
+		logfile<<"loop 1: "<<failSafe;
+
+	}*/
+/*	if (position.GetAngle() < fraction) {
+		while (position.GetAngle() < fraction) {
+			driveTrain.TankDrive(-.25, -.25);
+		}
+	} else if (position.GetAngle() > fraction) {
+		while (position.GetAngle() > fraction) {
+			driveTrain.TankDrive(.25, .25);
+		}
+	}*/
+	driveTrain.TankDrive(0.0, 0.0);
+	/*float output1;
 	double angleToTurn = fraction; //tj
 	double startAngle = position.GetAngle();
 	double currentAngle = position.GetAngle() - startAngle;
@@ -249,7 +261,7 @@ void Robot::Autonomous()
 		logfile << "loop 3:" << failSafe << std::endl;
 		//turn
 	}
-	if (failSafe >=500)
+	if(failSafe >= 500)
 	{
 		driveTrain.Disable();
 		shooter.Disable();
@@ -266,10 +278,9 @@ void Robot::Autonomous()
 	float output = 0;
 	//  this would be so much easier in c#
 	//driveTrain.TurnToRelativeAngle(azimuth);
-	//  if the image is fresh then turn slow so azimuth between -1 and 1
-	while (abs(azimuth) > 2.0 && failSafe < 500)
-	{
-		if (azimuth >= 10)
+//  if the image is fresh then turn slow so azimuth between -1 and 1
+	while(abs(azimuth) > 2.0 && failSafe < 500){
+		if(azimuth >= 10)
 		{
 			output = 0.8;
 		}
@@ -292,6 +303,7 @@ void Robot::Autonomous()
 		failSafe++;
 		azimuth = aimer.GetAngleToTower();
 		logfile << "loop 3:" << failSafe << std::endl;
+		logfile << output << std::endl;
 		//  start the shooter motor and raise the shooter arm
 		//  if azimuth < 0 and arm in position then fire shooter
 		//  then turn 180 to point back to the home side
@@ -299,7 +311,7 @@ void Robot::Autonomous()
 
 		//  else sleep for .01 second sleep(1000) then increment failsafe
 	}
-	if (failSafe >=500)
+	if (failSafe >= 500)
 	{
 		driveTrain.Disable();
 		shooter.Disable();
@@ -318,6 +330,6 @@ void Robot::Autonomous()
 	driveTrain.Disable();
 	logfile << "Auto ended" << std::endl;
 	logfile.close();
-
+*/
 }
 START_ROBOT_CLASS(Robot);
