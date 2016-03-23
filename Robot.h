@@ -25,7 +25,6 @@ class Robot : public SampleRobot {
 	Servo servo;
 public:
 	Robot();
-	void RobotInit();
 	void OperatorControl();
 	void Autonomous();
 };

@@ -24,3 +24,9 @@ float Aimer::GetAngleToShoot()
 {
 	return (float)table->GetNumber("averageShootyAngleOut", 42);
 }
+
+int Aimer::GetAge()
+{
+	return (int)table->GetNumber("sinceLastUpdate", 4);
+}
+
