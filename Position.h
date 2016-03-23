@@ -39,6 +39,7 @@ public:
 	float AngleToTower();
 	float DistanceToTower();
 	float GetAngle();
+	float GetAngleDegrees();
 	float GetPitch();
 	bool IsTurning();
 };

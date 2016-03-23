@@ -128,8 +128,13 @@
 		return fmod((mxp.GetYaw() + Constants::gyroOffset), 360) * PI / 180;
 	}
 
+	float Position::GetAngleDegrees()
+	{
+		return mxp.GetYaw() + 180;
+	}
+
 	float Position::GetPitch() {
-		return mxp.GetPitch() * PI / 180;
+		return mxp.GetPitch() * PI / 180.0;
 	}
 
 	bool Position::IsTurning() {

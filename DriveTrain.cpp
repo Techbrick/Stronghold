@@ -40,20 +40,34 @@ void DriveTrain::TurnToAngle(float angle) { //give angle in degrees
 	float k_i = 0.5;
 	float p   = 0;
 	float i   = 0;
-
+	float delta_t = 0.01;
+	
+	float error = 0;
 	float output = 0;
-	while (abs(currentAngle - angle) > 1.0)
+
+	unsigned int failsafe = 0;
+
+	while (abs(currentAngle - angle) > 10.0 && failsafe < 500)
 	{
 		std::cout << "PI Loop: " << std::endl;
 		std::cout << " P: " << p << std::endl;
 		std::cout << " I: " << i << std::endl;
 		std::cout << " Output: " << output << std::endl;
-		p = k_p * (angle - currentAngle);
-		i = i + k_i * output;
-		output = i + p;
-		leftMaster.Set(0.5);   //TODO: Noah, try this, if it spins, then try replacing the 0.5 with 'output'
-		rightMaster.Set(-0.5);
-		currentAngle = position->GetAngle();
+
+		i = (i + k_i * error) * delta_t;
+
+		error = abs(angle - currentAngle);
+		if(error > 180.0)
+			error = error * -1;
+		error /= 180.0;
+
+		p = k_p * error;
+		output = p + i;
+		leftMaster.Set(output);   //TODO: Noah, try this, if it spins, then try replacing the 0.5 with 'output'
+		rightMaster.Set(-output);
+		currentAngle = position->GetAngleDegrees();
+		failsafe++;
+		Wait(delta_t);
 	}
 
 	leftMaster.Set(0);
