@@ -155,12 +155,13 @@ void Robot::OperatorControl() //teleop code
 			driveTrain.TurnToRelativeAngle(30);
 		}*/
 		SmartDashboard::PutNumber("getPOV", operatorStick.GetPOV());
-		SmartDashboard::PutNumber("xPos", position.GetX());
-		SmartDashboard::PutNumber("yPos", position.GetY());
-		SmartDashboard::PutString("Version", "0.9");
+		SmartDashboard::PutString("Version", "1.1");
 		SmartDashboard::PutBoolean("Has Ball", shooter.HasBall());
+		SmartDashboard::PutBoolean("Target Acquired", aimer.GetAge() < 3);
+		SmartDashboard::PutBoolean("Aimed", abs(aimer.GetAngleToTower()) < 3.0);
+		SmartDashboard::PutBoolean("Angled", abs(shooter.Angle() - aimer.GetAngleToShoot()) < 5.0);
 		SmartDashboard::PutNumber("Shooter Angle", shooter.Angle());
-		shooter.ReadPot();
+		SmartDashboard::PutNumber("Angle to Tower", aimer.GetAngleToTower());
 	}
 
 	shooter.Disable();
@@ -177,6 +178,7 @@ void Robot::Autonomous()
 {
 	driveTrain.SetSafetyEnabled(false);
 	driveTrain.Enable();
+	shooter.Enable();
 	//bool updateThreadRun = true;
 	//std::thread updateThread(autoUpdateThreadFunction, &updateThreadRun, &autoPosition);
 	std::fstream logfile; logfile.open("logfile.txt", std::fstream::out);
@@ -184,7 +186,7 @@ void Robot::Autonomous()
 	//timer.Start();
 	//timer.Reset();
 	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("datatable");
-	int startPos = table->GetNumber("startPos", 1);
+	int startPos = table->GetNumber("startPos", 5);
 	float timeTo10 = table->GetNumber("timeTo10", 3);
 	float over9000 = table->GetNumber("powerLevel", 0.75);
 	logfile << startPos << " " << timeTo10 << " " << over9000 << std::endl;
@@ -219,117 +221,41 @@ void Robot::Autonomous()
 		logfile<<"loop 1: "<<failSafe;
 
 	}*/
-/*	if (position.GetAngle() < fraction) {
-		while (position.GetAngle() < fraction) {
-			driveTrain.TankDrive(-.25, -.25);
-		}
-	} else if (position.GetAngle() > fraction) {
-		while (position.GetAngle() > fraction) {
+	auto failsafe = 0;
+	if (position.GetAngleDegrees() < fraction) {
+		while (position.GetAngleDegrees() < fraction && failsafe < 500) {
 			driveTrain.TankDrive(.25, .25);
+			Wait(0.01);
+			failsafe++;
 		}
-	}*/
+	} else if (position.GetAngleDegrees() > fraction) {
+		while (position.GetAngleDegrees() > fraction && failsafe < 500) {
+			driveTrain.TankDrive(-.25, -.25);
+			Wait(0.01);
+			failsafe++;
+		}
+	}
 	driveTrain.TankDrive(0.0, 0.0);
-	/*float output1;
-	double angleToTurn = fraction; //tj
-	double startAngle = position.GetAngle();
-	double currentAngle = position.GetAngle() - startAngle;
-	while (abs((position.GetAngle() - startAngle) - angleToTurn) > 2 && failSafe <= 500)
-	{
-		if (position.GetAngle() >= 10)
-		{
-			output1 = 0.8;
-		}
-		else if (currentAngle < -10)
-		{
-			output1 = -0.8;
-		}
-		else if (currentAngle > 0 && currentAngle < 10)
-		{
-			output1 = currentAngle*0.06+0.2;
-		}
-		else if (currentAngle < 0 && currentAngle > -10)
-		{
-			output1 = -(currentAngle*0.06+0.2);
-		}
-		currentAngle = position.GetAngle();
-		logfile << "Calculated Output 2:" << output1 << std::endl;
-		logfile << "Azimuth 2:" << currentAngle << std::endl;
-		driveTrain.TankDrive(output1, -output1);
-		Wait(0.01);
-		failSafe++;
-		currentAngle = position.GetAngle();
-		logfile << "loop 3:" << failSafe << std::endl;
-		//turn
-	}
-	if(failSafe >= 500)
-	{
-		driveTrain.Disable();
-		shooter.Disable();
 
-		logfile << "FAIL SAFE ACTIVATED!! WEEOO WEEOO!" << std::endl;
-		return;
-	}
-	failSafe = 0;
-	driveTrain.ArcadeDrive(0.0, 0.0, false);
-	//turn to tower
-	//logfile << "turning to tower..."<< std::endl;
-	std::cout << "VALUES TO OLD!!!" << std::endl;
-	float azimuth = aimer.GetAngleToTower();
-	float output = 0;
-	//  this would be so much easier in c#
-	//driveTrain.TurnToRelativeAngle(azimuth);
-//  if the image is fresh then turn slow so azimuth between -1 and 1
-	while(abs(azimuth) > 2.0 && failSafe < 500){
-		if(azimuth >= 10)
-		{
-			output = 0.8;
-		}
-		else if (azimuth < -10)
-		{
-			output = -0.8;
-		}
-		else if (azimuth > 0 && azimuth < 10)
-		{
-			output = azimuth*0.06+0.2;
-		}
-		else if (azimuth < 0 && azimuth > -10)
-		{
-			output = -(azimuth*0.06+0.2);
-		}
-		logfile << "Calculated Output 3:" << output << std::endl;
-		logfile << "Azimuth 3:" << azimuth << std::endl;
-		driveTrain.TankDrive(output, -output);
-		Wait(0.01);
-		failSafe++;
-		azimuth = aimer.GetAngleToTower();
-		logfile << "loop 3:" << failSafe << std::endl;
-		logfile << output << std::endl;
-		//  start the shooter motor and raise the shooter arm
-		//  if azimuth < 0 and arm in position then fire shooter
-		//  then turn 180 to point back to the home side
-		//  console.println("pc > xbox");
+	float angleToTower = aimer.GetAngleToTower();
+	driveTrain.TurnToRelativeAngle(angleToTower);
 
-		//  else sleep for .01 second sleep(1000) then increment failsafe
-	}
-	if (failSafe >= 500)
-	{
-		driveTrain.Disable();
-		shooter.Disable();
-
-		logfile << "FAIL SAFE ACTIVATED!! WEEOO WEEOO!" << std::endl;
-		return;
-	}
-	failSafe = 0;
 	driveTrain.ArcadeDrive(0.0, 0.0, false);
 	//aim at tower
-	shooter.SetAngle(aimer.GetAngleToShoot());
-	shooter.SetSpeed(1.0);
-	shooter.Shoot();
+	int age = aimer.GetAge();
+	if (age < 3)
+	{
+		float angleToShoot = aimer.GetAngleToShoot();
+		shooter.SetAngle(angleToShoot);
+		shooter.SetSpeed(1.0);
+		logfile << "Angle to shoot: " << angleToShoot << std::endl;
+		Wait(0.5);
+		shooter.Shoot();
+	}
 
 	shooter.Disable();
 	driveTrain.Disable();
 	logfile << "Auto ended" << std::endl;
 	logfile.close();
-*/
 }
 START_ROBOT_CLASS(Robot);

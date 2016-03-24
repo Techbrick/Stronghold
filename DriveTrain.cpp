@@ -34,7 +34,8 @@ void DriveTrain::Disable()
 
 
 //TODO: Take a sensitivity
-void DriveTrain::TurnToAngle(float angle) { //give angle in degrees
+void DriveTrain::TurnToAngle(float angle) //give angle in degrees
+{
 	float currentAngle = position->GetAngle();
 	float k_p = 0.75;
 	float k_i = 0.5;
