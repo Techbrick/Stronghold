@@ -16,7 +16,7 @@ public:
 	float GetAngleToShoot();
 	float GetSpeedToShoot();
 	float GetDistanceToTower();
-	int Aimer::GetAge()
+	int GetAge();
 };
 
 #endif
