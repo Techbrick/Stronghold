@@ -21,6 +21,7 @@ public:
 	void Disable();
 	void TurnToAngle(float angle);
 	void TurnToRelativeAngle(float angle);
+	void DriveStraight(float speed, float fieldAngle, float timeInSeconds);
 	void MoveDistance(float distance, float speed);
 
 };

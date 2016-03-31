@@ -7,12 +7,16 @@ namespace Constants {
 	static constexpr int driveRightMasterID = 14;
 	static constexpr int driveLeftSlaveID = 13;
 	static constexpr int driveRightSlaveID = 15;
+	static float driveK_P = 0.75;
+	static float driveK_I = 5.0;
+	static constexpr float drivePIDepsilon = 4.0;
 
 	//Joystick axis and buttons
 	static constexpr int driveJoystickChannel = 0;
 	static constexpr int driveLeftStickX = 0;
 	static constexpr int driveLeftStickY = 1;
 	static constexpr int driveL2 = 3;
+	static constexpr int driveR2 = 4;
 	static constexpr int driveRightStickY = 5;
 	static constexpr int calibrateButton = 12;
 	static constexpr int shootButton = 1;
@@ -25,7 +29,8 @@ namespace Constants {
 	static constexpr int shooterLeftTalonID = 8;
 	static constexpr int shooterRightTalonID = 9;
 	static constexpr int shooterAimTalonID = 10;
-	static constexpr int shooterIRPin = 6;
+	static constexpr int shooterKickerTalonID = 11;
+	static constexpr int shooterIRPin = 7;
 	static constexpr int servoPin = 0;
 	static constexpr float shooter100Velocity = 12.33; //via physics major
 	static constexpr float shooter75Velocity = 9.2475; //may need to be changed. Currently assuming percent voltage to velocity is linear
@@ -34,7 +39,7 @@ namespace Constants {
 	static constexpr float maximumAngle = 70; //TODO: temporary value
 	static constexpr float servoMaxPosition = 0.9;
 	static constexpr float servoMinPosition = 0.3;
-	static constexpr float aimDegreesToPotFactor = 545 / 68.2;
+	static constexpr float aimDegreesToPotFactor = (478 / 68.2) / (45 / 61.351);
 
 	//Arm
 	static constexpr int armTalonPin  = 11;

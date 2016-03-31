@@ -21,10 +21,21 @@ class Robot : public SampleRobot {
 	Shooter shooter;
 	Position position;
 	Aimer aimer;
-	Arm arm;
+	CANTalon testCANTalon;
 	Servo servo;
+	Servo servo1;
+	Servo servo2;
+	Servo servo3;
+	Servo servo4;
+	Servo servo5;
+	Servo servo6;
+	Servo servo7;
+	Servo servo8;
+	Servo servo9;
+	int pwmPin;
 public:
 	Robot();
+	void RobotInit();
 	void OperatorControl();
 	void Autonomous();
 };
