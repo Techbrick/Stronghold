@@ -5,24 +5,27 @@
 
 #ifndef SRC_DRIVETRAIN_H
 #define SRC_DRIVETRAIN_H
+
 #define PI 3.14159265
 
-class DriveTrain : public RobotDrive
+class DriveTrain : public RobotDrive, public PIDOutput
 {
 	CANTalon leftMaster;
-	CanTalonSRX leftSlave;
 	CANTalon rightMaster;
-	CANTalon rightSlave;
+
+	float pidOutput;
+	PIDController pidController;
 
 	Position *position;
 public:
-	DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, uint32_t rightMasterDeviceID, uint32_t rightSlaveDeviceID, Position *position_);
+	DriveTrain(uint32_t leftMasterDeviceID, uint32_t rightMasterDeviceID, float P, float I, float D, float F, Position *position_);
 	void Enable();
 	void Disable();
 	void TurnToAngle(float angle);
 	void TurnToRelativeAngle(float angle);
-	void MoveDistance(float distance, float speed);
-
+	void DriveStraight(float speed, float fieldAngle, float timeInSeconds);
+	void TankDriveSpeed(float leftspeed, float rightspeed);
+	void PIDWrite(float output);
 };
 
 #endif

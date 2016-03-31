@@ -7,6 +7,9 @@ namespace Constants {
 	static constexpr int driveRightMasterID = 14;
 	static constexpr int driveLeftSlaveID = 13;
 	static constexpr int driveRightSlaveID = 15;
+	static constexpr float driveK_P = 0.75;
+	static constexpr float driveK_I = 0.01;
+	static constexpr float drivePIDepsilon = 4.0;
 
 	//Joystick axis and buttons
 	static constexpr int driveJoystickChannel = 0;
@@ -25,6 +28,7 @@ namespace Constants {
 	static constexpr int shooterLeftTalonID = 8;
 	static constexpr int shooterRightTalonID = 9;
 	static constexpr int shooterAimTalonID = 10;
+	static constexpr int shooterKickerTalonID = 11;
 	static constexpr int shooterIRPin = 6;
 	static constexpr int servoPin = 0;
 	static constexpr float shooter100Velocity = 12.33; //via physics major

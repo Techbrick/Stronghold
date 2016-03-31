@@ -29,6 +29,9 @@ class Position {
 
 public:
 	Position();
+
+	AHRS* PtrToMXP();
+
 	void TrackX(bool movingForward, int encoderTickValue);
 	void TrackY(bool movingForward, int encoderTickValue);
 	void Update(bool movingForward, int encoderTickValue);
@@ -39,6 +42,7 @@ public:
 	float AngleToTower();
 	float DistanceToTower();
 	float GetAngle();
+	float GetAngleDegrees();
 	float GetPitch();
 	bool IsTurning();
 };
