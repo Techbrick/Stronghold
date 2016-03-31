@@ -14,7 +14,7 @@ DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t rightMasterDeviceID
 	leftMaster.SetControlMode(CANTalon::ControlMode::kSpeed);
 	leftMaster.SetFeedbackDevice(CANTalon::FeedbackDevice::CtreMagEncoder_Absolute);
 	leftMaster.SetSensorDirection(false);
-	leftMaster.SetReversed(true);
+	leftMaster.SetInverted(true);
 	leftMaster.SelectProfileSlot(0);
 	leftMaster.SetF(0.1);
 	leftMaster.SetP(0);
