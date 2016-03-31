@@ -1,23 +1,34 @@
 #include "DriveTrain.h"
-#define PI 3.14159265
 
-DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, uint32_t rightMasterDeviceID, uint32_t rightSlaveDeviceID, Position *position_):
+DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t rightMasterDeviceID, float P, float I, float D, float F, Position *position_) :
 	RobotDrive(leftMaster, rightMaster),
 	leftMaster(leftMasterDeviceID),
-	leftSlave(leftSlaveDeviceID),
 	rightMaster(rightMasterDeviceID),
-	rightSlave(rightSlaveDeviceID),
+	pidOutput(0),
+	pidController(P, I, D, F, position->PtrToMXP(), this, 0.02),
 	position(position_)
 {
-	leftMaster.SetControlMode(CANTalon::ControlMode::kPercentVbus);
-	leftMaster.SetClosedLoopOutputDirection(true);
-	leftSlave.SetModeSelect(CanTalonSRX::kMode_SlaveFollower);
-	leftSlave.SetDemand(leftMasterDeviceID);
-	leftSlave.SetRevMotDuringCloseLoopEn(1);
+	pidController.SetInputRange(-180.0, 180.0);
+	pidController.SetContinuous(true);
 
-	rightMaster.SetControlMode(CANTalon::ControlMode::kPercentVbus);
-	rightSlave.SetControlMode(CANTalon::ControlMode::kFollower);
-	rightSlave.Set(Constants::driveRightMasterID);
+	leftMaster.SetControlMode(CANTalon::ControlMode::kSpeed);
+	leftMaster.SetFeedbackDevice(CANTalon::FeedbackDevice::CtreMagEncoder_Absolute);
+	leftMaster.SetSensorDirection(false);
+	leftMaster.SetReversed(true);
+	leftMaster.SelectProfileSlot(0);
+	leftMaster.SetF(0.1);
+	leftMaster.SetP(0);
+	leftMaster.SetI(0);
+	leftMaster.SetD(0);
+	
+	rightMaster.SetControlMode(CANTalon::ControlMode::kSpeed);
+	rightMaster.SetFeedbackDevice(CANTalon::FeedbackDevice::CtreMagEncoder_Absolute);
+	rightMaster.SetSensorDirection(false);
+	rightMaster.SelectProfileSlot(0);
+	rightMaster.SetF(0.1);
+	rightMaster.SetP(0);
+	rightMaster.SetI(0);
+	rightMaster.SetD(0);
 }
 
 void DriveTrain::Enable()
@@ -36,41 +47,19 @@ void DriveTrain::Disable()
 //TODO: Take a sensitivity
 void DriveTrain::TurnToAngle(float angle) //give angle in degrees
 {
-	float currentAngle = position->GetAngle();
-	float k_p = 0.75;
-	float k_i = 0.5;
-	float p   = 0;
-	float i   = 0;
-	float delta_t = 0.01;
-	
-	float error = 0;
-	float output = 0;
+	pidController.SetPID(SmartDashboard::GetNumber("kF", 0.0), SmartDashboard::GetNumber("kP", 0.0), SmartDashboard::GetNumber("kI", 0.0), SmartDashboard::GetNumber("kD", 0.0));
+	pidController.Enable();
+	auto failsafe = 0;
+	auto delta_t = 0.02;
 
-	unsigned int failsafe = 0;
-
-	while (abs(currentAngle - angle) > 10.0 && failsafe < 500)
+	while (abs(pidController.GetAvgError()) > 2 && failsafe < 3.0/delta_t)
 	{
-		std::cout << "PI Loop: " << std::endl;
-		std::cout << " P: " << p << std::endl;
-		std::cout << " I: " << i << std::endl;
-		std::cout << " Output: " << output << std::endl;
-
-		i = (i + k_i * error) * delta_t;
-
-		error = abs(angle - currentAngle);
-		if(error > 180.0)
-			error = error * -1;
-		error /= 180.0;
-
-		p = k_p * error;
-		output = p + i;
-		leftMaster.Set(output);   //TODO: Noah, try this, if it spins, then try replacing the 0.5 with 'output'
-		rightMaster.Set(-output);
-		currentAngle = position->GetAngleDegrees();
-		failsafe++;
+		leftMaster.Set(pidOutput);
+		rightMaster.Set(-pidOutput);
 		Wait(delta_t);
 	}
 
+	pidController.Disable();
 	leftMaster.Set(0);
 	rightMaster.Set(0);
 }
@@ -79,11 +68,19 @@ void DriveTrain::TurnToRelativeAngle(float angle) {
 	TurnToAngle(angle + position->GetAngle());
 }
 
-void DriveTrain::MoveDistance(float distance, float speed) {
-	float xOffset = position->GetX();
-	float yOffset = position->GetY();
-	while (sqrt(pow(position->GetX() - xOffset, 2) + pow(position->GetY() - yOffset, 2)) < distance) {
-		leftMaster.Set(speed);
-		rightMaster.Set(speed);
-	}
+void DriveTrain::DriveStraight(float speed, float fieldAngle, float timeInSeconds)
+{
+}
+
+void DriveTrain::TankDriveSpeed(float leftspeed, float rightspeed)
+{
+	leftMaster.SetControlMode(CANTalon::ControlMode::kSpeed);
+	rightMaster.SetControlMode(CANTalon::ControlMode::kSpeed);
+	leftMaster.Set(leftspeed);
+	rightMaster.Set(rightspeed);
+}
+
+void DriveTrain::PIDWrite(float output)
+{
+	pidOutput = output;
 }
