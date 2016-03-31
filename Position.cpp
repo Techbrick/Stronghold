@@ -130,7 +130,7 @@
 
 	float Position::GetAngleDegrees()
 	{
-		return mxp.GetYaw() + 180;
+		return mxp.GetYaw();
 	}
 
 	float Position::GetPitch() {
@@ -139,4 +139,9 @@
 
 	bool Position::IsTurning() {
 		return mxp.IsRotating();
+	}
+
+	void Position::ZeroYaw()
+	{
+		mxp.ZeroYaw();
 	}

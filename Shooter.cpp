@@ -7,17 +7,19 @@
 
 #include "Shooter.h"
 
-Shooter::Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon, Position *position_) :
+Shooter::Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon, uint32_t kickerTalon, Position *position_) :
 	left(leftTalon),
 	right(rightTalon),
 	aim(angleTalon),
 	ballSensor(Constants::shooterIRPin),
 	servo(Constants::servoPin),
+	kicker(kickerTalon),
 	position(position_)
 {
 	left.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	right.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	aim.SetControlMode(CANTalon::ControlMode::kPosition);
+	kicker.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 }
 
 void Shooter::Enable()
@@ -25,6 +27,7 @@ void Shooter::Enable()
 	left.Enable();
 	right.Enable();
 	aim.Enable();
+	kicker.Enable();
 }
 
 void Shooter::Disable()
@@ -32,6 +35,7 @@ void Shooter::Disable()
 	left.Disable();
 	right.Disable();
 	aim.Disable();
+	kicker.Disable();
 }
 
 void Shooter::SetSpeed(float leftSpeed, float rightSpeed) //speeds are a percentage of the maximum possible speed
@@ -47,28 +51,33 @@ void Shooter::SetSpeed(float speed) {
 
 void Shooter::SetAngle(float angle) { //degrees
 	//TODO: Don't set angle more than Constants::maximumAngle or less than Constants::minimumAngle
-	if (angle < 0 || angle > 68.2) {
+	if (angle < 32 || angle > 48) {
 		SmartDashboard::PutString("Set Angle Failed", "Angle was out of bounds. Bounds are [0, 68.2]");
 		return;
 	}
 	aim.SetControlMode(CANTalon::ControlMode::kPosition);
-	int position = aim.Get();
-	int potValue = (int)(754 - (angle * Constants::aimDegreesToPotFactor));
-	if (potValue < 488) {
-		SmartDashboard::PutString("Set Angle Failed for a different reason", "Angle was out of bounds. Will not clear the bar");
-	}/*
+	int position = aim.GetAnalogInRaw();
+	int failsafe = 0;
+	int potValue = (int)(882 - (angle * Constants::aimDegreesToPotFactor));
+	//if (potValue < 488) {
+	//	SmartDashboard::PutString("Set Angle Failed for a different reason", "Angle was out of bounds. Will not clear the bar");
+	//}
 	if (aim.GetAnalogInRaw() < potValue) {
-		while (aim.GetAnalogInRaw() < potValue) {
+		while (aim.GetAnalogInRaw() < potValue && failsafe < 200) {
 			aim.Set(position);
 			position--; //may need to change increment value
+			failsafe++;
+			Wait(.01);
 		}
 	} else {
-		while (aim.GetAnalogInRaw() > potValue) {
+		while (aim.GetAnalogInRaw() > potValue && failsafe < 200) {
 			aim.Set(position);
+			failsafe++;
 			position++; //depending on how the talon is wired this may need to be -= and the other one may need to be +=
+			Wait(.01);
 		}
-	}*/
-	aim.SetAnalogPosition(potValue);
+	}
+	//aim.SetAnalogPosition(potValue);
 	aim.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 }
 
@@ -96,9 +105,9 @@ void Shooter::LoadBall() {
 }
 
 void Shooter::Shoot() {
-	servo.Set(Constants::servoMaxPosition); //angle will need to be adjusted with testing
-	Wait(.5);
-	servo.Set(Constants::servoMinPosition); //angle will need to be adjusted with testing
+	kicker.Set(-1.0);
+	Wait(0.8);
+	kicker.Set(0.0);
 }
 
 bool Shooter::HasBall() {
@@ -110,10 +119,10 @@ float Shooter::WheelSpeed() {
 }
 
 float Shooter::Angle() {
-	return (aim.GetAnalogInRaw() - 209) * Constants::aimDegreesToPotFactor; //may need adjustment
+	return (882 - aim.GetAnalogInRaw()) / Constants::aimDegreesToPotFactor - 6.0;
 }
 
-void Shooter::ReadPot() {
-	SmartDashboard::PutNumber("Pot Raw", aim.GetAnalogInRaw());
+float Shooter::ReadPot() {
+	return aim.GetAnalogInRaw();
 	SmartDashboard::PutNumber("Pot reg", aim.GetAnalogIn());
 }

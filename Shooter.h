@@ -18,10 +18,11 @@ class Shooter {
 	CANTalon aim;
 	DigitalInput ballSensor;
 	Servo servo;
+	CANTalon kicker;
 	Position *position;
 
 public:
-	Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon, Position *position_);
+	Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon, uint32_t kickerTalon, Position *position_);
 	void Enable();
 	void Disable();
 	void SetSpeed(float leftSpeed, float rightSpeed);
@@ -31,7 +32,7 @@ public:
 	void PrepareShooter(float angle = 45, float speed = 1.0);
 	void LoadBall();
 	void Shoot();
-	void ReadPot();
+	float ReadPot();
 	bool HasBall();
 	float WheelSpeed();
 	float Angle();

@@ -42,6 +42,7 @@ public:
 	float GetAngleDegrees();
 	float GetPitch();
 	bool IsTurning();
+	void ZeroYaw();
 };
 
 
