@@ -1,10 +1,4 @@
-// Simple strand test for Adafruit Dot Star RGB LED strip.
-// This is a basic diagnostic tool, NOT a graphics demo...helps confirm
-// correct wiring and tests each pixel's ability to display red, green
-// and blue and to forward data down the line.  By limiting the number
-// and color of LEDs, it's reasonably safe to power a couple meters off
-// the Arduino's 5V pin.  DON'T try that with other code!
-
+#include <Wire.h>
 #include <Adafruit_DotStar.h>
 // Because conditional #includes don't work w/Arduino sketches...
 #include <SPI.h>         // COMMENT OUT THIS LINE FOR GEMMA OR TRINKET
@@ -22,19 +16,18 @@
 //#define CLOCKPIN 17
 Adafruit_DotStar strip = Adafruit_DotStar(NUMPIXELS, DATAPIN, CLOCKPIN);
 
-
-// Hardware SPI is a little faster, but must be wired to specific pins
-// (Arduino Uno = pin 11 for data, 13 for clock, other boards are different).
-//Adafruit_DotStar strip = Adafruit_DotStar(NUMPIXELS);
-
 const int ledPin = 13;
-
+volatile int control = 0;
+volatile int wait = 25;
 
 void setup() {
 
 #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000L)
   clock_prescale_set(clock_div_1); // Enable 16 MHz on Trinket
 #endif
+
+  Wire.begin(5);
+  Wire.onReceive(receiveEvent);
 
   strip.begin(); // Initialize pins for output
   strip.show();  // Turn all LEDs off ASAP
@@ -52,14 +45,55 @@ int i= 0,j=0,x=0;
 byte red = 0, green = 0, blue = 0;
 
 void loop() {
-  theaterChaseRainbow(25);
-  
+  switch (control) {
+    case 1:
+      angle(wait);
+      break;
+    case 2:
+      theaterChaseRainbow(wait, 2);
+      break;
+    case 3:
+      theaterChaseRainbow(wait, 1);
+      break;
+    default:
+      noCommand();
+      break;
+  }  
+}
+
+void noCommand() {
+  for (int c = 0; c < strip.numPixels(); c++) {
+    strip.setPixelColor(c, 0, 255, 0);
+    strip.show();
+    delay(wait);
+    strip.setPixelColor(c, 0);
+    strip.show();
+    strip.setPixelColor(c-2, 50, 150, 50);
+    strip.show();
+    delay(wait);
+    strip.setPixelColor(c-2, 0);
+    strip.show();
+    strip.setPixelColor(c-4, 50, 50, 50);
+    strip.show();
+    delay(wait);
+    strip.setPixelColor(c-4, 0);
+    strip.show();
+  }
+}
+
+void angle(int angle) {
+  int number = int(float(angle) * (48.0 / 90.0));
+  for (int c = 0; c < number; c++) {
+    strip.setPixelColor(c, 255, 0, 0);
+  }
+  strip.show();
 }
 
 //Theatre-style crawling lights with rainbow effect
-void theaterChaseRainbow(uint8_t wait) {
+void theaterChaseRainbow(uint8_t wait, uint8_t dir) {
   for (int j=0; j < 256; j++) {     // cycle all 256 colors in the wheel
-    for (int q=0; q < 8; q++) {
+    if (dir == 1) {
+      for (int q=0; q < 8; q++) {
         for (int i=0; i < strip.numPixels(); i=i+8) {
           strip.setPixelColor(i+q, Wheel( (i+j) % 255));    //turn every third pixel on
         }
@@ -70,38 +104,32 @@ void theaterChaseRainbow(uint8_t wait) {
         for (int i=0; i < strip.numPixels(); i=i+8) {
           strip.setPixelColor(i+q, 0);        //turn every third pixel off
         }
+      }
     }
+    else if (dir == 2) {
+      for (int q=8; q > 0; q--) {
+        for (int i=0; i < strip.numPixels(); i=i+8) {
+          strip.setPixelColor(i+q, Wheel( (i+j) % 255));    //turn every third pixel on
+        }
+        strip.show();
+       
+        delay(wait);
+       
+        for (int i=0; i < strip.numPixels(); i=i+8) {
+          strip.setPixelColor(i+q, 0);        //turn every third pixel off
+        }
+      }
+    }
+    
     digitalWrite(ledPin,!digitalRead(ledPin));
   }
 }
 
-void followrainbow(uint8_t wait){
-  // Now Broken!!!
-  uint16_t x,j,c;
-  c=0;
-  for(j = 0; j<256;j++){
-    for(x = 0; x < strip.numPixels(); x++){
-      if(x <=head && x>tail){
-        strip.setPixelColor(x,Wheel(j+x*2));
-      }else{
-        strip.setPixelColor(x,0);
-      }
-      c++;
-      if( c>10){
-        c=0;
-        head+=1;
-        tail+=1;
-        if(head > strip.numPixels()){
-          head=0;
-          tail=-4;
-        }
-      }
-      
+void receiveEvent(int howMany) {
+  while (Wire.available()) {
+    int control = Wire.read();
+    int wait = Wire.read();
     }
-    strip.show();
-    delay(wait);
-    digitalWrite(ledPin,!digitalRead(ledPin));
-  }
 }
 
 void rainbow(uint8_t wait) {
