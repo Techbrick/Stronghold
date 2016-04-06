@@ -19,6 +19,7 @@ DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, 
 	leftMaster.SetI(0.00000);
 	leftMaster.SetD(0.0);
 	leftMaster.SetAllowableClosedLoopErr(10);
+	leftMaster.SetInverted(true);
 
 	leftSlave.SetModeSelect(CanTalonSRX::kMode_SlaveFollower);
 	leftSlave.SetDemand(leftMasterDeviceID);
@@ -31,9 +32,10 @@ DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, 
 	rightMaster.SelectProfileSlot(0);
 	rightMaster.SetF(0.124);
 	rightMaster.SetP(0.12);
-	rightMaster.SetI(0.00001);
+	rightMaster.SetI(0.0000);
 	rightMaster.SetD(0.0);
 	rightMaster.SetAllowableClosedLoopErr(10);
+	rightMaster.SetInverted(true);
 	
 	rightSlave.SetControlMode(CANTalon::ControlMode::kFollower);
 	rightSlave.Set(Constants::driveRightMasterID);
