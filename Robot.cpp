@@ -113,12 +113,14 @@ void Robot::OperatorControl() //teleop code
 				shooter.Shoot();
 			}
 		}
+
 		if (operatorStick.GetRawButton(5)) {
-			angleToTower = aimer.GetAngleToTower();
-			driveTrain.TurnToAngle(angleToTower);
+			//angleToTower = aimer.GetAngleToTower();
+			//driveTrain.TurnToAngle(angleToTower);
 			angleToShoot = aimer.GetAngleToShoot();
 			shooter.SetAngle(angleToShoot);
 		}
+
 		if (operatorStick.GetRawButton(Constants::xButton))
 		{
 			shooter.Shoot();
