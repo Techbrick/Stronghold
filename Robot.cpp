@@ -69,8 +69,10 @@ void Robot::OperatorControl() //teleop code
 	while (IsOperatorControl() && IsEnabled())
 	{
 		throttle = (((driveStick.GetRawAxis(Constants::driveL2)) + 1.0)/4.0) + 0.5; //[1, .5]
-		leftMoveValue = .90 * throttle * driveStick.GetRawAxis(1);
-		rightMoveValue = -throttle * driveStick.GetRawAxis(5);
+		//leftMoveValue = .90 * throttle * driveStick.GetRawAxis(1);
+		//rightMoveValue = -throttle * driveStick.GetRawAxis(5);
+		leftMoveValue = driveStick.GetRawAxis(1);
+		rightMoveValue = -driveStick.GetRawAxis(5);
 
 		SmartDashboard::PutNumber("Throttle Value", throttle);
 		SmartDashboard::PutNumber("Left Move Value", leftMoveValue);

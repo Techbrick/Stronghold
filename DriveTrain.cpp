@@ -12,11 +12,11 @@ DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, 
 	leftMaster.SetControlMode(CANTalon::ControlMode::kSpeed);
 	leftMaster.SetFeedbackDevice(CANTalon::FeedbackDevice::QuadEncoder);
 	leftMaster.ConfigEncoderCodesPerRev(2048);
-	leftMaster.SetSensorDirection(false);
+	leftMaster.SetSensorDirection(true);
 	leftMaster.SelectProfileSlot(0);
 	leftMaster.SetF(0.124);
 	leftMaster.SetP(0.12);
-	leftMaster.SetI(0.00001);
+	leftMaster.SetI(0.00000);
 	leftMaster.SetD(0.0);
 	leftMaster.SetAllowableClosedLoopErr(10);
 
