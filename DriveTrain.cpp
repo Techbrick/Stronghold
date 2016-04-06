@@ -19,7 +19,7 @@ DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, 
 	leftMaster.SetI(0.00000);
 	leftMaster.SetD(0.0);
 	leftMaster.SetAllowableClosedLoopErr(10);
-	leftMaster.SetInverted(true);
+	leftMaster.SetInverted(false);
 
 	leftSlave.SetModeSelect(CanTalonSRX::kMode_SlaveFollower);
 	leftSlave.SetDemand(leftMasterDeviceID);
@@ -37,8 +37,10 @@ DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, 
 	rightMaster.SetAllowableClosedLoopErr(10);
 	rightMaster.SetInverted(true);
 	
-	rightSlave.SetControlMode(CANTalon::ControlMode::kFollower);
+	//rightSlave.SetControlMode(CANTalon::ControlMode::kFollower);
+	rightSlave.SetModeSelect(CanTalonSRX::kMode_SlaveFollower);
 	rightSlave.Set(Constants::driveRightMasterID);
+	rightSlave.SetDemand(rightMasterDeviceID);
 }
 
 void DriveTrain::Enable()
@@ -87,13 +89,13 @@ void DriveTrain::TurnToAngle(float absAngle)
 
 	unsigned int failsafe = 0;
 	float delta_t = 0.02;
-	unsigned int failsafeMax = static_cast<unsigned int>(2.0 / delta_t); // Two seconds timeout
+	unsigned int failsafeMax = static_cast<unsigned int>(10.0 / delta_t); // Two seconds timeout
 
 	while(abs(error) > Constants::drivePIDepsilon && failsafe < failsafeMax)
 	{
 		float motorOutput = scaleOutput(k_P * error);
 		SmartDashboard::PutNumber("TurnPower", motorOutput);
-		TankDriveSpeed(-motorOutput, motorOutput);
+		TankDriveSpeed(motorOutput, -motorOutput);
 
 		Wait(delta_t);
 		failsafe++;

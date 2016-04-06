@@ -51,7 +51,7 @@ void Shooter::SetSpeed(float speed) {
 
 void Shooter::SetAngle(float angle) { //degrees
 	//TODO: Don't set angle more than Constants::maximumAngle or less than Constants::minimumAngle
-	if (angle < 32 || angle > 48) {
+	if (angle < Constants::shooterMinAngle || angle > Constants::shooterMaxAngle) {
 		SmartDashboard::PutString("Set Angle Failed", "Angle was out of bounds. Bounds are [0, 68.2]");
 		return;
 	}
@@ -126,5 +126,4 @@ float Shooter::Angle() {
 
 float Shooter::ReadPot() {
 	return aim.GetAnalogInRaw();
-	SmartDashboard::PutNumber("Pot reg", aim.GetAnalogIn());
 }

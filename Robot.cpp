@@ -71,19 +71,16 @@ void Robot::OperatorControl() //teleop code
 		throttle = (((driveStick.GetRawAxis(Constants::driveL2)) + 1.0)/4.0) + 0.5; //[1, .5]
 		//leftMoveValue = .90 * throttle * driveStick.GetRawAxis(1);
 		//rightMoveValue = -throttle * driveStick.GetRawAxis(5);
-		leftMoveValue = driveStick.GetRawAxis(1);
+		leftMoveValue = -driveStick.GetRawAxis(1);
 		rightMoveValue = -driveStick.GetRawAxis(5);
 
-		SmartDashboard::PutNumber("Throttle Value", throttle);
-		SmartDashboard::PutNumber("Left Move Value", leftMoveValue);
-		SmartDashboard::PutNumber("Right Move Value", rightMoveValue);
 		if (driveStick.GetRawButton(8)) {
 			leftMoveValue = -1 * leftMoveValue;
 			rightMoveValue = -1 * rightMoveValue;
 		}
 		driveTrain.TankDriveSpeed(leftMoveValue, rightMoveValue);
 
-		/*if (shooterPrepbaring)
+		/*if (shooterPreparing)
 		  {
 			  readyToShoot = (abs(shooter.WheelSpeed() - 1.0) < 0.01) && (abs(shooter.Angle() - angleToTower) < 0.1);
 			  if (readyToShoot)
@@ -114,7 +111,7 @@ void Robot::OperatorControl() //teleop code
 		}
 		if (operatorStick.GetRawButton(5)) {
 			angleToTower = aimer.GetAngleToTower();
-			driveTrain.TurnToAngle(angleToTower);
+			driveTrain.TurnToRelativeAngle(angleToTower);
 			angleToShoot = aimer.GetAngleToShoot();
 			shooter.SetAngle(angleToShoot);
 		}
@@ -137,17 +134,17 @@ void Robot::OperatorControl() //teleop code
 		}
 		if (operatorStick.GetPOV() == 0)
 		{
-			shooter.SetSpeed(1);
+			//shooter.SetSpeed(1);
 		}
 		if (operatorStick.GetPOV() == 270) {
-			shooter.SetSpeed(.5);
+			//shooter.SetSpeed(.5);
 		}
 		if (operatorStick.GetPOV() == 180)
 		{
-			shooter.LoadBall();
+			//shooter.LoadBall();
 		}
 		if (operatorStick.GetPOV() == 90) {
-			shooter.SetSpeed(.75);
+			//shooter.SetSpeed(.75);
 		}
 		if (operatorStick.GetRawButton(Constants::ejectButton)) {
 			shooter.SetSpeed(.5);
@@ -156,6 +153,14 @@ void Robot::OperatorControl() //teleop code
 			Wait(.5);
 			shooter.SetSpeed(0);
 		}
+
+		int testAngle = 33;
+		if(operatorStick.GetRawButton(4)) {
+			testAngle++;
+			shooter.SetAngle(testAngle);
+		}
+		SmartDashboard::PutNumber("Test Angle", testAngle);
+		SmartDashboard::PutNumber("Pot Value", shooter.ReadPot());
 		/*if (operatorStick.GetRawButton(5)) {
 			shooter.SetAngle(20);
 		}
@@ -169,8 +174,6 @@ void Robot::OperatorControl() //teleop code
 		if (operatorStick.GetRawButton(4)) {
 			driveTrain.TurnToRelativeAngle(30);
 		}*/
-		SmartDashboard::PutNumber("getPOV", operatorStick.GetPOV());
-		SmartDashboard::PutString("Version", "1.1");
 		SmartDashboard::PutBoolean("Has Ball", shooter.HasBall());
 		SmartDashboard::PutBoolean("Target Acquired", aimer.GetAge() < 3);
 		SmartDashboard::PutBoolean("Aimed", abs(aimer.GetAngleToTower()) < 3.0);
@@ -180,6 +183,7 @@ void Robot::OperatorControl() //teleop code
 		SmartDashboard::PutNumber("Angle to Tower", aimer.GetAngleToTower());
 		SmartDashboard::PutNumber("Rotation", position.GetAngleDegrees());
 		SmartDashboard::PutBoolean("Close Enough to Shoot", aimer.GetAngleToShoot() < 48 && aimer.GetAngleToShoot() > 32);
+		SmartDashboard::PutNumber("Shooter Speed", shooter.WheelSpeed());
 	}
 
 	shooter.Disable();
