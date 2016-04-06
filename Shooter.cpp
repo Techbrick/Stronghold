@@ -105,9 +105,11 @@ void Shooter::LoadBall() {
 }
 
 void Shooter::Shoot() {
-	kicker.Set(-1.0);
-	Wait(0.8);
-	kicker.Set(0.0);
+	kicker.Set(-.5);
+	Wait(0.3);
+	kicker.Set(.5);
+	Wait(.3);
+	kicker.Set(0);
 }
 
 bool Shooter::HasBall() {
