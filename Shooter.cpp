@@ -106,10 +106,10 @@ void Shooter::LoadBall() {
 }
 
 void Shooter::Shoot() {
-	kicker.Set(-.5);
-	Wait(0.3);
-	kicker.Set(.5);
-	Wait(.3);
+	kicker.Set(-1);
+	Wait(.25);
+	kicker.Set(1);
+	Wait(.25);
 	kicker.Set(0);
 }
 
