@@ -79,9 +79,9 @@ void Robot::OperatorControl() //teleop code
 			leftMoveValue = -1 * leftMoveValue;
 			rightMoveValue = -1 * rightMoveValue;
 		}
-		driveTrain.TankDrive(leftMoveValue, rightMoveValue, false);
+		driveTrain.TankDriveSpeed(leftMoveValue, rightMoveValue);
 
-		/*if (shooterPreparing)
+		/*if (shooterPrepbaring)
 		  {
 			  readyToShoot = (abs(shooter.WheelSpeed() - 1.0) < 0.01) && (abs(shooter.Angle() - angleToTower) < 0.1);
 			  if (readyToShoot)
