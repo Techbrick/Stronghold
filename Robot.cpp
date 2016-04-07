@@ -111,13 +111,12 @@ void Robot::OperatorControl() //teleop code
 			}
 		}
 
-		/*if (operatorStick.GetRawButton(5)) {
+		if (operatorStick.GetRawButton(5)) {
 			//angleToTower = aimer.GetAngleToTower();
 			//driveTrain.TurnToAngle(angleToTower);
 			angleToShoot = aimer.GetAngleToShoot();
 			shooter.SetAngle(angleToShoot);
-		}*/
-
+		}
 		if (operatorStick.GetRawButton(Constants::xButton))
 		{
 			shooter.Shoot();
@@ -164,13 +163,6 @@ void Robot::OperatorControl() //teleop code
 		if (operatorStick.GetRawButton(4)) {
 			driveTrain.TurnToRelativeAngle(30);
 		}*/
-/*		int testAngle = 33;
-		if (operatorStick.GetRawButton(4)) {
-			testAngle++;
-			shooter.SetAngle(testAngle);
-		}
-		SmartDashboard::PutNumber("test angle", testAngle);*/
-		SmartDashboard::PutNumber("Pot Value", shooter.ReadPot());
 		SmartDashboard::PutNumber("getPOV", operatorStick.GetPOV());
 		SmartDashboard::PutString("Version", "1.1");
 		SmartDashboard::PutBoolean("Has Ball", shooter.HasBall());
@@ -181,7 +173,7 @@ void Robot::OperatorControl() //teleop code
 		SmartDashboard::PutNumber("Recommended Shooter Angle", aimer.GetAngleToShoot());
 		SmartDashboard::PutNumber("Angle to Tower", aimer.GetAngleToTower());
 		SmartDashboard::PutNumber("Rotation", position.GetAngleDegrees());
-		SmartDashboard::PutBoolean("Close Enough to Shoot", aimer.GetAngleToShoot() < 44 && aimer.GetAngleToShoot() > 32);
+		SmartDashboard::PutBoolean("Close Enough to Shoot", aimer.GetAngleToShoot() < 48 && aimer.GetAngleToShoot() > 32);
 	}
 
 	shooter.Disable();
@@ -285,3 +277,4 @@ void Robot::Autonomous()
 	logfile.close();
 }
 START_ROBOT_CLASS(Robot);
+
