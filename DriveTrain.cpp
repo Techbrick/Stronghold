@@ -89,7 +89,7 @@ void DriveTrain::TurnToAngle(float absAngle)
 
 	unsigned int failsafe = 0;
 	float delta_t = 0.02;
-	unsigned int failsafeMax = static_cast<unsigned int>(10.0 / delta_t); // Two seconds timeout
+	unsigned int failsafeMax = static_cast<unsigned int>(3.0 / delta_t); // Two seconds timeout
 
 	while(abs(error) > Constants::drivePIDepsilon && failsafe < failsafeMax)
 	{

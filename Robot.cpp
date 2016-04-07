@@ -134,17 +134,17 @@ void Robot::OperatorControl() //teleop code
 		}
 		if (operatorStick.GetPOV() == 0)
 		{
-			//shooter.SetSpeed(1);
+			shooter.SetSpeed(1);
 		}
 		if (operatorStick.GetPOV() == 270) {
-			//shooter.SetSpeed(.5);
+			shooter.SetSpeed(.5);
 		}
 		if (operatorStick.GetPOV() == 180)
 		{
-			//shooter.LoadBall();
+			shooter.LoadBall();
 		}
 		if (operatorStick.GetPOV() == 90) {
-			//shooter.SetSpeed(.75);
+			shooter.SetSpeed(.75);
 		}
 		if (operatorStick.GetRawButton(Constants::ejectButton)) {
 			shooter.SetSpeed(.5);
