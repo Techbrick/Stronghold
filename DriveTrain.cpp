@@ -124,8 +124,33 @@ void DriveTrain::TurnToRelativeAngle(float angle)
 	TurnToAngle(angle + position->GetAngleDegrees());
 }
 
-void DriveTrain::DriveStraight(float speed, float fieldAngle, float timeInSeconds)
+void DriveTrain::TankDriveStraight(float speed, float fieldAngle)
 {
+	// Convert target to +/- 180 degrees to match gyro
+	float targetAngle = (fieldAngle <= 180.0) ? fieldAngle : fieldAngle-360;
+	float currentAngle = position->GetAngleDegrees();
+	float error = targetAngle-currentAngle;
+
+	// Take the shortest path to targetAngle
+	error = (error > 180) ? error - 360 : error;
+	error = (error < -180) ? error + 360 : error;
+
+	float pidAdjustment = Constants::driveK_P * error;
+
+	bool tooLowAndNonZero = abs(pidAdjustment) > Constants::drivePIDMinSpeed
+		&& abs(pidAdjustment) < Constants::drivePIDFinishTurn;
+	bool tooHigh = abs(pidAdjustment) > Constants::drivePIDMaxSpeed;
+
+	if (tooLowAndNonZero)
+		pidAdjustment = copysign(Constants::drivePIDFinishTurn, pidAdjustment);
+	if (tooHigh)
+		pidAdjustment = Constants::drivePIDMaxSpeed;
+
+	float motorOutput;
+	if (abs(error) > 20.0)
+		TankDriveSpeed(pidAdjustment, -pidAdjustment);
+	else
+		TankDriveSpeed(speed + pidAdjustment, speed - pidAdjustment);
 }
 
 void DriveTrain::TankDriveSpeed(float leftspeed, float rightspeed)

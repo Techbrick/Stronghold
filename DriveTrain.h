@@ -22,7 +22,7 @@ public:
 	void Disable();
 	void TurnToAngle(float angle);
 	void TurnToRelativeAngle(float angle);
-	void DriveStraight(float speed, float fieldAngle, float timeInSeconds);
+	void TankDriveStraight(float speed, float fieldAngle);
 	void TankDriveSpeed(float leftspeed, float rightspeed);
 };
 
