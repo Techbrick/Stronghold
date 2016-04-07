@@ -26,7 +26,7 @@ void Arm::Disable()
 		beltMover.Disable();
 }
 void Arm::ManualMoveBelt(float speed) {
-	beltMover.Set(speed);
+		beltMover.Set(speed);
 }
 void Arm::MoveBelt (float speed)
 {

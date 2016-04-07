@@ -52,13 +52,12 @@ void Shooter::SetSpeed(float speed) {
 
 void Shooter::SetAngle(float angle) { //degrees
 	if (angle < 32 || angle > 44) {
-		SmartDashboard::PutString("Set Angle Failed", "Angle was out of bounds. Bounds are [0, 68.2]");
 		return;
 	}
 	aim.SetControlMode(CANTalon::ControlMode::kPosition);
 	int position = aim.GetAnalogInRaw();
 	int failsafe = 0;
-	int potValue = (int)(882 - (angle * Constants::aimDegreesToPotFactor));
+	int potValue = (int)(Constants::potMinValue - (angle * Constants::aimDegreesToPotFactor));
 	if (aim.GetAnalogInRaw() < potValue) {
 		while (aim.GetAnalogInRaw() < potValue && failsafe < 200) {
 			aim.Set(position);
@@ -80,16 +79,7 @@ void Shooter::SetAngle(float angle) { //degrees
 
 void Shooter::Move(float speed) {
 	aim.SetControlMode(CANTalon::ControlMode::kPercentVbus);
-	//if (aim.GetAnalogInRaw() < 754 && speed > 0) {
-	//	aim.Set(speed);
-	//} else if (aim.GetAnalogInRaw() > 209 && speed < 0) {
-		aim.Set(speed);
-	//} else {
-	//	aim.Set(0);
-	//	return;
-	//}
-	SmartDashboard::PutBoolean("Shooter Top Limit Switch Hit", aim.GetReverseLimitOK());
-	SmartDashboard::PutBoolean("Shooter Bottom Limit Switch Hit", aim.GetForwardLimitOK());
+	aim.Set(speed);
 }
 
 void Shooter::PrepareShooter(float angle, float speed) {
@@ -118,10 +108,9 @@ float Shooter::WheelSpeed() {
 }
 
 float Shooter::Angle() {
-	return (Constants::potMinValue - aim.GetAnalogInRaw()) / Constants::aimDegreesToPotFactor - 8;
+	return (Constants::potMinValue - aim.GetAnalogInRaw()) / Constants::aimDegreesToPotFactor;
 }
 
 float Shooter::ReadPot() {
 	return aim.GetAnalogInRaw();
-	SmartDashboard::PutNumber("Pot reg", aim.GetAnalogIn());
 }

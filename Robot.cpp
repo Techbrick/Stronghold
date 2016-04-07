@@ -76,7 +76,12 @@ void Robot::OperatorControl() //teleop code
 			leftMoveValue = -1 * leftMoveValue;
 			rightMoveValue = -1 * rightMoveValue;
 		}
-		driveTrain.TankDriveSpeed(leftMoveValue, rightMoveValue);
+		if (driveStick.GetRawButton(6))
+			driveTrain.TankDriveStraight(leftMoveValue, 0);
+		else
+			driveTrain.TankDriveSpeed(leftMoveValue, rightMoveValue);
+
+
 
 		/*if (shooterPreparing)
 		  {
