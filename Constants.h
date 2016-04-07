@@ -37,11 +37,11 @@ namespace Constants {
 	static constexpr float shooter75Velocity = 9.2475; //may need to be changed. Currently assuming percent voltage to velocity is linear
 	static constexpr float shooter50Velocity = 6.165; //may need to be changed. Currently assuming percent voltage to velocity is linear
 	static constexpr float minimumAngle = 32;	//Actual value: needs more accuracy
-	static constexpr float maximumAngle = 44; //TODO: temporary value
+	static constexpr float maximumAngle = 46; //TODO: temporary value
 	static constexpr float servoMaxPosition = 0.9;
 	static constexpr float servoMinPosition = 0.3;
-	static constexpr int potMinValue = 654;
-	static constexpr int potMaxValue = 270;
+	static constexpr int potMinValue = 469;
+	static constexpr int potMaxValue = 45;
 	static constexpr float aimDegreesToPotFactor = ((potMinValue - potMaxValue) / (double)shooterMaxAngle);//(potMaxValue / 48.0); / (103.289 / 44.0);
 
 

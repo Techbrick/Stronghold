@@ -163,6 +163,7 @@ void Robot::OperatorControl() //teleop code
 		if (operatorStick.GetRawButton(4)) {
 			driveTrain.TurnToRelativeAngle(30);
 		}*/
+		SmartDashboard::PutNumber("Pot Value", shooter.ReadPot());
 		SmartDashboard::PutNumber("getPOV", operatorStick.GetPOV());
 		SmartDashboard::PutString("Version", "1.1");
 		SmartDashboard::PutBoolean("Has Ball", shooter.HasBall());

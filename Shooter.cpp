@@ -112,5 +112,6 @@ float Shooter::Angle() {
 }
 
 float Shooter::ReadPot() {
+	SmartDashboard::PutNumber("pot value", aim.GetAnalogInRaw());
 	return aim.GetAnalogInRaw();
 }
