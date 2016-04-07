@@ -252,22 +252,22 @@ void Robot::Autonomous()
 			failsafe++;
 		}
 	}*/
-	//driveTrain.TurnToAngle(fraction);
+	driveTrain.TurnToAngle(fraction);
 	driveTrain.TankDrive(0.0, 0.0);
 
 	float angleToTower = aimer.GetAngleToTower();
-	//driveTrain.TurnToRelativeAngle(angleToTower);
+	driveTrain.TurnToRelativeAngle(angleToTower);
 
 	driveTrain.ArcadeDrive(0.0, 0.0, false);
 	//aim at tower
 	int age = aimer.GetAge();
-	if (false)//(age < 3)
+	if/* (false)*/(age < 3)
 	{
 		float angleToShoot = aimer.GetAngleToShoot();
 		shooter.SetAngle(angleToShoot);
 		shooter.SetSpeed(1.0);
 		logfile << "Angle to shoot: " << angleToShoot << std::endl;
-		Wait(0.7);
+		Wait(1);
 		shooter.Shoot();
 	}
 	for (int i=0; i<20; i++)
