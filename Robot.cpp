@@ -153,13 +153,6 @@ void Robot::OperatorControl() //teleop code
 			Wait(.5);
 			shooter.SetSpeed(0);
 		}
-
-		int testAngle = 33;
-		if(operatorStick.GetRawButton(4)) {
-			testAngle++;
-			shooter.SetAngle(testAngle);
-		}
-		SmartDashboard::PutNumber("Test Angle", testAngle);
 		SmartDashboard::PutNumber("Pot Value", shooter.ReadPot());
 		/*if (operatorStick.GetRawButton(5)) {
 			shooter.SetAngle(20);
