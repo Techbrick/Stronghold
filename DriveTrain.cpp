@@ -1,5 +1,4 @@
 #include "DriveTrain.h"
-#define PI 3.14159265
 
 DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, uint32_t rightMasterDeviceID, uint32_t rightSlaveDeviceID, Position *position_):
 	RobotDrive(leftMaster, rightMaster),
@@ -9,13 +8,33 @@ DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, 
 	rightSlave(rightSlaveDeviceID),
 	position(position_)
 {
-	leftMaster.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	leftMaster.SetClosedLoopOutputDirection(true);
+	leftMaster.SetControlMode(CANTalon::ControlMode::kSpeed);
+	leftMaster.SetFeedbackDevice(CANTalon::FeedbackDevice::QuadEncoder);
+	leftMaster.ConfigEncoderCodesPerRev(2048);
+	leftMaster.SetSensorDirection(false);
+	leftMaster.SelectProfileSlot(0);
+	leftMaster.SetF(0.124);
+	leftMaster.SetP(0.12);
+	leftMaster.SetI(0.00001);
+	leftMaster.SetD(0.0);
+	leftMaster.SetAllowableClosedLoopErr(10);
+
 	leftSlave.SetModeSelect(CanTalonSRX::kMode_SlaveFollower);
 	leftSlave.SetDemand(leftMasterDeviceID);
 	leftSlave.SetRevMotDuringCloseLoopEn(1);
 
-	rightMaster.SetControlMode(CANTalon::ControlMode::kPercentVbus);
+	rightMaster.SetControlMode(CANTalon::ControlMode::kSpeed);
+	rightMaster.SetFeedbackDevice(CANTalon::FeedbackDevice::QuadEncoder);
+	rightMaster.ConfigEncoderCodesPerRev(2048);
+	rightMaster.SetSensorDirection(true);
+	rightMaster.SelectProfileSlot(0);
+	rightMaster.SetF(0.124);
+	rightMaster.SetP(0.12);
+	rightMaster.SetI(0.00001);
+	rightMaster.SetD(0.0);
+	rightMaster.SetAllowableClosedLoopErr(10);
+	
 	rightSlave.SetControlMode(CANTalon::ControlMode::kFollower);
 	rightSlave.Set(Constants::driveRightMasterID);
 }
@@ -32,113 +51,87 @@ void DriveTrain::Disable()
 	rightMaster.Disable();
 }
 
-
-//TODO: Take a sensitivity
-void DriveTrain::TurnToAngle(float angle) //give angle in degrees
+void DriveTrain::TurnToAngle(float absAngle)
 {
-	//angle *= -1;
-	angle = fmod(angle, 360.0);
-	angle = angle > 180 ? angle-360 : angle;
+	SmartDashboard::PutString("status", "TurnToAngle turn started");
 
+	float k_P = 0.008;
+
+	// Convert target to +/- 180 degrees to match gyro
+	float targetAngle = (absAngle <= 180.0) ? absAngle : absAngle-360;
 	float currentAngle = position->GetAngleDegrees();
-	float k_p = SmartDashboard::GetNumber("PID_k_P", 0.75);
-	float k_i = SmartDashboard::GetNumber("PID_k_I", 1.00);
-	float p   = 0;
-	float i   = 0;
-	float delta_t = 0.1;
-	
-	float errorDegrees = 0;
-	float errorScaled = 0;
-	float output = 0;
+	float error = targetAngle-currentAngle;
+
+	// Take the shortest path to targetAngle
+	error = (error > 180) ? error - 360 : error;
+	error = (error < -180) ? error + 360 : error;
+
+	auto scaleOutput = [](float output)
+	{
+		bool tooLowAndNonZero = abs(output) > Constants::drivePIDMinSpeed
+			&& abs(output) < Constants::drivePIDFinishTurn;
+		bool tooHigh = abs(output) > Constants::drivePIDMaxSpeed;
+
+		if (tooLowAndNonZero)
+			output = copysign(Constants::drivePIDFinishTurn, output);
+		if (tooHigh)
+			output = Constants::drivePIDMaxSpeed;
+
+		return output;
+	};
+
+	SmartDashboard::PutNumber("targetAngle", targetAngle);
+	SmartDashboard::PutNumber("errorAngle", error);
 
 	unsigned int failsafe = 0;
+	float delta_t = 0.02;
+	unsigned int failsafeMax = static_cast<unsigned int>(2.0 / delta_t); // Two seconds timeout
 
-	std::cout << "Running Loop";
-	while (abs(currentAngle - angle) > Constants::drivePIDepsilon && failsafe < 30)
+	while(abs(error) > Constants::drivePIDepsilon && failsafe < failsafeMax)
 	{
-		std::cout << "PI Loop: " << std::endl;
-		std::cout << " P: " << p << std::endl;
-		std::cout << " I: " << i << std::endl;
-		std::cout << " Output: " << output << std::endl;
-		std::cout << " ErrorDegrees: " << errorDegrees << std::endl;
-		std::cout << " ErrorScaled: " << errorScaled << std::endl;
-		std::cout << " Target angle: " << angle << std::endl;
-		std::cout << " Current angle: " << currentAngle << std::endl;
-		std::cout << " Failsafe: " << failsafe << std::endl;
+		float motorOutput = scaleOutput(k_P * error);
+		SmartDashboard::PutNumber("TurnPower", motorOutput);
+		TankDriveSpeed(-motorOutput, motorOutput);
 
-		i = (i + k_i * errorScaled) * delta_t;
-
-		errorDegrees = currentAngle - angle;
-		if (abs(errorDegrees) > 180.0)
-		{
-			errorDegrees = errorDegrees - copysign(360.0, errorDegrees);
-		}
-		errorScaled = errorDegrees/180.0;
-
-		p = k_p * errorScaled;
-		output = p + i;
-		leftMaster.Set(output);
-		rightMaster.Set(-output);
-		currentAngle = position->GetAngleDegrees();
-		failsafe++;
 		Wait(delta_t);
+		failsafe++;
+
+		currentAngle = position->GetAngleDegrees();
+		error = targetAngle - currentAngle;
+		error = (abs(error) > 180) ? error - copysign(360.0, error) : error;
+
+		SmartDashboard::PutNumber("ErrorAngle", abs(error));
 	}
 
-	leftMaster.Set(0);
-	rightMaster.Set(0);
+	if (failsafe == failsafeMax)
+	{
+		SmartDashboard::PutString("status", "driveTrain.TurnToAngle() failsafe hit");
+	}
+	else
+	{
+		SmartDashboard::PutString("status", "driveTrain.TurnToAngle() completed");
+	}
+
+	TankDriveSpeed(0, 0);
 }
 
-void DriveTrain::TurnToRelativeAngle(float angle) {
+void DriveTrain::TurnToRelativeAngle(float angle)
+{
 	TurnToAngle(angle + position->GetAngleDegrees());
 }
 
 void DriveTrain::DriveStraight(float speed, float fieldAngle, float timeInSeconds)
 {
-	float currentAngle = position->GetAngle();
-	float k_p = Constants::driveK_P;
-	float k_i = Constants::driveK_I;
-	float p   = 0;
-	float i   = 0;
-	float delta_t = 0.01;
-	
-	float error = 0;
-	float pidOutput = 0;
-
-	unsigned int failsafe = 0;
-	unsigned int failsafeMax = timeInSeconds / delta_t;
-
-	while (abs(currentAngle-fieldAngle) > Constants::drivePIDepsilon && failsafe < failsafeMax)
-	{
-		i = (i + k_i * error) * delta_t;
-
-		error = abs(fieldAngle - currentAngle);
-		if(error > 180.0)
-			error = error * -1;
-		error /= 180.0;
-
-		p = k_p * error;
-		pidOutput = p + i;
-		float combinedOutputLeft = tanh(speed + pidOutput);
-		float combinedOutputRight = tanh(speed - pidOutput);
-		combinedOutputLeft = combinedOutputLeft*0.9 + copysign(0.1, combinedOutputLeft);
-		combinedOutputRight = combinedOutputRight*0.9 + copysign(0.1, combinedOutputRight);
-
-		leftMaster.Set(combinedOutputLeft);
-		rightMaster.Set(combinedOutputRight);
-		currentAngle = position->GetAngleDegrees();
-		failsafe++;
-		Wait(delta_t);
-	}
-
-	leftMaster.Set(0);
-	rightMaster.Set(0);
 }
 
-void DriveTrain::MoveDistance(float distance, float speed) {
-	float xOffset = position->GetX();
-	float yOffset = position->GetY();
-	while (sqrt(pow(position->GetX() - xOffset, 2) + pow(position->GetY() - yOffset, 2)) < distance) {
-		leftMaster.Set(speed);
-		rightMaster.Set(speed);
-	}
+void DriveTrain::TankDriveSpeed(float leftspeed, float rightspeed)
+{
+	leftspeed = (std::abs(leftspeed) <= Constants::drivePIDMinSpeed) ? 0.0 : leftspeed;
+	rightspeed = (std::abs(rightspeed) <= Constants::drivePIDMinSpeed) ? 0.0 : rightspeed;
+	leftMaster.SetControlMode(CANTalon::ControlMode::kSpeed);
+	rightMaster.SetControlMode(CANTalon::ControlMode::kSpeed);
+	leftMaster.Set(leftspeed * Constants::driveMaxRPM);
+	rightMaster.Set(rightspeed * Constants::driveMaxRPM);
+	SmartDashboard::PutNumber("LeftError", leftMaster.GetClosedLoopError());
+	SmartDashboard::PutNumber("RightError", rightMaster.GetClosedLoopError());
 }

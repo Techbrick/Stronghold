@@ -5,6 +5,7 @@
 
 #ifndef SRC_DRIVETRAIN_H
 #define SRC_DRIVETRAIN_H
+
 #define PI 3.14159265
 
 class DriveTrain : public RobotDrive
@@ -22,8 +23,7 @@ public:
 	void TurnToAngle(float angle);
 	void TurnToRelativeAngle(float angle);
 	void DriveStraight(float speed, float fieldAngle, float timeInSeconds);
-	void MoveDistance(float distance, float speed);
-
+	void TankDriveSpeed(float leftspeed, float rightspeed);
 };
 
 #endif

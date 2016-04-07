@@ -120,6 +120,11 @@ void Robot::OperatorControl() //teleop code
 		{
 			shooter.Shoot();
 		}
+		float POVangle = driveStick.GetPOV();
+		if (POVangle != -1)
+		{
+			driveTrain.TurnToAngle(POVangle);
+		}
 		float shooterAngleInput = -operatorStick.GetRawAxis(1);
 		shooterAngleInput = abs(shooterAngleInput) > 0.005 ? shooterAngleInput : 0.0;
 		shooter.Move(shooterAngleInput);
