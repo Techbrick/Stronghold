@@ -69,8 +69,8 @@ void Robot::OperatorControl() //teleop code
 	while (IsOperatorControl() && IsEnabled())
 	{
 		throttle = (((driveStick.GetRawAxis(Constants::driveL2)) + 1.0)/4.0) + 0.5; //[1, .5]
-		leftMoveValue = -driveStick.GetRawAxis(1);
-		rightMoveValue = -driveStick.GetRawAxis(5);
+		leftMoveValue = -throttle * driveStick.GetRawAxis(1);
+		rightMoveValue = -throttle * driveStick.GetRawAxis(5);
 
 		if (driveStick.GetRawButton(8)) {
 			leftMoveValue = -1 * leftMoveValue;
@@ -118,6 +118,12 @@ void Robot::OperatorControl() //teleop code
 			angleToShoot = aimer.GetAngleToShoot();
 			shooter.SetAngle(angleToShoot);
 		}
+		else
+		{
+			float shooterAngleInput = -operatorStick.GetRawAxis(1);
+			shooterAngleInput = abs(shooterAngleInput) > 0.005 ? shooterAngleInput : 0.0;
+			shooter.Move(shooterAngleInput);
+		}
 		if (operatorStick.GetRawButton(Constants::xButton))
 		{
 			shooter.Shoot();
@@ -127,9 +133,6 @@ void Robot::OperatorControl() //teleop code
 		{
 			driveTrain.TurnToAngle(POVangle);
 		}
-		float shooterAngleInput = -operatorStick.GetRawAxis(1);
-		shooterAngleInput = abs(shooterAngleInput) > 0.005 ? shooterAngleInput : 0.0;
-		shooter.Move(shooterAngleInput);
 
 		if (operatorStick.GetRawButton(Constants::stopShooterWheels))
 		{
@@ -155,9 +158,6 @@ void Robot::OperatorControl() //teleop code
 			shooter.Shoot();
 			Wait(.5);
 			shooter.SetSpeed(0);
-		}
-		if (operatorStick.GetRawButton(7)) {
-			shooter.SetPotValue(300);
 		}
 		SmartDashboard::PutNumber("Pot Value", shooter.ReadPot());
 		/*if (operatorStick.GetRawButton(5)) {

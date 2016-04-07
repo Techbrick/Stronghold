@@ -8,10 +8,10 @@ namespace Constants {
 	static constexpr int driveLeftSlaveID = 13;
 	static constexpr int driveRightSlaveID = 15;
 	static constexpr float driveK_P = 0.008;
-	static constexpr float drivePIDepsilon = 4.0;
-	static constexpr float drivePIDMaxSpeed = 0.9;
+	static constexpr float drivePIDepsilon = 1.0;
+	static constexpr float drivePIDMaxSpeed = 0.6;
 	static constexpr float drivePIDMinSpeed = 0.03;
-	static constexpr float drivePIDFinishTurn = 0.1;
+	static constexpr float drivePIDFinishTurn = 0.3;
 	static constexpr int driveMaxRPM = 590;
 
 	//Joystick axis and buttons

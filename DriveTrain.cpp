@@ -79,7 +79,7 @@ void DriveTrain::TurnToAngle(float absAngle)
 		if (tooLowAndNonZero)
 			output = copysign(Constants::drivePIDFinishTurn, output);
 		if (tooHigh)
-			output = Constants::drivePIDMaxSpeed;
+			output = copysign(Constants::drivePIDMaxSpeed, output);
 
 		return output;
 	};
@@ -144,7 +144,7 @@ void DriveTrain::TankDriveStraight(float speed, float fieldAngle)
 	if (tooLowAndNonZero)
 		pidAdjustment = copysign(Constants::drivePIDFinishTurn, pidAdjustment);
 	if (tooHigh)
-		pidAdjustment = Constants::drivePIDMaxSpeed;
+		pidAdjustment = copysign(Constants::drivePIDMaxSpeed, pidAdjustment);
 
 	float motorOutput;
 	if (abs(error) > 20.0)
