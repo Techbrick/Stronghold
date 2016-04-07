@@ -58,7 +58,7 @@ void Shooter::SetAngle(float angle) { //degrees
 	aim.SetControlMode(CANTalon::ControlMode::kPosition);
 	int position = aim.GetAnalogInRaw();
 	int failsafe = 0;
-	int potValue = (int)(882 - (angle * Constants::aimDegreesToPotFactor));
+	int potValue = (int)(Constants::potMinValue - (angle * Constants::aimDegreesToPotFactor));
 	//if (potValue < 488) {
 	//	SmartDashboard::PutString("Set Angle Failed for a different reason", "Angle was out of bounds. Will not clear the bar");
 	//}
@@ -83,16 +83,7 @@ void Shooter::SetAngle(float angle) { //degrees
 
 void Shooter::Move(float speed) {
 	aim.SetControlMode(CANTalon::ControlMode::kPercentVbus);
-	//if (aim.GetAnalogInRaw() < 754 && speed > 0) {
-	//	aim.Set(speed);
-	//} else if (aim.GetAnalogInRaw() > 209 && speed < 0) {
-		aim.Set(speed);
-	//} else {
-	//	aim.Set(0);
-	//	return;
-	//}
-	SmartDashboard::PutBoolean("Shooter Top Limit Switch Hit", aim.GetReverseLimitOK());
-	SmartDashboard::PutBoolean("Shooter Bottom Limit Switch Hit", aim.GetForwardLimitOK());
+	aim.Set(speed);
 }
 
 void Shooter::PrepareShooter(float angle, float speed) {

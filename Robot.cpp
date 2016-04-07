@@ -182,7 +182,7 @@ void Robot::OperatorControl() //teleop code
 		SmartDashboard::PutNumber("Recommended Shooter Angle", aimer.GetAngleToShoot());
 		SmartDashboard::PutNumber("Angle to Tower", aimer.GetAngleToTower());
 		SmartDashboard::PutNumber("Rotation", position.GetAngleDegrees());
-		SmartDashboard::PutBoolean("Close Enough to Shoot", aimer.GetAngleToShoot() < 48 && aimer.GetAngleToShoot() > 32);
+		SmartDashboard::PutBoolean("Close Enough to Shoot", aimer.GetAngleToShoot() < Constants::shooterMaxAngle && aimer.GetAngleToShoot() > Constants::shooterMinAngle);
 		SmartDashboard::PutNumber("Shooter Speed", shooter.WheelSpeed());
 	}
 
