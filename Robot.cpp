@@ -75,9 +75,6 @@ void Robot::OperatorControl() //teleop code
 		leftMoveValue = .90 * throttle * driveStick.GetRawAxis(1);
 		rightMoveValue = -throttle * driveStick.GetRawAxis(5);
 
-		SmartDashboard::PutNumber("Throttle Value", throttle);
-		SmartDashboard::PutNumber("Left Move Value", leftMoveValue);
-		SmartDashboard::PutNumber("Right Move Value", rightMoveValue);
 		if (driveStick.GetRawButton(8)) {
 			leftMoveValue = -1 * leftMoveValue;
 			rightMoveValue = -1 * rightMoveValue;
