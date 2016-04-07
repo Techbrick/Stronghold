@@ -32,6 +32,7 @@ namespace Constants {
 	static constexpr int shooterKickerTalonID = 11;
 	static constexpr int shooterIRPin = 6;
 	static constexpr int servoPin = 0;
+	static constexpr float shooterMaxAngle = 44;
 	static constexpr float shooter100Velocity = 12.33; //via physics major
 	static constexpr float shooter75Velocity = 9.2475; //may need to be changed. Currently assuming percent voltage to velocity is linear
 	static constexpr float shooter50Velocity = 6.165; //may need to be changed. Currently assuming percent voltage to velocity is linear
@@ -39,9 +40,10 @@ namespace Constants {
 	static constexpr float maximumAngle = 44; //TODO: temporary value
 	static constexpr float servoMaxPosition = 0.9;
 	static constexpr float servoMinPosition = 0.3;
-	static constexpr int potMinValue = 481; //corresponds to the min angle
-	static constexpr int potMaxValue = 111; //corresponds to the max angle
-	static constexpr float aimDegreesToPotFactor = (potMaxValue / maximumAngle) / (maximumAngle / 72.8);
+	static constexpr int potMinValue = 654;
+	static constexpr int potMaxValue = 270;
+	static constexpr float aimDegreesToPotFactor = ((potMinValue - potMaxValue) / (double)shooterMaxAngle);//(potMaxValue / 48.0); / (103.289 / 44.0);
+
 
 	//Arm
 	static constexpr int armTalonPin  = 99;

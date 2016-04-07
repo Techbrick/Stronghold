@@ -108,7 +108,7 @@ float Shooter::WheelSpeed() {
 }
 
 float Shooter::Angle() {
-	return (Constants::potMinValue - aim.GetAnalogInRaw()) / Constants::aimDegreesToPotFactor - 8;
+	return (Constants::potMinValue - aim.GetAnalogInRaw()) / Constants::aimDegreesToPotFactor;
 }
 
 float Shooter::ReadPot() {
