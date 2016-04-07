@@ -32,6 +32,7 @@ public:
 	void PrepareShooter(float angle = 45, float speed = 1.0);
 	void LoadBall();
 	void Shoot();
+	void SetPotValue(int potValue);
 	float ReadPot();
 	bool HasBall();
 	float WheelSpeed();

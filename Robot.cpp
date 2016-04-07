@@ -156,6 +156,9 @@ void Robot::OperatorControl() //teleop code
 			Wait(.5);
 			shooter.SetSpeed(0);
 		}
+		if (operatorStick.GetRawButton(7)) {
+			shooter.SetPotValue(300);
+		}
 		SmartDashboard::PutNumber("Pot Value", shooter.ReadPot());
 		/*if (operatorStick.GetRawButton(5)) {
 			shooter.SetAngle(20);

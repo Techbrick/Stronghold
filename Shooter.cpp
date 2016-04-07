@@ -20,6 +20,7 @@ Shooter::Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon, u
 	right.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	aim.SetControlMode(CANTalon::ControlMode::kPosition);
 	aim.SetFeedbackDevice(CANTalon::FeedbackDevice::AnalogPot);
+	aim.SetClosedLoopOutputDirection(true);
 	kicker.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 }
 
@@ -51,6 +52,30 @@ void Shooter::SetSpeed(float speed) {
 }
 
 void Shooter::SetAngle(float angle) { //degrees
+	if (angle < Constants::shooterMinAngle || angle > Constants::shooterMaxAngle) {
+		return;
+	}
+	aim.SetControlMode(CANTalon::ControlMode::kPosition);
+	int potValue = (int)(Constants::potMinValue - (angle * Constants::aimDegreesToPotFactor));
+	aim.Set(potValue);
+	/*if (angle < Constants::shooterMinAngle || angle > Constants::shooterMaxAngle) {
+		return;
+	}
+	int potValue = (int)(Constants::potMinValue - (angle * Constants::aimDegreesToPotFactor));
+	aim.SetControlMode(CANTalon::ControlMode::kPercentVbus);
+	float failsafe = 0.0;
+	float delta_t = 0.05;
+	while (abs(aim.GetAnalogInRaw() - potValue) > 2.0 && failsafe < 2.0/delta_t)
+	{
+		aim.Set()
+	}*/
+}
+
+void Shooter::SetPotValue(int potValue) {
+	aim.SetControlMode(CANTalon::ControlMode::kPosition);
+	aim.Set(potValue);
+}
+/*void Shooter::SetAngle(float angle) { //degrees
 	if (angle < 32 || angle > 44) {
 		return;
 	}
@@ -75,7 +100,7 @@ void Shooter::SetAngle(float angle) { //degrees
 	}
 	//aim.SetAnalogPosition(potValue);
 	aim.SetControlMode(CANTalon::ControlMode::kPercentVbus);
-}
+}*/
 
 void Shooter::Move(float speed) {
 	aim.SetControlMode(CANTalon::ControlMode::kPercentVbus);
