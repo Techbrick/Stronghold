@@ -11,7 +11,7 @@ namespace Constants {
 	static constexpr float driveK_I = 0.01;
 	static constexpr float drivePIDepsilon = 4.0;
 	static constexpr float drivePIDMaxSpeed = 0.9;
-	static constexpr float drivePIDMinSpeed = 0.02;
+	static constexpr float drivePIDMinSpeed = 0.03;
 	static constexpr float drivePIDFinishTurn = 0.1;
 	static constexpr int driveMaxRPM = 590;
 
@@ -39,11 +39,13 @@ namespace Constants {
 	static constexpr float shooter100Velocity = 12.33; //via physics major
 	static constexpr float shooter75Velocity = 9.2475; //may need to be changed. Currently assuming percent voltage to velocity is linear
 	static constexpr float shooter50Velocity = 6.165; //may need to be changed. Currently assuming percent voltage to velocity is linear
-	static constexpr float minimumAngle = 32;	//Actual value: needs more accuracy
-	static constexpr float maximumAngle = 70; //TODO: temporary value
+	static constexpr float shooterMinAngle = 32;	//Actual value: needs more accuracy
+	static constexpr float shooterMaxAngle = 44; //TODO: temporary value
 	static constexpr float servoMaxPosition = 0.9;
 	static constexpr float servoMinPosition = 0.3;
-	static constexpr float aimDegreesToPotFactor = (478 / 68.2) / (45 / 61.351);
+	static constexpr int potMinValue = 654;
+	static constexpr int potMaxValue = 270;
+	static constexpr float aimDegreesToPotFactor = (potMaxValue / 44.0) / (44.0 / 64.0);
 
 	//Arm
 	static constexpr int armTalonPin  = 11;

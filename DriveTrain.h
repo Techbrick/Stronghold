@@ -13,7 +13,7 @@ class DriveTrain : public RobotDrive
 	CANTalon leftMaster;
 	CanTalonSRX leftSlave;
 	CANTalon rightMaster;
-	CANTalon rightSlave;
+	CanTalonSRX rightSlave;
 
 	Position *position;
 public:
