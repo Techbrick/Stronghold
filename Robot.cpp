@@ -113,12 +113,14 @@ void Robot::OperatorControl() //teleop code
 				shooter.Shoot();
 			}
 		}
-		if (operatorStick.GetRawButton(5)) {
-			angleToTower = aimer.GetAngleToTower();
-			driveTrain.TurnToAngle(angleToTower);
+
+		/*if (operatorStick.GetRawButton(5)) {
+			//angleToTower = aimer.GetAngleToTower();
+			//driveTrain.TurnToAngle(angleToTower);
 			angleToShoot = aimer.GetAngleToShoot();
 			shooter.SetAngle(angleToShoot);
-		}
+		}*/
+
 		if (operatorStick.GetRawButton(Constants::xButton))
 		{
 			shooter.Shoot();
@@ -165,6 +167,13 @@ void Robot::OperatorControl() //teleop code
 		if (operatorStick.GetRawButton(4)) {
 			driveTrain.TurnToRelativeAngle(30);
 		}*/
+/*		int testAngle = 33;
+		if (operatorStick.GetRawButton(4)) {
+			testAngle++;
+			shooter.SetAngle(testAngle);
+		}
+		SmartDashboard::PutNumber("test angle", testAngle);*/
+		SmartDashboard::PutNumber("Pot Value", shooter.ReadPot());
 		SmartDashboard::PutNumber("getPOV", operatorStick.GetPOV());
 		SmartDashboard::PutString("Version", "1.1");
 		SmartDashboard::PutBoolean("Has Ball", shooter.HasBall());
@@ -175,7 +184,7 @@ void Robot::OperatorControl() //teleop code
 		SmartDashboard::PutNumber("Recommended Shooter Angle", aimer.GetAngleToShoot());
 		SmartDashboard::PutNumber("Angle to Tower", aimer.GetAngleToTower());
 		SmartDashboard::PutNumber("Rotation", position.GetAngleDegrees());
-		SmartDashboard::PutBoolean("Close Enough to Shoot", aimer.GetAngleToShoot() < 48 && aimer.GetAngleToShoot() > 32);
+		SmartDashboard::PutBoolean("Close Enough to Shoot", aimer.GetAngleToShoot() < 44 && aimer.GetAngleToShoot() > 32);
 	}
 
 	shooter.Disable();
@@ -214,8 +223,10 @@ void Robot::Autonomous()
 		//drive over defense
 		logfile<<"Over the mountain" << std::endl;
 		float speed = SmartDashboard::GetNumber("adjustSpeed", 1.0);
+		driveTrain.TankDrive(-over9000 * 0.2, over9000 * 0.2);
+		Wait(0.3);
 	driveTrain.TankDrive(-over9000*speed, over9000);
-	Wait(timeTo10);
+	Wait(timeTo10 - 0.3);
 	driveTrain.TankDrive(0.0, 0.0);
 	//turn 180 unless it's at the ends then turn  145
 	logfile << "Twist'n, baby!"<< std::endl;
