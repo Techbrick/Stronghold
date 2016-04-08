@@ -8,10 +8,10 @@ namespace Constants {
 	static constexpr int driveLeftSlaveID = 13;
 	static constexpr int driveRightSlaveID = 15;
 	static constexpr float driveK_P = 0.008;
-	static constexpr float drivePIDepsilon = 1.0;
-	static constexpr float drivePIDMaxSpeed = 0.6;
+	static constexpr float drivePIDepsilon = 2.0;
+	static constexpr float drivePIDMaxSpeed = 0.9;
 	static constexpr float drivePIDMinSpeed = 0.03;
-	static constexpr float drivePIDFinishTurn = 0.3;
+	static constexpr float drivePIDFinishTurn = 0.15;
 	static constexpr int driveMaxRPM = 590;
 
 	//Joystick axis and buttons
@@ -42,8 +42,8 @@ namespace Constants {
 	static constexpr float shooterMaxAngle = 46; //TODO: temporary value
 	static constexpr float servoMaxPosition = 0.9;
 	static constexpr float servoMinPosition = 0.3;
-	static constexpr int potMinValue = 469;
-	static constexpr int potMaxValue = 45;
+	static constexpr int potMinValue = 461;
+	static constexpr int potMaxValue = 64;
 	static constexpr float aimDegreesToPotFactor = ((potMinValue - potMaxValue) / (double)shooterMaxAngle);//(potMaxValue / 48.0); / (103.289 / 44.0);
 
 	//Arm

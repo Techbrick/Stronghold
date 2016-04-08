@@ -59,7 +59,7 @@ void DriveTrain::TurnToAngle(float absAngle)
 {
 	SmartDashboard::PutString("status", "TurnToAngle turn started");
 
-	float k_P = 0.008;
+	float k_P = 0.01;
 
 	// Convert target to +/- 180 degrees to match gyro
 	float targetAngle = (absAngle <= 180.0) ? absAngle : absAngle-360;
