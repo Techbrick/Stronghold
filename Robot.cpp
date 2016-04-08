@@ -32,20 +32,8 @@ Robot::Robot() :
 	operatorStick(1),
 	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID, Constants::shooterAimTalonID, Constants::shooterKickerTalonID, &position),
 	position(),
-	aimer(),
-	testCANTalon(2),
-	servo(0),
-	servo1(1),
-	servo2(2),
-	servo3(3),
-	servo4(4),
-	servo5(5),
-	servo6(6),
-	servo7(7),
-	servo8(8),
-	servo9(9)
+	aimer()
 {
-	testCANTalon.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	driveTrain.SetExpiration(0.1); // safety feature
 	CameraServer::GetInstance()->SetQuality(50);
 	CameraServer::GetInstance()->StartAutomaticCapture("cam0");

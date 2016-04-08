@@ -19,6 +19,7 @@ Shooter::Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon, u
 	left.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	right.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	aim.SetControlMode(CANTalon::ControlMode::kPosition);
+	aim.SetFeedbackDevice(CANTalon::FeedbackDevice::AnalogPot);
 	kicker.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 }
 
@@ -105,9 +106,11 @@ void Shooter::LoadBall() {
 }
 
 void Shooter::Shoot() {
-	kicker.Set(-1.0);
-	Wait(0.8);
-	kicker.Set(0.0);
+	kicker.Set(-1);
+	Wait(.25);
+	kicker.Set(1);
+	Wait(.25);
+	kicker.Set(0);
 }
 
 bool Shooter::HasBall() {

@@ -42,7 +42,7 @@ namespace Constants {
 	static constexpr float aimDegreesToPotFactor = (478 / 68.2) / (45 / 61.351);
 
 	//Arm
-	static constexpr int armTalonPin  = 11;
+	static constexpr int armTalonPin  = 99;
 
 	//Position
 	static constexpr float towerX = 0;

@@ -106,7 +106,6 @@ void DriveTrain::DriveStraight(float speed, float fieldAngle, float timeInSecond
 
 	unsigned int failsafe = 0;
 	unsigned int failsafeMax = timeInSeconds / delta_t;
-
 	while (abs(currentAngle-fieldAngle) > Constants::drivePIDepsilon && failsafe < failsafeMax)
 	{
 		i = (i + k_i * error) * delta_t;
