@@ -69,8 +69,6 @@ void Robot::OperatorControl() //teleop code
 	while (IsOperatorControl() && IsEnabled())
 	{
 		throttle = (((driveStick.GetRawAxis(Constants::driveL2)) + 1.0)/4.0) + 0.5; //[1, .5]
-		//leftMoveValue = .90 * throttle * driveStick.GetRawAxis(1);
-		//rightMoveValue = -throttle * driveStick.GetRawAxis(5);
 		leftMoveValue = -driveStick.GetRawAxis(1);
 		rightMoveValue = -driveStick.GetRawAxis(5);
 
@@ -215,8 +213,10 @@ void Robot::Autonomous()
 		//drive over defense
 		logfile<<"Over the mountain" << std::endl;
 		float speed = SmartDashboard::GetNumber("adjustSpeed", 1.0);
+		driveTrain.TankDrive(-over9000 * 0.2, over9000 * 0.2);
+		Wait(0.3);
 	driveTrain.TankDrive(-over9000*speed, over9000);
-	Wait(timeTo10);
+	Wait(timeTo10 - 0.3);
 	driveTrain.TankDrive(0.0, 0.0);
 	//turn 180 unless it's at the ends then turn  145
 	logfile << "Twist'n, baby!"<< std::endl;
@@ -260,13 +260,13 @@ void Robot::Autonomous()
 	driveTrain.ArcadeDrive(0.0, 0.0, false);
 	//aim at tower
 	int age = aimer.GetAge();
-	if/* (false)*/(age < 3)
+	if (age < 3)
 	{
 		float angleToShoot = aimer.GetAngleToShoot();
 		shooter.SetAngle(angleToShoot);
 		shooter.SetSpeed(1.0);
 		logfile << "Angle to shoot: " << angleToShoot << std::endl;
-		Wait(1);
+		Wait(0.7);
 		shooter.Shoot();
 	}
 	for (int i=0; i<20; i++)

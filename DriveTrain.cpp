@@ -1,4 +1,5 @@
 #include "DriveTrain.h"
+#define PI 3.14159265
 
 DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, uint32_t rightMasterDeviceID, uint32_t rightSlaveDeviceID, Position *position_):
 	RobotDrive(leftMaster, rightMaster),
@@ -36,8 +37,7 @@ DriveTrain::DriveTrain(uint32_t leftMasterDeviceID, uint32_t leftSlaveDeviceID, 
 	rightMaster.SetD(0.0);
 	rightMaster.SetAllowableClosedLoopErr(10);
 	rightMaster.SetInverted(true);
-	
-	//rightSlave.SetControlMode(CANTalon::ControlMode::kFollower);
+
 	rightSlave.SetModeSelect(CanTalonSRX::kMode_SlaveFollower);
 	rightSlave.Set(Constants::driveRightMasterID);
 	rightSlave.SetDemand(rightMasterDeviceID);
@@ -164,3 +164,4 @@ void DriveTrain::TankDriveSpeed(float leftspeed, float rightspeed)
 	SmartDashboard::PutNumber("LeftError", leftMaster.GetClosedLoopError());
 	SmartDashboard::PutNumber("RightError", rightMaster.GetClosedLoopError());
 }
+
