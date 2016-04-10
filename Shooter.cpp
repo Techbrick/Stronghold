@@ -19,6 +19,7 @@ Shooter::Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon, u
 	left.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	right.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	aim.SetControlMode(CANTalon::ControlMode::kPosition);
+	aim.SetFeedbackDevice(CANTalon::FeedbackDevice::AnalogPot);
 	kicker.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 }
 
@@ -50,18 +51,13 @@ void Shooter::SetSpeed(float speed) {
 }
 
 void Shooter::SetAngle(float angle) { //degrees
-	//TODO: Don't set angle more than Constants::maximumAngle or less than Constants::minimumAngle
-	if (angle < 32 || angle > 48) {
-		SmartDashboard::PutString("Set Angle Failed", "Angle was out of bounds. Bounds are [0, 68.2]");
+	if (angle < 32 || angle > 44) {
 		return;
 	}
 	aim.SetControlMode(CANTalon::ControlMode::kPosition);
 	int position = aim.GetAnalogInRaw();
 	int failsafe = 0;
-	int potValue = (int)(882 - (angle * Constants::aimDegreesToPotFactor));
-	//if (potValue < 488) {
-	//	SmartDashboard::PutString("Set Angle Failed for a different reason", "Angle was out of bounds. Will not clear the bar");
-	//}
+	int potValue = (int)(Constants::potMinValue - (angle * Constants::aimDegreesToPotFactor));
 	if (aim.GetAnalogInRaw() < potValue) {
 		while (aim.GetAnalogInRaw() < potValue && failsafe < 200) {
 			aim.Set(position);
@@ -83,16 +79,7 @@ void Shooter::SetAngle(float angle) { //degrees
 
 void Shooter::Move(float speed) {
 	aim.SetControlMode(CANTalon::ControlMode::kPercentVbus);
-	//if (aim.GetAnalogInRaw() < 754 && speed > 0) {
-	//	aim.Set(speed);
-	//} else if (aim.GetAnalogInRaw() > 209 && speed < 0) {
-		aim.Set(speed);
-	//} else {
-	//	aim.Set(0);
-	//	return;
-	//}
-	SmartDashboard::PutBoolean("Shooter Top Limit Switch Hit", aim.GetReverseLimitOK());
-	SmartDashboard::PutBoolean("Shooter Bottom Limit Switch Hit", aim.GetForwardLimitOK());
+	aim.Set(speed);
 }
 
 void Shooter::PrepareShooter(float angle, float speed) {
@@ -105,9 +92,11 @@ void Shooter::LoadBall() {
 }
 
 void Shooter::Shoot() {
-	kicker.Set(-1.0);
-	Wait(0.8);
-	kicker.Set(0.0);
+	kicker.Set(-1);
+	Wait(.25);
+	kicker.Set(1);
+	Wait(.25);
+	kicker.Set(0);
 }
 
 bool Shooter::HasBall() {
@@ -119,10 +108,10 @@ float Shooter::WheelSpeed() {
 }
 
 float Shooter::Angle() {
-	return (882 - aim.GetAnalogInRaw()) / Constants::aimDegreesToPotFactor - 6.0;
+	return (Constants::potMinValue - aim.GetAnalogInRaw()) / Constants::aimDegreesToPotFactor;
 }
 
 float Shooter::ReadPot() {
+	SmartDashboard::PutNumber("pot value", aim.GetAnalogInRaw());
 	return aim.GetAnalogInRaw();
-	SmartDashboard::PutNumber("Pot reg", aim.GetAnalogIn());
 }

@@ -32,20 +32,8 @@ Robot::Robot() :
 	operatorStick(1),
 	shooter(Constants::shooterLeftTalonID, Constants::shooterRightTalonID, Constants::shooterAimTalonID, Constants::shooterKickerTalonID, &position),
 	position(),
-	aimer(),
-	testCANTalon(2),
-	servo(0),
-	servo1(1),
-	servo2(2),
-	servo3(3),
-	servo4(4),
-	servo5(5),
-	servo6(6),
-	servo7(7),
-	servo8(8),
-	servo9(9)
+	aimer()
 {
-	testCANTalon.SetControlMode(CANTalon::ControlMode::kPercentVbus);
 	driveTrain.SetExpiration(0.1); // safety feature
 	CameraServer::GetInstance()->SetQuality(50);
 	CameraServer::GetInstance()->StartAutomaticCapture("cam0");
@@ -87,9 +75,6 @@ void Robot::OperatorControl() //teleop code
 		leftMoveValue = .90 * throttle * driveStick.GetRawAxis(1);
 		rightMoveValue = -throttle * driveStick.GetRawAxis(5);
 
-		SmartDashboard::PutNumber("Throttle Value", throttle);
-		SmartDashboard::PutNumber("Left Move Value", leftMoveValue);
-		SmartDashboard::PutNumber("Right Move Value", rightMoveValue);
 		if (driveStick.GetRawButton(8)) {
 			leftMoveValue = -1 * leftMoveValue;
 			rightMoveValue = -1 * rightMoveValue;
@@ -125,9 +110,10 @@ void Robot::OperatorControl() //teleop code
 				shooter.Shoot();
 			}
 		}
+
 		if (operatorStick.GetRawButton(5)) {
-			angleToTower = aimer.GetAngleToTower();
-			driveTrain.TurnToAngle(angleToTower);
+			//angleToTower = aimer.GetAngleToTower();
+			//driveTrain.TurnToAngle(angleToTower);
 			angleToShoot = aimer.GetAngleToShoot();
 			shooter.SetAngle(angleToShoot);
 		}
@@ -177,6 +163,7 @@ void Robot::OperatorControl() //teleop code
 		if (operatorStick.GetRawButton(4)) {
 			driveTrain.TurnToRelativeAngle(30);
 		}*/
+		SmartDashboard::PutNumber("Pot Value", shooter.ReadPot());
 		SmartDashboard::PutNumber("getPOV", operatorStick.GetPOV());
 		SmartDashboard::PutString("Version", "1.1");
 		SmartDashboard::PutBoolean("Has Ball", shooter.HasBall());
@@ -226,8 +213,10 @@ void Robot::Autonomous()
 		//drive over defense
 		logfile<<"Over the mountain" << std::endl;
 		float speed = SmartDashboard::GetNumber("adjustSpeed", 1.0);
+		driveTrain.TankDrive(-over9000 * 0.2, over9000 * 0.2);
+		Wait(0.3);
 	driveTrain.TankDrive(-over9000*speed, over9000);
-	Wait(timeTo10);
+	Wait(timeTo10 - 0.3);
 	driveTrain.TankDrive(0.0, 0.0);
 	//turn 180 unless it's at the ends then turn  145
 	logfile << "Twist'n, baby!"<< std::endl;
@@ -289,3 +278,4 @@ void Robot::Autonomous()
 	logfile.close();
 }
 START_ROBOT_CLASS(Robot);
+
