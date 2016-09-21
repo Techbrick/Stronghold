@@ -61,7 +61,7 @@ void Shooter::SetSpeed(float speed) {
 	aim.SetControlMode(CANTalon::ControlMode::kPosition);
 	int potValue = (int)(Constants::potMinValue - (angle * Constants::aimDegreesToPotFactor));
 	aim.Set(potValue);
-	/*if (angle < Constants::shooterMinAngle || angle > Constants::shooterMaxAngle) {
+	if (angle < Constants::shooterMinAngle || angle > Constants::shooterMaxAngle) {
 		return;
 	}
 	int potValue = (int)(Constants::potMinValue - (angle * Constants::aimDegreesToPotFactor));
@@ -78,6 +78,7 @@ void Shooter::SetPotValue(int potValue) {
 	aim.SetControlMode(CANTalon::ControlMode::kPosition);
 	aim.Set(potValue);
 }
+
 void Shooter::SetAngle(float angle) { //degrees
 	if (angle < 32 || angle > 44) {
 		return;
@@ -89,7 +90,7 @@ void Shooter::SetAngle(float angle) { //degrees
 	if (aim.GetAnalogInRaw() < potValue) {
 		while (aim.GetAnalogInRaw() < potValue && failsafe < 200) {
 			aim.Set(position);
-			position--; //may need to change increment value
+			position--; //depending on how the talon is wired this may need to be ++ and the other one may need to be --
 			failsafe++;
 			Wait(.01);
 		}
@@ -97,12 +98,50 @@ void Shooter::SetAngle(float angle) { //degrees
 		while (aim.GetAnalogInRaw() > potValue && failsafe < 200) {
 			aim.Set(position);
 			failsafe++;
-			position++; //depending on how the talon is wired this may need to be -= and the other one may need to be +=
+			position++; //depending on how the talon is wired this may need to be -- and the other one may need to be ++
 			Wait(.01);
 		}
 	}
 	//aim.SetAnalogPosition(potValue);
 	aim.SetControlMode(CANTalon::ControlMode::kPercentVbus);
+}
+
+/*decide if you're going to use the accelerometer or the pot. 
+Then make changes in Robot.cpp accordingly.
+If you use the pot, you will have to recalibrate the code to accomodate for it and account for slippage.
+If you use the accelerometer you will have to change things in Robot.cpp to account for method changes.
+Lastly, you may need to change the value you're setting the motor to, depending on how fast it moves.
+Test it out and see which one you'd rather use*/
+void Shooter::SetAngleAccelerometer(float angle) { 
+	if (angle < Constants::shooterMinAngle || angle > Constants::shooterMaxAngle) {
+		return;
+	}
+	aim.SetControlMode(CANTalon::ControlMode::kPercentVbus);
+	int position = Angle();
+   int failsafe = 0;
+	if (position < angle) {
+		while (position < angle && failsafe < 250) {
+         if (position < Constants::shooterMinAngle || position > Constants::shooterMaxAngle) {
+            aim.Set(0.0);
+            return;
+         }
+			aim.Set(.2); //may need to be adjusted && negative may be flipped
+			position = Angle();
+			failsafe++;
+         Wait(.01);
+		}
+	} else {
+		while (position > angle && failsafe < 250) {
+         if (position < Constants::shooterMinAngle || position > Constants::shooterMaxAngle) {
+            aim.Set(0.0);
+            return;
+         }
+			aim.Set(-.2); //may need to be adjusted && negative may need to be flipped
+			position = Angle();
+         failsafe++;
+			Wait(.01);
+		}
+	}
 }
 
 void Shooter::Move(float speed) {
