@@ -8,6 +8,7 @@
 #include "WPILib.h"
 #include "Constants.h"
 #include "Position.h"
+#include "ADXL345_I2C.h"
 
 #ifndef SRC_SHOOTER_H
 #define SRC_SHOOTER_H
@@ -20,6 +21,7 @@ class Shooter {
 	Servo servo;
 	CANTalon kicker;
 	Position *position;
+	ADXL345_I2C accel;
 
 public:
 	Shooter(uint32_t leftTalon, uint32_t rightTalon, uint32_t angleTalon, uint32_t kickerTalon, Position *position_);
@@ -32,10 +34,13 @@ public:
 	void PrepareShooter(float angle = 45, float speed = 1.0);
 	void LoadBall();
 	void Shoot();
+	void SetPotValue(int potValue);
 	float ReadPot();
 	bool HasBall();
 	float WheelSpeed();
 	float Angle();
+	float Roll();
+	float Pitch();
 };
 
 #endif
